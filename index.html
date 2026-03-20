@@ -1,0 +1,2970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atmiyata Digital – AI Mental Health Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;700&family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage: #7bc4a0;
+    --sage-light: #d4f0e3;
+    --sage-pale: #eef8f3;
+    --blush: #f5a8a8;
+    --blush-light: #fde8e8;
+    --sky: #8fc4e8;
+    --sky-light: #daeef9;
+    --honey: #f5c842;
+    --honey-light: #fef3c2;
+    --ink: #2d2d2d;
+    --ink-soft: #555;
+    --ink-muted: #888;
+    --border: #e0e0e0;
+    --white: #ffffff;
+    --bg: #f7f5f0;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+  }
+
+  body {
+    font-family: 'Noto Sans Gujarati', 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 48px;
+    background-image: radial-gradient(ellipse at 20% 20%, #d4f0e380 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, #fde8e880 0%, transparent 50%);
+  }
+
+  /* ── Global support quick access ── */
+  .support-btn {
+    border: 1px solid #b42318;
+    background: #d92d20;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(217,45,32,0.25);
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: 6px;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .support-btn:hover { background: #b42318; }
+
+  .support-panel {
+    position: absolute;
+    top: 48px;
+    right: 12px;
+    z-index: 29;
+    width: min(280px, calc(100% - 24px));
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+    padding: 14px;
+    display: none;
+  }
+  .support-panel.open { display: block; }
+  .support-panel h3 {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .support-panel p {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .support-panel ul {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 6px;
+  }
+  .support-panel li {
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .support-panel .support-note {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--honey-light);
+    font-size: 11px;
+    font-weight: 700;
+    color: #7a5c00;
+  }
+  .support-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 28;
+    background: transparent;
+    display: none;
+    border-radius: 36px;
+  }
+  .support-overlay.open { display: block; }
+
+  /* ── Top nav ── */
+  .app-header {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .app-header h1 {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .app-header p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .lang-switch {
+    margin-top: 10px;
+    display: inline-flex;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .lang-btn {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    cursor: pointer;
+    font-family: 'Noto Sans Gujarati', 'Nunito', sans-serif;
+  }
+  .lang-btn.active {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* ── Screen tabs ── */
+  .screen-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    background: #fff;
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .screen-tabs.hidden { display: none; }
+  .tab-btn {
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    padding: 8px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+  .tab-btn.active {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* ── Module jump chips (outside phone) ── */
+  .module-jump-wrap {
+    width: 300px;
+    display: none;
+    position: fixed;
+    left: 16px;
+    top: 110px;
+    z-index: 4;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+    margin: 0;
+    padding-right: 4px;
+  }
+  .module-jump-wrap.show { display: block; }
+  .module-jump-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+    padding-left: 4px;
+  }
+  .module-jump-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .module-chip {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .module-chip:hover:not(:disabled) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+  }
+  .module-chip.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .module-chip:disabled {
+    opacity: 0.65;
+    cursor: default;
+  }
+
+  /* ── Pause / Play control ── */
+  .pause-wrap {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 auto;
+    min-width: 112px;
+  }
+  .pause-wrap.show { display: flex; }
+  .pause-play-btn {
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    line-height: 1;
+    width: 100%;
+  }
+  .pause-play-btn:hover:not(:disabled) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+  }
+  .pause-play-btn.paused {
+    background: var(--honey-light);
+    border-color: var(--honey);
+    color: #7a5c00;
+  }
+  .pause-play-btn.paused:hover {
+    background: #fef0a8;
+    border-color: #e8b820;
+  }
+  .pause-play-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .pause-hint {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--ink-muted);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .pause-wrap.paused-state .pause-hint {
+    opacity: 1;
+  }
+
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 360px;
+    height: 700px;
+    margin-top: 8px;
+    background: var(--white);
+    border-radius: 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14), 0 0 0 8px #e8e5df;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Screens ── */
+  .screen { display: none; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+  .screen.active { display: flex; }
+
+  /* ── Home / overview ── */
+  .home-screen {
+    background: linear-gradient(180deg, #fcfbf8 0%, #f6f2ea 100%);
+  }
+  .home-shell {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .home-hero {
+    background: linear-gradient(135deg, rgba(123,196,160,0.22) 0%, rgba(245,200,66,0.20) 100%);
+    border: 1px solid rgba(123,196,160,0.28);
+    border-radius: 24px;
+    padding: 20px 18px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+  }
+  .home-kicker {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #1e5c40;
+    margin-bottom: 8px;
+  }
+  .home-title {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .home-copy {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .home-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    padding: 0 2px;
+  }
+  .home-mode-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .home-mode-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 15px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.05);
+  }
+  .home-mode-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .home-mode-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    background: var(--sage-pale);
+  }
+  .home-mode-card.roleplay .home-mode-icon { background: var(--sky-light); }
+  .home-mode-card.quiz .home-mode-icon { background: var(--honey-light); }
+  .home-mode-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .home-mode-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .home-session-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 16px;
+    display: grid;
+    gap: 10px;
+    box-shadow: 0 12px 26px rgba(0,0,0,0.06);
+  }
+  .home-session-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .home-session-title {
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .home-session-meta {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .home-start-btn {
+    margin-top: 2px;
+  }
+  .home-start-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* ── Participant bar ── */
+  .participant-bar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    min-height: 50px;
+    position: relative;
+  }
+  .chip {
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: default;
+    border: none;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .chip.green  { background: var(--sage-light);  color: #2a7a58; }
+  .chip.blue   { background: var(--sky-light);   color: #1a5f8a; }
+  .chip.yellow { background: var(--honey-light); color: #7a5c00; }
+  .chip.speaking { outline: 2.5px solid var(--ink); outline-offset: 2px; }
+  .chip.clickable { cursor: pointer; }
+  .chip.clickable:hover { filter: brightness(0.98); }
+  .chip.more-chip { min-width: 72px; text-align: center; }
+  .attendees-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 12px;
+    width: min(230px, calc(100% - 24px));
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+    padding: 10px 12px;
+    z-index: 35;
+    display: none;
+  }
+  .attendees-popover.open { display: block; }
+  .attendees-popover h4 {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--ink-muted);
+    margin-bottom: 7px;
+  }
+  .attendees-popover ul {
+    margin: 0;
+    padding-left: 16px;
+    display: grid;
+    gap: 5px;
+  }
+  .attendees-popover li {
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  /* ─────────────────────────────────────────
+     SCREEN 1: Training – Focused
+  ───────────────────────────────────────── */
+  .session-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    padding: 10px 16px 4px;
+    flex-shrink: 0;
+  }
+
+  .flashcard-wrap {
+    flex: 1;
+    min-height: 0;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  .scroll-hint { height: 1px; }
+
+  .flashcard { background: var(--sage-light); }
+  .flashcard.speaker-trainer  { background: var(--sage-light); }
+  .flashcard.speaker-attendee { background: var(--sky-light); }
+  .flashcard.speaker-other    { background: var(--honey-light); }
+
+  .flashcard {
+    background: var(--sage-light);
+    border-radius: var(--radius-lg);
+    padding: 40px 22px 28px;
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(.4,0,.2,1);
+    min-height: 300px;
+    position: relative;
+    overflow-y: auto;
+  }
+  .flashcard::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .flashcard p {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1e5c40;
+    line-height: 1.45;
+    position: relative;
+  }
+  .flashcard.speaker-attendee p { color: #1a5f8a; }
+  .flashcard.speaker-other    p { color: #7a5c00; }
+
+  /* Zoomed out state */
+  .flashcard-wrap.zoomed .flashcard {
+    min-height: unset;
+    flex: unset;
+    padding: 0;
+    background: transparent;
+    display: none;
+  }
+
+  .msg-bubble {
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.5;
+    animation: bubbleIn 0.3s ease both;
+    flex-shrink: 0;
+  }
+  @keyframes bubbleIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg-bubble.trainer  { background: var(--sage-light);  align-self: flex-start; max-width: 85%; }
+  .msg-bubble.attendee { background: var(--blush-light); align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.note     { background: var(--sky-light);   align-self: flex-start; max-width: 90%; }
+
+  .msg-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 5px;
+    opacity: 0.65;
+  }
+
+  .bubble-content { display: block; }
+
+  .hidden-bubbles { display: none; flex-shrink: 0; }
+  .flashcard-wrap.zoomed .hidden-bubbles { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Bottom actions ── */
+  .bottom-bar {
+    padding: 10px 16px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .btn-continue {
+    display: block;
+    width: 100%;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-continue:hover:not(:disabled) { background: #444; transform: scale(1.01); }
+  .btn-continue:disabled { opacity: 0.45; cursor: default; transform: none; }
+  .training-actions-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .training-actions-row .btn-continue {
+    flex: 1 1 auto;
+    width: auto;
+    padding: 12px 14px;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 8px;
+    row-gap: 4px;
+    align-items: center;
+  }
+  .text-input {
+    width: 100%;
+    min-width: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 11px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .text-input:focus { border-color: var(--sage); }
+  .mic-btn {
+    width: 42px; height: 42px;
+    background: var(--sage-light);
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  .mic-btn:hover { transform: scale(1.1); }
+  .mic-status {
+    grid-column: 1 / -1;
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    display: none;
+    padding-left: 12px;
+  }
+  .mic-status.active { display: block; }
+
+  /* ─────────────────────────────────────────
+     SCREEN 2: Roleplaying
+  ───────────────────────────────────────── */
+  .rp-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .rp-header h2 {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .avatars-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .avatar-card {
+    flex: 1;
+    background: var(--sage-pale);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .avatar-card.user-card { background: var(--blush-light); }
+  .avatar-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .avatar-icon.persona { background: var(--sage-light); }
+  .avatar-icon.user    { background: var(--blush-light); }
+  .avatar-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .avatar-status {
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .rp-chat {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+  }
+
+  /* ─────────────────────────────────────────
+     SCREEN 3: Quiz
+  ───────────────────────────────────────── */
+  .quiz-header {
+    padding: 18px 20px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .quiz-header h2 {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .progress-bar-wrap {
+    margin-top: 10px;
+    background: var(--border);
+    border-radius: 50px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sage), #5aac85);
+    border-radius: 50px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-weight: 700;
+    margin-top: 5px;
+  }
+
+  .quiz-body {
+    flex: 1;
+    padding: 20px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+  }
+
+  .question-text {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .option-btn {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    transform: translateX(3px);
+  }
+  .option-btn.correct {
+    border-color: #3da672;
+    background: var(--sage-light);
+    color: #1e5c40;
+  }
+  .option-btn.wrong {
+    border-color: #e07070;
+    background: var(--blush-light);
+    color: #7a2020;
+  }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback-msg {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    display: none;
+  }
+  .feedback-msg.show { display: block; }
+  .feedback-msg.correct { background: var(--sage-light); color: #1e5c40; }
+  .feedback-msg.wrong   { background: var(--blush-light); color: #7a2020; }
+
+  .quiz-bottom {
+    padding: 10px 16px 16px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .btn-continue-arrow {
+    display: block;
+    width: 100%;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-continue-arrow:hover { background: #444; transform: scale(1.01); }
+  .btn-continue-arrow:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+  .scroll-hint-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    padding: 4px 0;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .scroll-hint-label:hover { color: var(--ink); }
+
+  /* ═══════════════════════════════════════════
+     NEW: Typing indicator dots
+  ═══════════════════════════════════════════ */
+  .typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    vertical-align: middle;
+    height: 1em;
+  }
+  .typing-dots span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.35;
+    animation: typing-bounce 1.2s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.22s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.44s; }
+  @keyframes typing-bounce {
+    0%, 80%, 100% { transform: translateY(0) scale(0.65); opacity: 0.25; }
+    40%            { transform: translateY(-4px) scale(1.05); opacity: 0.85; }
+  }
+  /* Color the dots to match their card context */
+  .flashcard.speaker-trainer  .typing-dots span { background: #1e5c40; }
+  .flashcard.speaker-attendee .typing-dots span { background: #1a5f8a; }
+  .flashcard.speaker-other    .typing-dots span { background: #7a5c00; }
+  .msg-bubble.trainer  .typing-dots span { background: #1e5c40; }
+  .msg-bubble.attendee .typing-dots span { background: #7a2020; }
+  .msg-bubble.note     .typing-dots span { background: #1a5f8a; }
+
+  /* ═══════════════════════════════════════════
+     NEW: Mic button recording state
+  ═══════════════════════════════════════════ */
+  @keyframes mic-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(245, 168, 168, 0.75); }
+    70%  { box-shadow: 0 0 0 9px rgba(245, 168, 168, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 168, 168, 0); }
+  }
+  .mic-btn.recording {
+    background: var(--blush-light);
+    animation: mic-pulse 1.1s infinite;
+  }
+
+  /* ═══════════════════════════════════════════
+     NEW: Roleplay – Mode Select overlay
+  ═══════════════════════════════════════════ */
+  .rp-mode-select {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 22px 20px 20px;
+    gap: 14px;
+  }
+  .rp-ms-title {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: center;
+  }
+  .rp-ms-subtitle {
+    font-size: 13px;
+    color: var(--ink-muted);
+    text-align: center;
+    margin-top: -6px;
+    line-height: 1.55;
+  }
+  .rp-ms-persona-card {
+    background: var(--sage-pale);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .rp-ms-avatar {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .rp-ms-persona-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .rp-ms-persona-tag {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .rp-ms-options-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ink-muted);
+    margin-bottom: -4px;
+  }
+  .rp-ms-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mode-option-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+    background: #fff;
+    user-select: none;
+  }
+  .mode-option-card:hover:not(.selected) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    transform: translateX(3px);
+  }
+  .mode-option-card.selected {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    outline: 2px solid var(--sage);
+    outline-offset: 1px;
+  }
+  .mode-option-icon { font-size: 22px; margin-bottom: 5px; }
+  .mode-option-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+  .mode-option-desc  { font-size: 12px; color: var(--ink-muted); margin-top: 3px; line-height: 1.4; }
+
+  /* ═══════════════════════════════════════════
+     NEW: Roleplay – Chat view (hidden until start)
+  ═══════════════════════════════════════════ */
+  #rp-chat-view {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1 id="app-title">CHW AI Mental Health Training</h1>
+  <p id="app-subtitle">AI Mental Health Training Platform</p>
+  <div class="lang-switch" role="group" aria-label="Language switch">
+    <button class="lang-btn active" id="lang-en-btn" onclick="switchLocale('en')">English</button>
+    <button class="lang-btn" id="lang-gu-btn" onclick="switchLocale('gu')">ગુજરાતી</button>
+  </div>
+</div>
+
+<div class="screen-tabs hidden" id="screen-tabs">
+  <button class="tab-btn active" id="tab-training" onclick="showScreen('training')">📖 Training</button>
+  <button class="tab-btn" id="tab-roleplay" onclick="showScreen('roleplay')">🎭 Roleplay</button>
+  <button class="tab-btn" id="tab-quiz" onclick="showScreen('quiz')">✏️ Quiz</button>
+</div>
+
+<div class="module-jump-wrap" id="module-jump-wrap">
+  <div class="module-jump-label" id="module-jump-label">Jump To Module</div>
+  <div class="module-jump-bar" id="module-jump-bar"></div>
+</div>
+
+<div class="phone">
+  <div class="support-overlay" id="support-overlay" onclick="closeSupportPanel()"></div>
+  <aside class="support-panel" id="support-panel">
+    <h3 id="support-title">Support Resources</h3>
+    <p id="support-subtitle">Resources for emergency and non-emergency support.</p>
+    <ul id="support-list">
+      <li><strong>Emergency:</strong> Call local emergency services immediately.</li>
+      <li><strong>iCall:</strong> 9152987821,</li>
+      <li><strong>Vandrevala Foundation:</strong> +1860-2662-345</li>
+      <li><strong>Tele MANAS:</strong> 1800-891-4416</li>
+    </ul>
+  </aside>
+
+  <div class="screen home-screen active" id="screen-home">
+    <div class="home-shell">
+      <section class="home-hero">
+        <div class="home-kicker" id="home-kicker">AI training workspace</div>
+        <h2 class="home-title" id="home-title">CHW AI Mental Health Trainer</h2>
+        <p class="home-copy" id="home-copy">
+          An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.
+          Move from structured learning to simulated counselling and a short quiz in one session flow.
+        </p>
+      </section>
+
+      <div class="home-section-title" id="home-modes-label">How the session works</div>
+      <section class="home-mode-grid">
+        <article class="home-mode-card training">
+          <div class="home-mode-top">
+            <div class="home-mode-icon">📖</div>
+            <div class="home-mode-name" id="home-training-title">Training</div>
+          </div>
+          <div class="home-mode-desc" id="home-training-desc">Learn through a guided exchange between an AI trainer and trainee group.</div>
+        </article>
+        <article class="home-mode-card roleplay">
+          <div class="home-mode-top">
+            <div class="home-mode-icon">🎭</div>
+            <div class="home-mode-name" id="home-roleplay-title">Roleplay</div>
+          </div>
+          <div class="home-mode-desc" id="home-roleplay-desc">Practice counselling with an AI patient by watching or participating yourself.</div>
+        </article>
+        <article class="home-mode-card quiz">
+          <div class="home-mode-top">
+            <div class="home-mode-icon">✏️</div>
+            <div class="home-mode-name" id="home-quiz-title">Quiz</div>
+          </div>
+          <div class="home-mode-desc" id="home-quiz-desc">Finish with a short knowledge check to reinforce the session.</div>
+        </article>
+      </section>
+
+      <section class="home-session-card">
+        <div class="home-session-label" id="home-session-label">Default session</div>
+        <div class="home-session-title" id="home-session-title">Session 5</div>
+        <div class="home-session-meta" id="home-session-meta">Loading session overview…</div>
+        <button class="btn-continue home-start-btn" id="home-start-btn" onclick="startDefaultSession()">Start Session</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: Training
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-training">
+    <div class="participant-bar" id="participant-bar">
+      <button class="support-btn" id="support-btn" onclick="toggleSupportPanel()">🚨 Support</button>
+    </div>
+
+    <div class="session-label" id="session-label">Session 5: Deep-dive into Distress &amp; Depression in CMD</div>
+
+    <p class="scroll-hint-label" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
+
+    <div class="flashcard-wrap" id="flashcard-wrap">
+      <div class="scroll-hint"></div>
+
+      <div class="hidden-bubbles" id="chat-history"></div>
+
+      <div class="flashcard speaker-trainer" id="flashcard">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;position:relative;">
+          <div id="flashcard-speaker-badge" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:0.6;color:var(--ink);">⌛ Loading…</div>
+          <p id="flashcard-text">Loading first exchange…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="training-actions-row">
+        <button class="btn-continue" id="training-continue-btn" onclick="advanceTraining()">continue</button>
+        <div class="pause-wrap" id="pause-wrap">
+          <button class="pause-play-btn" id="pause-play-btn" onclick="togglePause()">⏸ <span id="pause-play-label">Pause</span></button>
+          <span class="pause-hint" id="pause-hint">Audio &amp; playback paused</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <input class="text-input" id="training-input" type="text"
+               placeholder="ask a question …"
+               onkeydown="if(event.key==='Enter') sendTrainingQuestion()">
+        <button class="mic-btn" id="training-mic-btn" onclick="toggleTrainingMic()">🎙️</button>
+        <span class="mic-status" id="training-mic-status">Transcribing...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: Roleplay
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-roleplay">
+
+    <!-- ── Mode select (shown first) ── -->
+    <div id="rp-mode-select" class="rp-mode-select">
+      <div class="rp-ms-title" id="rp-ms-title">Session 9: Roleplaying</div>
+      <div class="rp-ms-subtitle" id="rp-ms-subtitle">Practice counselling with an AI patient.<br>Choose how you'd like to engage.</div>
+
+      <div class="rp-ms-persona-card">
+        <div class="rp-ms-avatar">🧑</div>
+        <div>
+          <div class="rp-ms-persona-name" id="rp-persona-name">Priya, 34</div>
+          <div class="rp-ms-persona-tag" id="rp-persona-tag">Presenting with moderate depression · reluctant to open up · gives short, guarded answers</div>
+        </div>
+      </div>
+
+      <div class="rp-ms-options-label" id="rp-options-label">Choose your mode</div>
+      <div class="rp-ms-options">
+        <div class="mode-option-card" id="mode-watch" onclick="selectMode('watch')">
+          <div class="mode-option-icon">👀</div>
+          <div class="mode-option-title" id="mode-watch-title">Watch</div>
+          <div class="mode-option-desc" id="mode-watch-desc">Observe a scripted counselling session between an AI counsellor and Priya. Tap Next to advance.</div>
+        </div>
+        <div class="mode-option-card" id="mode-participate" onclick="selectMode('participate')">
+          <div class="mode-option-icon">🎙️</div>
+          <div class="mode-option-title" id="mode-participate-title">Participate</div>
+          <div class="mode-option-desc" id="mode-participate-desc">Take the counsellor's role. Talk to Priya yourself via text or voice.</div>
+        </div>
+      </div>
+
+      <button class="btn-continue" id="rp-start-btn" onclick="startRoleplay()" disabled>Start Session</button>
+    </div>
+
+    <!-- ── Chat view (revealed after mode selected) ── -->
+    <div id="rp-chat-view">
+      <div class="rp-header">
+        <h2 id="rp-chat-title">Session 9: Roleplaying</h2>
+      </div>
+
+      <div class="avatars-row">
+        <div class="avatar-card">
+          <div class="avatar-icon persona">🧑</div>
+          <div>
+            <div class="avatar-name" id="rp-avatar-name">Priya</div>
+            <div class="avatar-status" id="rp-avatar-status">Depressed patient</div>
+          </div>
+        </div>
+        <div class="avatar-card user-card">
+          <div class="avatar-icon user">👤</div>
+          <div>
+            <div class="avatar-name" id="rp-user-label">Counsellor</div>
+            <div class="avatar-status" id="rp-user-status">Observing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rp-chat" id="rp-chat"></div>
+
+      <!-- Watch mode bottom bar -->
+      <div class="bottom-bar" id="rp-watch-bar" style="display:none">
+        <button class="btn-continue" id="rp-next-btn" onclick="advanceRoleplay()">Next →</button>
+      </div>
+
+      <!-- Participate mode bottom bar -->
+      <div class="bottom-bar" id="rp-participate-bar" style="display:none">
+        <div class="input-row">
+          <input class="text-input" id="rp-input" type="text"
+                 placeholder="type to interact …"
+                 onkeydown="if(event.key==='Enter') sendRoleplayMessage()">
+          <button class="mic-btn" id="rp-mic-btn" onclick="toggleRoleplayMic()">🎙️</button>
+          <span class="mic-status" id="rp-mic-status">Transcribing...</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: Quiz
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <h2 id="quiz-title">Quiz</h2>
+      <div class="progress-label" id="q-label">Question 1 of 5</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="q-progress" style="width: 20%"></div>
+      </div>
+    </div>
+
+    <div class="quiz-body">
+      <div class="question-text" id="q-text">Which of the following is a symptom of depression?</div>
+      <div class="options-list" id="q-options"></div>
+      <div class="feedback-msg" id="q-feedback"></div>
+    </div>
+
+    <div class="quiz-bottom">
+      <button class="btn-continue-arrow" id="q-next" onclick="nextQuestion()" disabled>Continue →</button>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
+const API_BASE = '/api'; // same-origin, backend serves frontend
+const CONTENT_BY_LOCALE = {
+  en: {
+    trainingNarrative: 'session_5_english',
+    quizNarrative: 'session_5_english',
+    roleplayPersona: 'persona_english',
+    ttsLocale: 'en',
+  },
+  gu: {
+    trainingNarrative: 'session_5_gujarati',
+    quizNarrative: 'session_5_gujarati',
+    roleplayPersona: 'persona_gujarati',
+    ttsLocale: 'gu',
+  },
+};
+const I18N = {
+  en: {
+    appTitle: 'CHW AI Mental Health Trainer',
+    appSubtitle: 'AI trainer, AI trainees, and guided practice for community mental health workers',
+    homeKicker: 'AI training workspace',
+    homeTitle: 'CHW AI Mental Health Trainer',
+    homeCopy: 'An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.<br>Move from structured learning to simulated counselling and a short quiz in one session flow.',
+    homeModesLabel: 'How the session works',
+    homeTrainingDesc: 'Learn through a guided exchange between an AI trainer and trainee group.',
+    homeRoleplayDesc: 'Practice counselling with an AI patient by watching or participating yourself.',
+    homeQuizDesc: 'Finish with a short knowledge check to reinforce the session.',
+    homeSessionLabel: 'Default session',
+    homeSessionMeta: '{modules} modules · Starts with Training and unlocks Roleplay and Quiz in the same workspace.',
+    tabTraining: '📖 Training',
+    tabRoleplay: '🎭 Roleplay',
+    tabQuiz: '✏️ Quiz',
+    moduleJump: 'Jump To Module',
+    supportButton: '🚨 Support',
+    supportTitle: 'Support Resources',
+    supportSubtitle: 'Resources for emergency and non-emergency support.',
+    supportEmergency: '<strong>Emergency:</strong> Call local emergency services immediately.',
+    supportICall: '<strong>iCall:</strong> 9152987821',
+    supportVandrevala: '<strong>Vandrevala Foundation:</strong> +1860-2662-345',
+    supportTeleManas: '<strong>Tele MANAS:</strong> 1800-891-4416',
+    sessionLoading: 'Loading…',
+    scrollUp: '↑ Scroll up to see history',
+    backToFocus: '↓ Back to focus',
+    loadingFirstExchange: 'Loading first exchange…',
+    trainingContinue: 'Continue',
+    askPlaceholder: 'ask a question …',
+    transcribing: 'Transcribing...',
+    roleplayTitle: 'Session 9: Roleplaying',
+    roleplaySubtitle: "Practice counselling with an AI patient.<br>Choose how you'd like to engage.",
+    roleplayPersonaName: 'Priya, 34',
+    roleplayPersonaTag: 'Presenting with moderate depression · reluctant to open up · gives short, guarded answers',
+    roleplayChooseMode: 'Choose your mode',
+    watch: 'Watch',
+    watchDesc: 'Observe a scripted counselling session between an AI counsellor and Priya. Tap Next to advance.',
+    participate: 'Participate',
+    participateDesc: "Take the counsellor's role. Talk to Priya yourself via text or voice.",
+    startSession: 'Start Session',
+    depressedPatient: 'Depressed patient',
+    counsellor: 'Counsellor',
+    counsellorAI: 'Counsellor (AI)',
+    observing: 'Observing',
+    you: 'You',
+    traineeCounsellor: 'Trainee counsellor',
+    next: 'Next →',
+    sessionComplete: 'Session Complete ✓',
+    roleplayInputPlaceholder: 'type to interact …',
+    quizTitle: 'Quiz',
+    questionOf: 'Question {current} of {total}',
+    finish: 'Finish ✓',
+    correct: '✅ Correct! {explanation}',
+    notQuite: '❌ Not quite — {explanation}',
+    answerSubmitted: '✅ Answer submitted.',
+    quizComplete: 'Quiz Complete!',
+    quizDoneBody: 'Great work on completing Session 5.<br>Your responses have been saved.',
+    restartQuiz: 'Restart Quiz',
+    allAttendees: 'All Attendees',
+    more: 'more',
+    attendee: 'Attendee',
+    participant: 'Participant',
+    trainer: 'Trainer',
+    sessionNote: 'Session Note',
+    microphoneDenied: 'Microphone access denied.',
+    modeDefaultHint: 'Select a mode to begin.',
+    pause: 'Pause',
+    resume: 'Resume',
+    pauseHint: 'Audio & playback paused',
+  },
+  gu: {
+    appTitle: 'CHW AI માનસિક આરોગ્ય ટ્રેનર',
+    appSubtitle: 'સમુદાય આરોગ્ય કાર્યકરો માટે AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત અભ્યાસ',
+    homeKicker: 'AI તાલીમ વર્કસ્પેસ',
+    homeTitle: 'CHW AI માનસિક આરોગ્ય ટ્રેનર',
+    homeCopy: 'આ એક ઇન્ટરેક્ટિવ અભ્યાસ જગ્યા છે જ્યાં સમુદાય આરોગ્ય કાર્યકરો AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત દર્દી સંવાદો સાથે શીખે છે.<br>એક જ સત્રમાં ગોઠવેલ તાલીમ, simulated counselling અને ટૂંકી ક્વિઝ સુધી આગળ વધો.',
+    homeModesLabel: 'સત્ર કેવી રીતે આગળ વધે છે',
+    homeTrainingDesc: 'AI ટ્રેનર અને ભાગલેનાર જૂથ વચ્ચેના માર્ગદર્શિત સંવાદથી શીખો.',
+    homeRoleplayDesc: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો, જોઈને અથવા પોતે ભાગ લઈને.',
+    homeQuizDesc: 'સત્રને મજબૂત કરવા અંતે ટૂંકી ક્વિઝ આપો.',
+    homeSessionLabel: 'ડિફૉલ્ટ સત્ર',
+    homeSessionMeta: '{modules} મોડ્યુલ · તાલીમથી શરૂઆત થાય છે અને પછી એ જ વર્કસ્પેસમાં ભૂમિકાભિનય અને ક્વિઝ ખુલશે.',
+    tabTraining: '📖 તાલીમ',
+    tabRoleplay: '🎭 ભૂમિકાભિનય',
+    tabQuiz: '✏️ ક્વિઝ',
+    moduleJump: 'મોડ્યુલ પર જાઓ',
+    supportButton: '🚨 સહાય',
+    supportTitle: 'સહાય સંસાધનો',
+    supportSubtitle: 'આપાતકાલીન અને સામાન્ય સહાય માટેના સંસાધનો.',
+    supportEmergency: '<strong>આપાતકાલીન:</strong> તાત્કાલિક સ્થાનિક ઇમરજન્સી સેવાઓને ફોન કરો.',
+    supportICall: '<strong>iCall:</strong> 9152987821',
+    supportVandrevala: '<strong>Vandrevala Foundation:</strong> +1860-2662-345',
+    supportTeleManas: '<strong>Tele MANAS:</strong> 1800-891-4416',
+    sessionLoading: 'લોડ થઈ રહ્યું છે…',
+    scrollUp: '↑ પાછલા ચેટ જુઓ',
+    backToFocus: '↓ ફરી મુખ્ય દૃશ્ય પર જાઓ',
+    loadingFirstExchange: 'પ્રથમ સંવાદ લોડ થઈ રહ્યો છે…',
+    trainingContinue: 'આગળ વધો',
+    askPlaceholder: 'કોઈ સવાલ પૂછો…',
+    transcribing: 'વાણી લખાણમાં ફેરવાઈ રહી છે...',
+    roleplayTitle: 'સત્ર 9: ભૂમિકાભિનય',
+    roleplaySubtitle: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો.<br>તમે કેવી રીતે જોડાશો તે પસંદ કરો.',
+    roleplayPersonaName: 'પ્રિયા, 34',
+    roleplayPersonaTag: 'મધ્યમ ડિપ્રેશનના લક્ષણો · ઓછી ખુલાસાખોર · ટૂંકા જવાબ આપે છે',
+    roleplayChooseMode: 'તમારો મોડ પસંદ કરો',
+    watch: 'જોવો',
+    watchDesc: 'AI સલાહકાર અને પ્રિયા વચ્ચેનો સ્ક્રિપ્ટેડ સત્ર જુઓ. આગળ વધવા Next દબાવો.',
+    participate: 'ભાગ લો',
+    participateDesc: 'તમે સલાહકારની ભૂમિકા ભજવો. ટેક્સ્ટ અથવા વાણીથી પ્રિયા સાથે વાત કરો.',
+    startSession: 'સત્ર શરૂ કરો',
+    depressedPatient: 'ઉદાસીનતા ધરાવતી દર્દી',
+    counsellor: 'સલાહકાર',
+    counsellorAI: 'સલાહકાર (AI)',
+    observing: 'નિરીક્ષણ',
+    you: 'તમે',
+    traineeCounsellor: 'પ્રશિક્ષણાર્થી સલાહકાર',
+    next: 'આગળ →',
+    sessionComplete: 'સત્ર પૂર્ણ ✓',
+    roleplayInputPlaceholder: 'અહીં લખો …',
+    quizTitle: 'ક્વિઝ',
+    questionOf: 'પ્રશ્ન {current} / {total}',
+    finish: 'પૂર્ણ ✓',
+    correct: '✅ સાચો જવાબ! {explanation}',
+    notQuite: '❌ પૂરતું નહીં — {explanation}',
+    answerSubmitted: '✅ જવાબ મોકલાયો.',
+    quizComplete: 'ક્વિઝ પૂર્ણ!',
+    quizDoneBody: 'સત્ર 5 પૂર્ણ કરવા બદલ અભિનંદન.<br>તમારા જવાબો સચવાઈ ગયા છે.',
+    restartQuiz: 'ક્વિઝ ફરી શરૂ કરો',
+    allAttendees: 'બધા ભાગલેનાર',
+    more: 'વધુ',
+    attendee: 'ભાગલેનાર',
+    participant: 'ભાગીદાર',
+    trainer: 'ટ્રેનર',
+    sessionNote: 'સત્ર નોંધ',
+    microphoneDenied: 'માઇક્રોફોનની પરવાનગી મળી નથી.',
+    modeDefaultHint: 'શરૂ કરવા માટે મોડ પસંદ કરો.',
+    pause: 'થોભો',
+    resume: 'ચાલુ કરો',
+    pauseHint: 'ઑડિઓ અને પ્લેબૅક થોભ્યો',
+  },
+};
+let appLocale = localStorage.getItem('app_locale') === 'gu' ? 'gu' : 'en';
+
+function localeConfig() {
+  return CONTENT_BY_LOCALE[appLocale] || CONTENT_BY_LOCALE.en;
+}
+
+function t(key, vars = {}) {
+  const table = I18N[appLocale] || I18N.en;
+  let phrase = table[key] || I18N.en[key] || key;
+  Object.entries(vars).forEach(([k, v]) => {
+    phrase = phrase.replaceAll(`{${k}}`, String(v));
+  });
+  return phrase;
+}
+
+function switchLocale(nextLocale) {
+  if (!['en', 'gu'].includes(nextLocale) || nextLocale === appLocale) return;
+  localStorage.setItem('app_locale', nextLocale);
+  window.location.reload();
+}
+
+function applyLocaleToUI() {
+  document.documentElement.lang = appLocale === 'gu' ? 'gu' : 'en';
+  document.getElementById('lang-en-btn')?.classList.toggle('active', appLocale === 'en');
+  document.getElementById('lang-gu-btn')?.classList.toggle('active', appLocale === 'gu');
+  const bind = (id, value) => { const el = document.getElementById(id); if (el) el.innerHTML = value; };
+  bind('app-title', t('appTitle'));
+  bind('app-subtitle', t('appSubtitle'));
+  bind('home-kicker', t('homeKicker'));
+  bind('home-title', t('homeTitle'));
+  bind('home-copy', t('homeCopy'));
+  bind('home-modes-label', t('homeModesLabel'));
+  bind('home-training-title', t('tabTraining'));
+  bind('home-roleplay-title', t('tabRoleplay'));
+  bind('home-quiz-title', t('tabQuiz'));
+  bind('home-training-desc', t('homeTrainingDesc'));
+  bind('home-roleplay-desc', t('homeRoleplayDesc'));
+  bind('home-quiz-desc', t('homeQuizDesc'));
+  bind('home-session-label', t('homeSessionLabel'));
+  bind('home-start-btn', t('startSession'));
+  bind('tab-training', t('tabTraining'));
+  bind('tab-roleplay', t('tabRoleplay'));
+  bind('tab-quiz', t('tabQuiz'));
+  bind('module-jump-label', t('moduleJump'));
+  bind('support-title', t('supportTitle'));
+  bind('support-subtitle', t('supportSubtitle'));
+  bind('support-btn', t('supportButton'));
+  const supportList = document.getElementById('support-list');
+  if (supportList) {
+    supportList.innerHTML = [
+      `<li>${t('supportEmergency')}</li>`,
+      `<li>${t('supportICall')}</li>`,
+      `<li>${t('supportVandrevala')}</li>`,
+      `<li>${t('supportTeleManas')}</li>`,
+    ].join('');
+  }
+  bind('scroll-hint-text', isZoomed ? t('backToFocus') : t('scrollUp'));
+  bind('flashcard-speaker-badge', `⌛ ${t('sessionLoading')}`);
+  bind('flashcard-text', t('loadingFirstExchange'));
+  bind('training-continue-btn', trainingComplete ? t('sessionComplete') : t('trainingContinue'));
+  updatePausePlayBtn();
+  bind('rp-ms-title', t('roleplayTitle'));
+  bind('rp-ms-subtitle', t('roleplaySubtitle'));
+  bind('rp-persona-name', t('roleplayPersonaName'));
+  bind('rp-persona-tag', t('roleplayPersonaTag'));
+  bind('rp-options-label', t('roleplayChooseMode'));
+  bind('mode-watch-title', t('watch'));
+  bind('mode-watch-desc', t('watchDesc'));
+  bind('mode-participate-title', t('participate'));
+  bind('mode-participate-desc', t('participateDesc'));
+  bind('rp-start-btn', t('startSession'));
+  bind('rp-chat-title', t('roleplayTitle'));
+  bind('rp-avatar-name', t('roleplayPersonaName').split(',')[0]);
+  bind('rp-avatar-status', t('depressedPatient'));
+  bind('rp-user-label', t('counsellor'));
+  bind('rp-user-status', t('observing'));
+  bind('rp-next-btn', t('next'));
+  bind('quiz-title', t('quizTitle'));
+  bind('q-label', t('questionOf', { current: 1, total: 5 }));
+  const qNext = document.getElementById('q-next');
+  if (qNext && qNext.style.display !== 'none') {
+    qNext.textContent = currentQ === questions.length - 1 && questions.length > 0 ? t('finish') : t('trainingContinue');
+  }
+  const trainingInput = document.getElementById('training-input');
+  if (trainingInput) trainingInput.placeholder = t('askPlaceholder');
+  const rpInput = document.getElementById('rp-input');
+  if (rpInput) rpInput.placeholder = t('roleplayInputPlaceholder');
+  const trainingMicStatus = document.getElementById('training-mic-status');
+  if (trainingMicStatus && trainingMicStatus.classList.contains('active')) trainingMicStatus.textContent = t('transcribing');
+  const rpMicStatus = document.getElementById('rp-mic-status');
+  if (rpMicStatus && rpMicStatus.classList.contains('active')) rpMicStatus.textContent = t('transcribing');
+  renderHomeSessionCard();
+}
+
+/* ══════════════════════════════════════════════════
+   SESSION IDs  (populated on init / session start)
+══════════════════════════════════════════════════ */
+let trainingSessionId = null;
+let quizSessionId     = null;
+let roleplaySessionId = null;
+let trainingModules   = [];
+let trainingNextExchangeIndex = 0;
+let trainingCurrentExchangeIndex = -1;
+let moduleSkipInFlight = false;
+let trainingTrainerName = t('trainer');
+let trainingAttendees = [];
+let trainingNarrativeMeta = null;
+let appStarted = false;
+let currentScreen = 'home';
+
+/* ══════════════════════════════════════════════════
+   SHARED HELPERS
+══════════════════════════════════════════════════ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function escapeHtml(text = '') {
+  return String(text)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function toggleSupportPanel() {
+  const panel = document.getElementById('support-panel');
+  const overlay = document.getElementById('support-overlay');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+}
+
+function closeSupportPanel() {
+  const panel = document.getElementById('support-panel');
+  const overlay = document.getElementById('support-overlay');
+  panel.classList.remove('open');
+  overlay.classList.remove('open');
+}
+
+function closeAttendeesPopover() {
+  const popover = document.getElementById('attendees-popover');
+  if (popover) popover.classList.remove('open');
+}
+
+function toggleAttendeesPopover(event) {
+  if (event) event.stopPropagation();
+  const popover = document.getElementById('attendees-popover');
+  if (!popover) return;
+  popover.classList.toggle('open');
+}
+
+function renderParticipantBar() {
+  const bar = document.getElementById('participant-bar');
+  if (!bar) return;
+
+  const trainer = (trainingTrainerName || t('trainer')).trim();
+  const attendees = Array.isArray(trainingAttendees) ? trainingAttendees.filter(Boolean) : [];
+  const firstAttendee = attendees[0] || t('attendee');
+  const remainingCount = Math.max(attendees.length - 1, 0);
+
+  const chipsHtml = [
+    `<span class="chip green" data-chip-key="trainer:${escapeHtml(trainer)}">${escapeHtml(trainer)}</span>`,
+    `<span class="chip blue" data-chip-key="attendee:${escapeHtml(firstAttendee)}">${escapeHtml(firstAttendee)}</span>`,
+    `<button type="button" class="chip yellow clickable more-chip" id="attendees-more-chip" ${remainingCount === 0 ? 'disabled' : ''}>+${remainingCount} ${t('more')}</button>`,
+  ].join('');
+
+  const popoverHtml = remainingCount > 0
+    ? `
+      <div class="attendees-popover" id="attendees-popover">
+        <h4>${t('allAttendees')}</h4>
+        <ul>
+          ${attendees.map((name) => `<li>${escapeHtml(name)}</li>`).join('')}
+        </ul>
+      </div>
+    `
+    : '';
+
+  const supportBtn = bar.querySelector('#support-btn');
+  bar.innerHTML = `${chipsHtml}${popoverHtml}`;
+  if (supportBtn) bar.appendChild(supportBtn);
+
+  const moreChip = document.getElementById('attendees-more-chip');
+  if (moreChip) {
+    moreChip.addEventListener('click', toggleAttendeesPopover);
+  }
+  const popover = document.getElementById('attendees-popover');
+  if (popover) {
+    popover.addEventListener('click', (event) => event.stopPropagation());
+  }
+}
+
+function setSpeakingChipForSpeaker(name, role) {
+  const bar = document.getElementById('participant-bar');
+  if (!bar) return;
+  const allChips = bar.querySelectorAll('.chip');
+  allChips.forEach((chip) => chip.classList.remove('speaking'));
+
+  if (!name && !role) return;
+
+  let selected = null;
+  if (role === 'trainer') {
+    selected = bar.querySelector(`[data-chip-key="trainer:${CSS.escape(trainingTrainerName)}"]`);
+  } else if (name && trainingAttendees.includes(name)) {
+    selected = bar.querySelector(`[data-chip-key="attendee:${CSS.escape(name)}"]`);
+  }
+
+  if (!selected && role !== 'trainer') {
+    selected = document.getElementById('attendees-more-chip');
+  }
+  if (selected) selected.classList.add('speaking');
+}
+
+document.addEventListener('click', () => {
+  closeAttendeesPopover();
+});
+
+function scrollToBottom(el) {
+  if (!el) return;
+  requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
+}
+
+function makeDots() {
+  return '<span class="typing-dots"><span></span><span></span><span></span></span>';
+}
+
+function appendStreamingBubble(container, bubbleClass, name) {
+  const bubble = document.createElement('div');
+  bubble.className = `msg-bubble ${bubbleClass}`;
+  bubble.innerHTML = `<div class="msg-label">${name}</div><div class="bubble-content">${makeDots()}</div>`;
+  container.appendChild(bubble);
+  scrollToBottom(container);
+  return bubble;
+}
+
+// Fetch-based SSE reader — accepts a URL string or an already-fetched Response.
+async function* openSSE(urlOrRes, options = {}) {
+  let res;
+  if (typeof urlOrRes === 'string') {
+    res = await fetch(urlOrRes, {
+      ...options,
+      headers: { Accept: 'text/event-stream', ...(options.headers || {}) },
+    });
+  } else {
+    res = urlOrRes;
+  }
+  if (!res.ok) throw new Error(`SSE HTTP ${res.status}`);
+  const reader = res.body.getReader();
+  const dec    = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        try { yield JSON.parse(line.slice(6)); } catch {}
+      }
+    }
+  }
+}
+
+async function createSession(narrativeId, mode) {
+  const res = await fetch(`${API_BASE}/session/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ narrative_id: narrativeId, mode, locale: appLocale }),
+  });
+  return (await res.json()).session_id;
+}
+
+async function loadTrainingNarrativeMeta(narrativeId) {
+  const res = await fetch(`${API_BASE}/training/narrative/${narrativeId}`);
+  if (!res.ok) throw new Error(`Narrative meta HTTP ${res.status}`);
+  return res.json();
+}
+
+function moduleIndexForExchange(exchangeIndex) {
+  if (!Array.isArray(trainingModules) || !trainingModules.length) return -1;
+  for (const mod of trainingModules) {
+    const start = Number(mod.start_index || 0);
+    const count = Number(mod.exchange_count || 0);
+    const endExclusive = start + count;
+    if (exchangeIndex >= start && exchangeIndex < endExclusive) {
+      return Number(mod.index);
+    }
+  }
+  if (exchangeIndex >= 0 && trainingModules.length) {
+    return Number(trainingModules[trainingModules.length - 1].index);
+  }
+  return -1;
+}
+
+function setActiveModuleChip(moduleIndex) {
+  document.querySelectorAll('.module-chip').forEach((chip) => {
+    chip.classList.toggle('active', Number(chip.dataset.moduleIndex) === moduleIndex);
+  });
+}
+
+function renderModuleJumpChips() {
+  const wrap = document.getElementById('module-jump-wrap');
+  const bar = document.getElementById('module-jump-bar');
+  if (!wrap || !bar) return;
+  if (!Array.isArray(trainingModules) || trainingModules.length <= 1) {
+    wrap.classList.remove('show');
+    bar.innerHTML = '';
+    return;
+  }
+  wrap.classList.add('show');
+  bar.innerHTML = trainingModules.map((mod, idx) => `
+    <button class="module-chip" data-module-index="${idx}" onclick="skipToModule(${idx})" title="${mod.title || `${t('moduleJump')} ${idx + 1}`}">
+      ${mod.title || `${t('moduleJump')} ${idx + 1}`}
+    </button>
+  `).join('');
+  setActiveModuleChip(0);
+  updateChromeForScreen();
+}
+
+function setModuleChipDisabled(disabled) {
+  document.querySelectorAll('.module-chip').forEach((chip) => {
+    chip.disabled = Boolean(disabled);
+  });
+}
+
+async function skipToModule(moduleIndex) {
+  if (!trainingSessionId || isStreaming || moduleSkipInFlight || isPaused) return;
+  moduleSkipInFlight = true;
+  setModuleChipDisabled(true);
+  const continueBtn = document.getElementById('training-continue-btn');
+  continueBtn.disabled = true;
+  try {
+    const res = await fetch(`${API_BASE}/training/${trainingSessionId}/skip-module/${moduleIndex}`, {
+      method: 'POST',
+    });
+    if (!res.ok) throw new Error(`Skip module HTTP ${res.status}`);
+    const data = await res.json();
+    trainingComplete = false;
+    trainingNextExchangeIndex = Number(data.next_exchange_index || 0);
+    trainingCurrentExchangeIndex = trainingNextExchangeIndex - 1;
+    continueBtn.textContent = t('trainingContinue');
+    setActiveModuleChip(Number(moduleIndex));
+    await advanceTraining();
+  } catch (e) {
+    console.error('Skip module error', e);
+    continueBtn.disabled = false;
+  } finally {
+    moduleSkipInFlight = false;
+    setModuleChipDisabled(false);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TTS AUDIO QUEUE
+   ─────────────────────────────────────────────────
+   Design:
+   • Sentences are enqueued immediately on SSE sentence events.
+   • Playback uses streaming endpoint `/tts/stream` per sentence.
+   • Exactly one active request/playback at a time (no request flood).
+   • Playback remains strictly sequential for clean turn control.
+   • Context switches cancel in-flight audio and flush stale queue.
+ ══════════════════════════════════════════════════ */
+
+const TTS_TIMEOUT_MS   = 25000;   // max ms overall for playback to start+finish
+const TTS_STALL_MS     = 60000;   // safety net stall timer
+const TTS_DEBUG_LOGS   = true;
+
+let ttsQueue           = [];
+let ttsPlaying         = false;
+let currentTTSContext  = 'training';
+let ttsContextEpoch    = 0;
+let ttsSeqCounter      = 0;
+let ttsPlayedSeq       = 0;
+let ttsWaiters         = [];
+let _activeAudioEl     = null;
+let _activePlaybackControl = null;
+
+// ── audio unlock (browser autoplay policy) ──────────────────────────────────
+let _audioUnlocked = false;
+let _audioUnlockWaiters = [];
+
+function _resolveAudioUnlock() {
+  const waiters = _audioUnlockWaiters;
+  _audioUnlockWaiters = [];
+  waiters.forEach(resolve => resolve());
+}
+
+function _markAudioUnlocked() {
+  if (_audioUnlocked) return;
+  _audioUnlocked = true;
+  _resolveAudioUnlock();
+}
+
+function _registerUserGestureUnlock() {
+  _markAudioUnlocked();
+}
+
+['click', 'pointerdown', 'touchstart', 'keydown'].forEach(t =>
+  document.addEventListener(t, _registerUserGestureUnlock, { passive: true })
+);
+
+function waitForAudioUnlock() {
+  if (_audioUnlocked) return Promise.resolve();
+  return new Promise(resolve => _audioUnlockWaiters.push(resolve));
+}
+
+// ── public enqueue API ───────────────────────────────────────────────────────
+function enqueueTTS(text, voice = 'meera') {
+  return enqueueTTSForContext(text, voice, currentTTSContext);
+}
+
+function enqueueTTSForContext(text, voice = 'meera', context = 'training', options = {}) {
+  if (!text || !text.trim()) return;
+  if (context !== currentTTSContext) return;
+  const normalized = text.trim().replace(/\s+/g, ' ');
+  // Skip punctuation/noise-only snippets that frequently fail upstream.
+  if (!/[A-Za-z0-9\u0900-\u097F\u0A80-\u0AFF]/.test(normalized)) return;
+  const item = {
+    text: normalized,
+    voice,
+    context,
+    epoch: ttsContextEpoch,
+    seq: ++ttsSeqCounter,
+    enqueuedAt: performance.now(),
+    allowWhilePaused: Boolean(options.allowWhilePaused),
+  };
+  if (TTS_DEBUG_LOGS) {
+    console.info(`[TTS] enqueue seq=${item.seq} ctx=${item.context} voice=${item.voice} qlen=${ttsQueue.length + 1} text="${item.text.slice(0, 80)}"`);
+  }
+  ttsQueue.push(item);
+  if (!ttsPlaying) _drainTTSQueue();
+  return item.seq;
+}
+
+function waitForTTSPlayback(seq, context, epoch) {
+  if (!seq || ttsPlayedSeq >= seq) return Promise.resolve();
+  if (context !== currentTTSContext || epoch !== ttsContextEpoch) return Promise.resolve();
+  return new Promise(resolve => {
+    ttsWaiters.push({ seq, context, epoch, resolve });
+  });
+}
+
+function _notifyTTSWaiters() {
+  const pending = [];
+  for (const w of ttsWaiters) {
+    const done = (
+      ttsPlayedSeq >= w.seq ||
+      w.context !== currentTTSContext ||
+      w.epoch !== ttsContextEpoch
+    );
+    if (done) w.resolve();
+    else pending.push(w);
+  }
+  ttsWaiters = pending;
+}
+
+// ── internal drain loop ──────────────────────────────────────────────────────
+async function _drainTTSQueue() {
+  if (ttsPlaying) return;
+  ttsPlaying = true;
+  while (ttsQueue.length > 0) {
+    // Hold here between items while the user has paused, unless this item is
+    // an explicit question response that should be allowed through.
+    while (isPaused && !(ttsQueue[0] && ttsQueue[0].allowWhilePaused)) {
+      await sleep(150);
+    }
+    const item = ttsQueue.shift();
+    if (!item) continue;
+    if (item.context !== currentTTSContext || item.epoch !== ttsContextEpoch) {
+      if (item.seq > ttsPlayedSeq) {
+        ttsPlayedSeq = item.seq;
+        _notifyTTSWaiters();
+      }
+      continue;
+    }
+    try {
+      await _playTTS(item);
+    } catch (e) {
+      console.warn('TTS playback item failed (swallowed):', e?.message);
+    } finally {
+      if (item.seq > ttsPlayedSeq) {
+        ttsPlayedSeq = item.seq;
+        _notifyTTSWaiters();
+      }
+    }
+  }
+  ttsPlaying = false;
+}
+
+// ── context / cancel ─────────────────────────────────────────────────────────
+function setTTSContext(context) {
+  if (context === currentTTSContext) return;
+  currentTTSContext = context;
+  ttsContextEpoch += 1;
+  if (TTS_DEBUG_LOGS) console.info(`[TTS] context-switch -> ${context} epoch=${ttsContextEpoch}`);
+  ttsQueue = [];
+  if (_activePlaybackControl) {
+    try { _activePlaybackControl.cancel(); } catch (_) {}
+    _activePlaybackControl = null;
+  }
+  if (_activeAudioEl) {
+    try { _activeAudioEl.pause(); _activeAudioEl.removeAttribute('src'); _activeAudioEl.load(); } catch (_) {}
+    _activeAudioEl = null;
+  }
+  _notifyTTSWaiters();
+}
+
+async function _playTTS(item) {
+  await waitForAudioUnlock();
+  if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) return;
+  const startedAt = performance.now();
+  const waitMs = Math.round(startedAt - item.enqueuedAt);
+  const params = new URLSearchParams({ text: item.text });
+  if (item.voice) params.set('voice', item.voice);
+  params.set('locale', localeConfig().ttsLocale);
+  const streamUrl = `${API_BASE}/tts/stream?${params.toString()}`;
+  if (TTS_DEBUG_LOGS) {
+    console.info(`[TTS] start seq=${item.seq} waited=${waitMs}ms url=/tts/stream`);
+  }
+
+  return new Promise((resolve) => {
+    const done = () => { resolve(); };
+    const guard = _epochGuard(item.epoch, done);
+    const a = new Audio(streamUrl);
+    _activeAudioEl = a;
+    a.preload = 'auto';
+    let finished = false;
+    let overallTimeout = null;
+    let stallTimer = null;
+    const overallState = { remaining: TTS_TIMEOUT_MS, startedAt: 0 };
+    const stallState = { remaining: TTS_STALL_MS, startedAt: 0 };
+
+    const clearManagedTimer = (state, timerRefName, preserveRemaining = false) => {
+      const timerId = timerRefName === 'overall' ? overallTimeout : stallTimer;
+      if (timerId) {
+        clearTimeout(timerId);
+        if (timerRefName === 'overall') overallTimeout = null;
+        else stallTimer = null;
+      }
+      if (preserveRemaining && state.startedAt) {
+        const elapsed = performance.now() - state.startedAt;
+        state.remaining = Math.max(0, state.remaining - elapsed);
+      }
+      state.startedAt = 0;
+    };
+
+    const startManagedTimer = (state, timerRefName, onFire) => {
+      clearManagedTimer(state, timerRefName);
+      if (finished || isPaused) return;
+      if (state.remaining <= 0) {
+        onFire();
+        return;
+      }
+      state.startedAt = performance.now();
+      const timerId = setTimeout(() => {
+        state.startedAt = 0;
+        state.remaining = 0;
+        if (timerRefName === 'overall') overallTimeout = null;
+        else stallTimer = null;
+        if (finished || isPaused) return;
+        onFire();
+      }, state.remaining);
+      if (timerRefName === 'overall') overallTimeout = timerId;
+      else stallTimer = timerId;
+    };
+
+    const pauseManagedTimer = (state, timerRefName) => {
+      clearManagedTimer(state, timerRefName, true);
+    };
+
+    const resetManagedTimer = (state, timerRefName, durationMs, onFire) => {
+      state.remaining = durationMs;
+      startManagedTimer(state, timerRefName, onFire);
+    };
+
+    const onOverallTimeout = () => {
+      console.warn('TTS overall timeout fired');
+      finish(); done();
+    };
+
+    const onStallTimeout = () => {
+      console.warn('TTS stall watchdog fired');
+      finish(); done();
+    };
+
+    const suspendPlayback = () => {
+      if (finished) return;
+      pauseManagedTimer(overallState, 'overall');
+      pauseManagedTimer(stallState, 'stall');
+      try { a.pause(); } catch (_) {}
+    };
+
+    const resumePlayback = () => {
+      if (finished) return;
+      startManagedTimer(overallState, 'overall', onOverallTimeout);
+      if (stallState.remaining < TTS_STALL_MS) {
+        startManagedTimer(stallState, 'stall', onStallTimeout);
+      }
+      try { a.play().catch(() => {}); } catch (_) {}
+    };
+
+    const cancelPlayback = () => {
+      clearManagedTimer(overallState, 'overall');
+      clearManagedTimer(stallState, 'stall');
+    };
+
+    _activePlaybackControl = {
+      pause: suspendPlayback,
+      resume: resumePlayback,
+      cancel: cancelPlayback,
+    };
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      guard.done();
+      if (_activePlaybackControl?.cancel) {
+        try { _activePlaybackControl.cancel(); } catch (_) {}
+      }
+      if (_activePlaybackControl && _activeAudioEl === a) {
+        _activePlaybackControl = null;
+      }
+      if (_activeAudioEl === a) _activeAudioEl = null;
+      try { a.pause(); a.removeAttribute('src'); a.load(); } catch (_) {}
+    };
+
+    // Stall watchdog: reset on timeupdate so it triggers only on real freeze.
+    const resetStall = () => {
+      resetManagedTimer(stallState, 'stall', TTS_STALL_MS, onStallTimeout);
+    };
+    a.addEventListener('timeupdate', resetStall);
+    a.addEventListener('loadstart', () => {
+      if (TTS_DEBUG_LOGS) console.info(`[TTS] loadstart seq=${item.seq}`);
+    }, { once: true });
+    a.addEventListener('playing', () => {
+      if (!TTS_DEBUG_LOGS) return;
+      const now = performance.now();
+      console.info(`[TTS] playing seq=${item.seq} startup=${Math.round(now - startedAt)}ms totalSinceEnqueue=${Math.round(now - item.enqueuedAt)}ms`);
+    }, { once: true });
+
+    // Overall timeout: covers the case where play() never even starts.
+    // It pauses with the session, so user pauses can be indefinite.
+    startManagedTimer(overallState, 'overall', onOverallTimeout);
+
+    a.addEventListener('ended', () => {
+      if (TTS_DEBUG_LOGS) {
+        const now = performance.now();
+        console.info(`[TTS] ended seq=${item.seq} playDuration=${Math.round(now - startedAt)}ms totalSinceEnqueue=${Math.round(now - item.enqueuedAt)}ms`);
+      }
+      finish(); done();
+    });
+    a.addEventListener('error', (e) => {
+      console.warn('Audio element error:', e?.target?.error);
+      finish(); done();
+    });
+
+    a.play().catch((err) => {
+      console.warn('Audio play() rejected:', err?.message);
+      finish(); done();
+    });
+  });
+}
+
+// Epoch guard — resolves the promise and marks done when context changes
+function _epochGuard(epoch, resolve) {
+  let done = false;
+  const check = () => {
+    if (!done && ttsContextEpoch !== epoch) {
+      done = true;
+      resolve();
+      return true;
+    }
+    return false;
+  };
+  // Poll for context change every 200 ms
+  const interval = setInterval(() => { if (check() || done) clearInterval(interval); }, 200);
+  return {
+    cancelled: () => ttsContextEpoch !== epoch,
+    done: () => {
+      done = true;
+      clearInterval(interval);
+    },
+  };
+}
+
+/* ══════════════════════════════════════════════════
+   SCREEN SWITCHING
+══════════════════════════════════════════════════ */
+function showScreen(name) {
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const screenEl = document.getElementById(`screen-${name}`);
+  if (screenEl) screenEl.classList.add('active');
+  const tabMap = { training: 'tab-training', roleplay: 'tab-roleplay', quiz: 'tab-quiz' };
+  const activeTabId = tabMap[name];
+  if (activeTabId) document.getElementById(activeTabId)?.classList.add('active');
+  const ttsContext = name === 'training' ? 'training' : (name === 'roleplay' ? 'roleplay' : 'none');
+  setTTSContext(ttsContext);
+  if (name === 'quiz' && !quizLoaded) loadQuizQuestions();
+  updateChromeForScreen();
+}
+
+function updateChromeForScreen() {
+  const tabs = document.getElementById('screen-tabs');
+  if (tabs) tabs.classList.toggle('hidden', !appStarted);
+
+  const moduleWrap = document.getElementById('module-jump-wrap');
+  const canShowModuleJump = (
+    appStarted &&
+    currentScreen === 'training' &&
+    Array.isArray(trainingModules) &&
+    trainingModules.length > 1
+  );
+  if (moduleWrap) moduleWrap.classList.toggle('show', canShowModuleJump);
+
+  showPauseWrap(appStarted && currentScreen === 'training' && !!trainingSessionId);
+}
+
+function renderHomeSessionCard() {
+  const titleEl = document.getElementById('home-session-title');
+  const metaEl = document.getElementById('home-session-meta');
+  if (titleEl) {
+    titleEl.textContent = trainingNarrativeMeta?.title || 'Session 5';
+  }
+  if (metaEl) {
+    const moduleCount = Array.isArray(trainingModules) && trainingModules.length ? trainingModules.length : 1;
+    metaEl.innerHTML = t('homeSessionMeta', { modules: moduleCount });
+  }
+}
+
+async function startDefaultSession() {
+  if (trainingSessionId) {
+    appStarted = true;
+    showScreen('training');
+    return;
+  }
+
+  const btn = document.getElementById('home-start-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const trainingNarrative = localeConfig().trainingNarrative;
+    const sessionLabel = document.getElementById('session-label');
+    trainingSessionId = await createSession(trainingNarrative, 'training');
+    trainingNextExchangeIndex = 0;
+    trainingCurrentExchangeIndex = -1;
+    trainingComplete = false;
+    appStarted = true;
+    if (sessionLabel && trainingNarrativeMeta?.title) {
+      sessionLabel.textContent = trainingNarrativeMeta.title;
+    }
+    updatePausePlayBtn();
+    showScreen('training');
+    await advanceTraining();
+  } catch (e) {
+    console.warn('Unable to start default session:', e.message);
+    appStarted = false;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TRAINING – DATA
+══════════════════════════════════════════════════ */
+function speakerForRole(role, name) {
+  const normalizedName = typeof name === 'string' ? name.trim() : '';
+  if (role === 'trainer' || normalizedName === trainingTrainerName) {
+    return {
+      name: normalizedName || trainingTrainerName || t('trainer'),
+      badge: `🧑‍🏫 ${normalizedName || trainingTrainerName || t('trainer')}`,
+      cardClass: 'speaker-trainer',
+      bubbleClass: 'trainer',
+    };
+  }
+  if (role === 'attendee' || (normalizedName && trainingAttendees.includes(normalizedName))) {
+    return {
+      name: normalizedName || t('attendee'),
+      badge: `🙋 ${normalizedName || t('attendee')}`,
+      cardClass: 'speaker-attendee',
+      bubbleClass: 'attendee',
+    };
+  }
+  return {
+    name: normalizedName || t('participant'),
+    badge: `🙋 ${normalizedName || t('participant')}`,
+    cardClass: 'speaker-other',
+    bubbleClass: 'note',
+  };
+}
+
+function isIntroFlashcardMessage(role, name) {
+  const r = typeof role === 'string' ? role.trim() : '';
+  const n = typeof name === 'string' ? name.trim() : '';
+  return !r && !n;
+}
+
+function roleplayMessageMeta(role, speaker) {
+  if (isIntroFlashcardMessage(role, speaker)) {
+    return { bubbleClass: 'note', label: t('sessionNote'), skipTTS: true };
+  }
+  return {
+    bubbleClass: role === 'persona' ? 'trainer' : 'attendee',
+    label: speaker || (role === 'persona' ? t('roleplayPersonaName').split(',')[0] : t('counsellor')),
+    skipTTS: false,
+  };
+}
+
+/* ══════════════════════════════════════════════════
+   TRAINING – STATE
+══════════════════════════════════════════════════ */
+let isZoomed        = false;
+let isStreaming      = false;
+let trainingComplete = false;
+let isPaused        = false;
+const chatHistory    = [];
+const trainingAskQueue = [];
+let trainingAskRunnerActive = false;
+let autoAdvanceAfterQueuedAsk = false;
+let trainingAdvanceAbortController = null;
+let interruptTrainingForAsk = false;
+
+function renderChatHistory() {
+  const el = document.getElementById('chat-history');
+  el.innerHTML = chatHistory.map(h => `
+    <div class="msg-bubble ${h.bubbleClass}">
+      <div class="msg-label">${h.name}</div>${h.text}
+    </div>`).join('');
+}
+
+// Shared SSE consumer that renders into the training flashcard.
+// TTS is enqueued per sentence, but training progression waits for the
+// last enqueued TTS item of that flashcard to finish playback.
+async function consumeTrainingStream(sseIter, options = {}) {
+  const card   = document.getElementById('flashcard');
+  const badge  = document.getElementById('flashcard-speaker-badge');
+  const textEl = document.getElementById('flashcard-text');
+  const allowWhilePaused = Boolean(options.allowWhilePaused);
+  let spk = null, text = '', voice = 'meera';
+  let skipTTSForMessage = false;
+  let lastTTSSeq = 0;
+  let messageLastTTSSeq = 0;
+  const streamEpoch = ttsContextEpoch;
+
+  for await (const ev of sseIter) {
+    switch (ev.type) {
+      case 'message_start': {
+        // Wait here before showing a new speaker card. This is the pause gate —
+        // it keeps the current card visible and prevents any new TTS from starting
+        // while the user has paused. When the user resumes, the gate opens and we
+        // animate normally into the next message.
+        while (isPaused && !allowWhilePaused) { await sleep(150); }
+        const isIntroFlashcard = Boolean(ev.no_tts) || isIntroFlashcardMessage(ev.role, ev.speaker);
+        skipTTSForMessage = isIntroFlashcard;
+        spk   = isIntroFlashcard
+          ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'note' }
+          : speakerForRole(ev.role, ev.speaker);
+        voice = ev.voice || 'meera';
+        text  = '';
+        messageLastTTSSeq = 0;
+        card.style.transition = 'opacity 0.28s, transform 0.28s';
+        card.style.opacity    = '0';
+        card.style.transform  = 'scale(0.97)';
+        await sleep(280);
+        card.className        = 'flashcard ' + spk.cardClass;
+        badge.textContent     = spk.badge;
+        textEl.textContent    = '';
+        if (!skipTTSForMessage) {
+          textEl.innerHTML = makeDots();
+        }
+        if (isIntroFlashcard) setSpeakingChipForSpeaker('', '');
+        else setSpeakingChipForSpeaker(ev.speaker || spk.name, ev.role || '');
+        card.style.opacity    = '1';
+        card.style.transform  = 'scale(1)';
+        break;
+      }
+      case 'token': {
+        text += ev.text;
+        textEl.textContent = text;
+        break;
+      }
+      case 'sentence': {
+        if (skipTTSForMessage) break;
+        // Enqueue TTS immediately per sentence
+        const s = ev.text.trim();
+        if (s) {
+          const seq = enqueueTTSForContext(s, voice, 'training', { allowWhilePaused });
+          if (seq) {
+            lastTTSSeq = seq;
+            messageLastTTSSeq = seq;
+          }
+        }
+        break;
+      }
+      case 'message_end': {
+        if (!skipTTSForMessage) {
+          await waitForTTSPlayback(messageLastTTSSeq, 'training', streamEpoch);
+        }
+        if (spk) {
+          chatHistory.push({ name: spk.name, bubbleClass: spk.bubbleClass, text: text.trim() });
+          renderChatHistory();
+        }
+        break;
+      }
+      case 'exchange_end':
+      case 'done':
+        return { event: ev, lastTTSSeq, epoch: streamEpoch };
+    }
+  }
+  return { event: null, lastTTSSeq, epoch: streamEpoch };
+}
+
+/* ── Training: advance scripted exchange ── */
+async function advanceTraining() {
+  if (!trainingSessionId || isStreaming || trainingComplete || isPaused) return;
+  if (isZoomed) toggleZoom();
+  const renderedExchangeIndex = trainingNextExchangeIndex;
+
+  isStreaming = true;
+  const btn = document.getElementById('training-continue-btn');
+  btn.disabled = true;
+  trainingAdvanceAbortController = new AbortController();
+
+  try {
+    const result = await consumeTrainingStream(
+      openSSE(`${API_BASE}/training/${trainingSessionId}/next/stream`, {
+        signal: trainingAdvanceAbortController.signal,
+      })
+    );
+    trainingCurrentExchangeIndex = renderedExchangeIndex;
+    trainingNextExchangeIndex = renderedExchangeIndex + 1;
+    setActiveModuleChip(moduleIndexForExchange(trainingCurrentExchangeIndex));
+    await waitForTTSPlayback(result.lastTTSSeq, 'training', result.epoch);
+    const ev = result.event;
+    if (ev?.type === 'exchange_end' && ev.has_more === false) {
+      trainingComplete = true;
+      btn.textContent  = t('sessionComplete');
+    } else {
+      btn.disabled = false;
+    }
+  } catch (e) {
+    const wasInterrupted = Boolean(trainingAdvanceAbortController?.signal?.aborted && interruptTrainingForAsk);
+    if (wasInterrupted) {
+      // Backend increments exchange index when /next/stream starts. Keep frontend
+      // cursor in sync when we intentionally interrupt for immediate Q&A.
+      trainingCurrentExchangeIndex = renderedExchangeIndex;
+      trainingNextExchangeIndex = renderedExchangeIndex + 1;
+      setActiveModuleChip(moduleIndexForExchange(trainingCurrentExchangeIndex));
+    } else {
+      console.error('Training advance error', e);
+      btn.disabled = false;
+    }
+  }
+  interruptTrainingForAsk = false;
+  trainingAdvanceAbortController = null;
+  isStreaming = false;
+  runTrainingAskQueue();
+}
+
+/* ── Training: free-text Q&A ── */
+async function askTrainingNow(text) {
+  if (!text || !trainingSessionId || isStreaming) return;
+  chatHistory.push({ name: t('you'), bubbleClass: 'attendee', text });
+  renderChatHistory();
+  if (isZoomed) toggleZoom();
+
+  isStreaming = true;
+  document.getElementById('training-continue-btn').disabled = true;
+
+  try {
+    const result = await consumeTrainingStream(openSSE(`${API_BASE}/training/${trainingSessionId}/ask`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ text }),
+    }), { allowWhilePaused: true });
+    await waitForTTSPlayback(result.lastTTSSeq, 'training', result.epoch);
+  } catch (e) { console.error('Training ask error', e); }
+
+  // Unlock after full flashcard TTS playback completes
+  isStreaming = false;
+  if (!trainingComplete && !isPaused) {
+    document.getElementById('training-continue-btn').disabled = false;
+  }
+}
+
+async function runTrainingAskQueue() {
+  if (trainingAskRunnerActive || !trainingSessionId || isStreaming) return;
+  trainingAskRunnerActive = true;
+  try {
+    while (trainingAskQueue.length > 0) {
+      if (isStreaming || !trainingSessionId) break;
+      const queuedText = trainingAskQueue.shift();
+      await askTrainingNow(queuedText);
+    }
+  } finally {
+    trainingAskRunnerActive = false;
+  }
+
+  if (autoAdvanceAfterQueuedAsk && !trainingComplete && !isStreaming) {
+    autoAdvanceAfterQueuedAsk = false;
+    if (isPaused) {
+      isPaused = false;
+      if (_activePlaybackControl) {
+        try { _activePlaybackControl.resume(); } catch (_) {}
+      } else if (_activeAudioEl) {
+        try { _activeAudioEl.play().catch(() => {}); } catch (_) {}
+      } else if (ttsQueue.length > 0 && !ttsPlaying) {
+        _drainTTSQueue();
+      }
+      setModuleChipDisabled(false);
+      updatePausePlayBtn();
+    }
+    await advanceTraining();
+  }
+}
+
+function enqueueTrainingQuestion(text) {
+  trainingAskQueue.push(text);
+  runTrainingAskQueue();
+}
+
+async function sendTrainingQuestion() {
+  const input = document.getElementById('training-input');
+  const text  = input.value.trim();
+  if (!text || !trainingSessionId) return;
+  input.value = '';
+
+  if (isStreaming) {
+    autoAdvanceAfterQueuedAsk = true;
+    enqueueTrainingQuestion(text);
+    if (!isPaused) {
+      togglePause();
+    }
+    if (trainingAdvanceAbortController && !trainingAdvanceAbortController.signal.aborted) {
+      interruptTrainingForAsk = true;
+      try { trainingAdvanceAbortController.abort(); } catch (_) {}
+    }
+    return;
+  }
+
+  if (isPaused) {
+    autoAdvanceAfterQueuedAsk = true;
+    enqueueTrainingQuestion(text);
+    return;
+  }
+
+  await askTrainingNow(text);
+  runTrainingAskQueue();
+}
+
+/* ── Training mic: MediaRecorder → POST /training/{id}/audio ── */
+let trainingRecorder = null;
+
+function setMicStatus(id, text = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle('active', Boolean(text));
+}
+
+async function toggleTrainingMic() {
+  const btn = document.getElementById('training-mic-btn');
+  if (btn.classList.contains('recording')) { trainingRecorder?.stop(); return; }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    trainingRecorder = new MediaRecorder(stream);
+    trainingRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    trainingRecorder.onstart = () => btn.classList.add('recording');
+    trainingRecorder.onstop  = async () => {
+      btn.classList.remove('recording');
+      stream.getTracks().forEach(t => t.stop());
+      if (isStreaming || !trainingSessionId) return;
+
+      btn.disabled = true;
+      setMicStatus('training-mic-status', t('transcribing'));
+
+      const fd = new FormData();
+      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'q.webm');
+      try {
+        const res = await fetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const transcript = (data.text || '').trim();
+        const input = document.getElementById('training-input');
+        if (transcript) {
+          input.value = transcript;
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+      } catch (e) { console.error('Training audio transcription error', e); }
+      finally {
+        btn.disabled = false;
+        setMicStatus('training-mic-status', '');
+      }
+    };
+    trainingRecorder.start();
+  } catch (e) { alert(t('microphoneDenied')); }
+}
+
+function toggleZoom() {
+  const wrap = document.getElementById('flashcard-wrap');
+  const hint = document.getElementById('scroll-hint-text');
+  isZoomed = !isZoomed;
+  wrap.classList.toggle('zoomed', isZoomed);
+  hint.textContent = isZoomed ? t('backToFocus') : t('scrollUp');
+  if (isZoomed) setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+}
+
+/* ── Pause / Play (outside phone) ── */
+function showPauseWrap(show) {
+  const wrap = document.getElementById('pause-wrap');
+  if (wrap) wrap.classList.toggle('show', Boolean(show));
+}
+
+function updatePausePlayBtn() {
+  const btn   = document.getElementById('pause-play-btn');
+  const label = document.getElementById('pause-play-label');
+  const hint  = document.getElementById('pause-hint');
+  const wrap  = document.getElementById('pause-wrap');
+  if (!btn || !label) return;
+  if (isPaused) {
+    btn.innerHTML   = '▶ <span id="pause-play-label">' + t('resume') + '</span>';
+    btn.classList.add('paused');
+    if (hint) hint.textContent = t('pauseHint');
+    if (wrap) wrap.classList.add('paused-state');
+  } else {
+    btn.innerHTML   = '⏸ <span id="pause-play-label">' + t('pause') + '</span>';
+    btn.classList.remove('paused');
+    if (wrap) wrap.classList.remove('paused-state');
+  }
+}
+
+function togglePause() {
+  if (!isPaused) {
+    // ── Pause ──
+    isPaused = true;
+    // Pause the currently playing audio element immediately.
+    if (_activePlaybackControl) {
+      try { _activePlaybackControl.pause(); } catch (_) {}
+    } else if (_activeAudioEl) {
+      try { _activeAudioEl.pause(); } catch (_) {}
+    }
+    // If we are between exchanges (not mid-stream), lock the Continue button so
+    // the user cannot advance while paused.
+    if (!isStreaming && !trainingComplete) {
+      const btn = document.getElementById('training-continue-btn');
+      if (btn) btn.disabled = true;
+    }
+    // Disable module-jump chips while paused.
+    setModuleChipDisabled(true);
+  } else {
+    // ── Resume ──
+    isPaused = false;
+    // Resume the audio element if it is still loaded and paused.
+    if (_activePlaybackControl) {
+      try { _activePlaybackControl.resume(); } catch (_) {}
+    } else if (_activeAudioEl) {
+      try { _activeAudioEl.play().catch(() => {}); } catch (_) {}
+    } else if (ttsQueue.length > 0 && !ttsPlaying) {
+      // Queue had items waiting – kick off the drain loop.
+      _drainTTSQueue();
+    }
+    // Re-enable Continue button when sitting between exchanges.
+    if (!isStreaming && !trainingComplete) {
+      const btn = document.getElementById('training-continue-btn');
+      if (btn) btn.disabled = false;
+    }
+    // Re-enable module-jump chips.
+    setModuleChipDisabled(false);
+    runTrainingAskQueue();
+  }
+  updatePausePlayBtn();
+}
+
+/* ══════════════════════════════════════════════════
+   ROLEPLAY
+══════════════════════════════════════════════════ */
+let rpMode     = null;
+let rpStreaming = false;
+
+function selectMode(mode) {
+  rpMode = mode;
+  document.querySelectorAll('.mode-option-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('mode-' + mode).classList.add('selected');
+  document.getElementById('rp-start-btn').disabled = false;
+}
+
+async function startRoleplay() {
+  document.getElementById('rp-mode-select').style.display = 'none';
+  document.getElementById('rp-chat-view').style.display   = 'flex';
+
+  roleplaySessionId = await createSession(
+    localeConfig().roleplayPersona,
+    rpMode === 'watch' ? 'roleplay_watch' : 'roleplay_participate'
+  );
+
+  if (rpMode === 'watch') {
+    document.getElementById('rp-watch-bar').style.display   = '';
+    document.getElementById('rp-user-label').textContent    = t('counsellorAI');
+    document.getElementById('rp-user-status').textContent   = t('observing');
+    advanceRoleplay();
+  } else {
+    document.getElementById('rp-participate-bar').style.display = '';
+    document.getElementById('rp-user-label').textContent    = t('you');
+    document.getElementById('rp-user-status').textContent   = t('traineeCounsellor');
+  }
+}
+
+/* ── Watch mode: stream next scripted exchange ── */
+async function advanceRoleplay() {
+  if (!roleplaySessionId || rpStreaming) return;
+  rpStreaming = true;
+  const streamEpoch = ttsContextEpoch;
+
+  const nextBtn = document.getElementById('rp-next-btn');
+  nextBtn.disabled = true;
+  const chat = document.getElementById('rp-chat');
+  let bubble = null, text = '', voice = 'meera';
+  let skipTTSForMessage = false;
+  let messageLastTTSSeq = 0;
+
+  try {
+    for await (const ev of openSSE(`${API_BASE}/roleplay/${roleplaySessionId}/watch/next`)) {
+      switch (ev.type) {
+        case 'message_start':
+          voice  = ev.voice || 'meera';
+          text   = '';
+          messageLastTTSSeq = 0;
+          {
+            const meta = roleplayMessageMeta(ev.role, ev.speaker);
+            skipTTSForMessage = Boolean(ev.no_tts) || meta.skipTTS;
+            bubble = appendStreamingBubble(chat, meta.bubbleClass, meta.label);
+          }
+          break;
+        case 'token':
+          text += ev.text;
+          if (bubble) { bubble.querySelector('.bubble-content').textContent = text; scrollToBottom(chat); }
+          break;
+        case 'sentence': {
+          if (skipTTSForMessage) break;
+          const s = ev.text.trim();
+          if (s) {
+            const seq = enqueueTTSForContext(s, voice, 'roleplay');
+            if (seq) messageLastTTSSeq = seq;
+          }
+          break;
+        }
+        case 'message_end': {
+          if (!skipTTSForMessage) {
+            await waitForTTSPlayback(messageLastTTSSeq, 'roleplay', streamEpoch);
+          }
+          bubble = null;
+          break;
+        }
+        case 'exchange_end':
+          // Each turn waits for its own TTS before moving on.
+          rpStreaming = false;
+          if (ev.has_more) { nextBtn.disabled = false; nextBtn.textContent = t('next'); }
+          else             { nextBtn.textContent = t('sessionComplete'); }
+          break;
+        case 'watch_end':
+          rpStreaming = false;
+          nextBtn.textContent = t('sessionComplete');
+          break;
+      }
+    }
+  } catch (e) {
+    console.error('Roleplay watch error', e);
+    rpStreaming = false;
+    nextBtn.disabled = false;
+  }
+}
+
+/* ── Participate mode: live AI persona response ── */
+async function sendRoleplayMessage() {
+  const input = document.getElementById('rp-input');
+  const text  = input.value.trim();
+  if (!text || !roleplaySessionId || rpStreaming) return;
+  input.value = '';
+
+  rpStreaming = true;
+  const chat = document.getElementById('rp-chat');
+
+  const ub = document.createElement('div');
+  ub.className = 'msg-bubble attendee';
+  ub.innerHTML = `<div class="msg-label">${t('you')}</div>${text}`;
+  chat.appendChild(ub);
+  scrollToBottom(chat);
+
+  let bubble = null, currentText = '', voice = 'meera';
+  let skipTTSForMessage = false;
+  try {
+    for await (const ev of openSSE(`${API_BASE}/roleplay/${roleplaySessionId}/message`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ text }),
+    })) {
+      switch (ev.type) {
+        case 'message_start':
+          voice       = ev.voice || 'meera';
+          currentText = '';
+          {
+            const meta = roleplayMessageMeta(ev.role, ev.speaker);
+            skipTTSForMessage = Boolean(ev.no_tts) || meta.skipTTS;
+            bubble = appendStreamingBubble(chat, meta.bubbleClass, meta.label);
+          }
+          break;
+        case 'token':
+          currentText += ev.text;
+          if (bubble) { bubble.querySelector('.bubble-content').textContent = currentText; scrollToBottom(chat); }
+          break;
+        case 'sentence': {
+          if (skipTTSForMessage) break;
+          const s = ev.text.trim();
+          if (s) enqueueTTSForContext(s, voice, 'roleplay');
+          break;
+        }
+        case 'message_end': {
+          break;
+        }
+        case 'done':
+          // Unlock UI immediately — TTS plays in background
+          rpStreaming = false;
+          break;
+      }
+    }
+  } catch (e) {
+    console.error('Roleplay message error', e);
+  } finally {
+    // Always clear streaming flag so the input is never permanently locked
+    rpStreaming = false;
+  }
+}
+
+/* ── Roleplay mic: MediaRecorder → POST /roleplay/{id}/audio ── */
+let rpRecorder = null;
+
+async function toggleRoleplayMic() {
+  const btn = document.getElementById('rp-mic-btn');
+  if (btn.classList.contains('recording')) { rpRecorder?.stop(); return; }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    rpRecorder = new MediaRecorder(stream);
+    rpRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    rpRecorder.onstart = () => btn.classList.add('recording');
+    rpRecorder.onstop  = async () => {
+      btn.classList.remove('recording');
+      stream.getTracks().forEach(t => t.stop());
+      if (rpStreaming || !roleplaySessionId) return;
+
+      btn.disabled = true;
+      setMicStatus('rp-mic-status', t('transcribing'));
+
+      const fd = new FormData();
+      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'rp.webm');
+      try {
+        const res = await fetch(`${API_BASE}/roleplay/${roleplaySessionId}/audio/transcribe`, { method: 'POST', body: fd });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const transcript = (data.text || '').trim();
+        const input = document.getElementById('rp-input');
+        if (transcript) {
+          input.value = transcript;
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+      } catch (e) { console.error('Roleplay audio transcription error', e); }
+      finally {
+        btn.disabled = false;
+        setMicStatus('rp-mic-status', '');
+      }
+    };
+    rpRecorder.start();
+  } catch (e) { alert(t('microphoneDenied')); }
+}
+
+/* ══════════════════════════════════════════════════
+   QUIZ
+══════════════════════════════════════════════════ */
+let questions  = [];
+let currentQ   = 0;
+let answered   = false;
+let quizLoaded = false;
+
+async function loadQuizQuestions() {
+  try {
+    const quizNarrative = localeConfig().quizNarrative;
+    // Lazy-create a dedicated quiz session so resets don't disturb training state
+    if (!quizSessionId) {
+      quizSessionId = await createSession(quizNarrative, 'quiz');
+    }
+    const res  = await fetch(`${API_BASE}/quiz/${quizNarrative}/questions`);
+    const data = await res.json();
+    questions  = data.questions;   // [{ id, text, options }]
+    quizLoaded = true;
+    renderQuestion();
+  } catch (e) { console.error('Quiz load error', e); }
+}
+
+function renderQuestion() {
+  if (!questions.length) return;
+  const q = questions[currentQ];
+  document.getElementById('q-text').textContent    = q.text;
+  document.getElementById('q-label').textContent   = t('questionOf', { current: currentQ + 1, total: questions.length });
+  document.getElementById('q-progress').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+  const fb = document.getElementById('q-feedback');
+  fb.className   = 'feedback-msg';
+  fb.textContent = '';
+
+  const nxt = document.getElementById('q-next');
+  nxt.disabled    = true;
+  nxt.textContent = currentQ === questions.length - 1 ? t('finish') : t('trainingContinue');
+
+  answered = false;
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className   = 'option-btn';
+    b.textContent = opt;
+    b.onclick     = () => selectOption(i, b);
+    opts.appendChild(b);
+  });
+}
+
+async function selectOption(idx, btn) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach(b => b.disabled = true);
+  const fb = document.getElementById('q-feedback');
+
+  try {
+    const res  = await fetch(`${API_BASE}/quiz/${quizSessionId}/answer`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ question_id: questions[currentQ].id, selected_index: idx }),
+    });
+    const data = await res.json();   // { correct, correct_index, explanation }
+    if (data.correct) {
+      btn.classList.add('correct');
+      fb.textContent = t('correct', { explanation: data.explanation });
+      fb.className   = 'feedback-msg correct show';
+    } else {
+      btn.classList.add('wrong');
+      allBtns[data.correct_index].classList.add('correct');
+      fb.textContent = t('notQuite', { explanation: data.explanation });
+      fb.className   = 'feedback-msg wrong show';
+    }
+  } catch (e) {
+    // Graceful fallback if backend is unreachable
+    btn.classList.add('correct');
+    fb.textContent = t('answerSubmitted');
+    fb.className   = 'feedback-msg correct show';
+  }
+
+  document.getElementById('q-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    document.querySelector('.quiz-body').innerHTML = `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;">
+        <div style="font-size:56px">🎉</div>
+        <div style="font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--ink)">${escapeHtml(t('quizComplete'))}</div>
+        <div style="font-size:14px;color:var(--ink-muted);line-height:1.6">${t('quizDoneBody')}</div>
+        <button onclick="restartQuiz()" style="margin-top:8px;background:var(--sage-light);border:none;border-radius:50px;padding:12px 28px;font-family:'Noto Sans Gujarati','Nunito',sans-serif;font-size:14px;font-weight:800;color:#1e5c40;cursor:pointer;">${escapeHtml(t('restartQuiz'))}</button>
+      </div>`;
+    document.getElementById('q-next').style.display = 'none';
+  }
+}
+
+async function restartQuiz() {
+  if (quizSessionId) {
+    try { await fetch(`${API_BASE}/session/${quizSessionId}/reset`, { method: 'POST' }); }
+    catch (e) { console.warn('Reset failed', e); }
+  }
+  currentQ = 0;
+  answered = false;
+  document.querySelector('.quiz-body').innerHTML = `
+    <div class="question-text" id="q-text"></div>
+    <div class="options-list"  id="q-options"></div>
+    <div class="feedback-msg"  id="q-feedback"></div>`;
+  document.getElementById('q-next').style.display = '';
+  renderQuestion();
+}
+
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+async function initializeApp() {
+  const trainingNarrative = localeConfig().trainingNarrative;
+
+  applyLocaleToUI();
+  renderParticipantBar();
+  renderChatHistory();
+  updateChromeForScreen();
+
+  try {
+    const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
+    trainingNarrativeMeta = narrativeMeta;
+    trainingModules = Array.isArray(narrativeMeta?.modules) ? narrativeMeta.modules : [];
+    trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+    trainingAttendees = Array.isArray(narrativeMeta?.participants?.attendees)
+      ? narrativeMeta.participants.attendees
+      : [];
+    renderParticipantBar();
+    renderModuleJumpChips();
+    renderHomeSessionCard();
+  } catch (e) {
+    console.warn('Backend unavailable — live features disabled:', e.message);
+    const homeStartBtn = document.getElementById('home-start-btn');
+    if (homeStartBtn) homeStartBtn.disabled = true;
+  }
+}
+
+initializeApp();
+</script>
+</body>
+</html>
