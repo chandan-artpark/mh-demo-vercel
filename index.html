@@ -706,14 +706,47 @@
   .rp-header {
     padding: 14px 16px 10px;
     border-bottom: 1px solid var(--border);
-    text-align: center;
     flex-shrink: 0;
+  }
+  .rp-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
   .rp-header h2 {
     font-family: 'Lora', serif;
     font-size: 16px;
     font-weight: 600;
     color: var(--ink);
+    margin: 0;
+    text-align: center;
+    flex: 1;
+  }
+  .rp-header-spacer {
+    width: 88px;
+    flex-shrink: 0;
+  }
+  .rp-action-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 9px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.12s;
+  }
+  .rp-action-btn:hover:not(:disabled) {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+  }
+  .rp-action-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
   }
 
   .avatars-row {
@@ -1047,6 +1080,17 @@
     min-height: 0;
     overflow: hidden;
   }
+  .rp-watch-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .rp-watch-actions .btn-continue {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  .rp-watch-actions .rp-action-btn {
+    min-width: 122px;
+  }
 </style>
 </head>
 <body>
@@ -1210,7 +1254,11 @@
     <!-- ── Chat view (revealed after mode selected) ── -->
     <div id="rp-chat-view">
       <div class="rp-header">
-        <h2 id="rp-chat-title">Session 9: Roleplaying</h2>
+        <div class="rp-header-top">
+          <button class="rp-action-btn" id="rp-back-btn" onclick="goBackFromRoleplay()">← Back</button>
+          <h2 id="rp-chat-title">Session 9: Roleplaying</h2>
+          <div class="rp-header-spacer"></div>
+        </div>
       </div>
 
       <div class="avatars-row">
@@ -1234,7 +1282,10 @@
 
       <!-- Watch mode bottom bar -->
       <div class="bottom-bar" id="rp-watch-bar" style="display:none">
-        <button class="btn-continue" id="rp-next-btn" onclick="advanceRoleplay()">Next →</button>
+        <div class="rp-watch-actions">
+          <button class="btn-continue" id="rp-next-btn" onclick="advanceRoleplay()">Next →</button>
+          <button class="rp-action-btn" id="rp-takeover-btn" onclick="takeOverRoleplay()">Take Over</button>
+        </div>
       </div>
 
       <!-- Participate mode bottom bar -->
@@ -1285,13 +1336,13 @@ const CONTENT_BY_LOCALE = {
   en: {
     trainingNarrative: 'session_5_english',
     quizNarrative: 'session_5_english',
-    roleplayPersona: 'persona_english',
+    roleplayPersona: 'priya',
     ttsLocale: 'en',
   },
   gu: {
     trainingNarrative: 'session_5_gujarati',
     quizNarrative: 'session_5_gujarati',
-    roleplayPersona: 'persona_gujarati',
+    roleplayPersona: 'priya',
     ttsLocale: 'gu',
   },
 };
@@ -1336,6 +1387,9 @@ const I18N = {
     participate: 'Participate',
     participateDesc: "Take the counsellor's role. Talk to Priya yourself via text or voice.",
     startSession: 'Start Session',
+    roleplayBack: 'Back',
+    takeOver: 'Take Over',
+    takeOverNote: 'You have taken over the counsellor role. Continue the conversation from here.',
     depressedPatient: 'Depressed patient',
     counsellor: 'Counsellor',
     counsellorAI: 'Counsellor (AI)',
@@ -1406,6 +1460,9 @@ const I18N = {
     participate: 'ભાગ લો',
     participateDesc: 'તમે સલાહકારની ભૂમિકા ભજવો. ટેક્સ્ટ અથવા વાણીથી પ્રિયા સાથે વાત કરો.',
     startSession: 'સત્ર શરૂ કરો',
+    roleplayBack: 'પાછા જાઓ',
+    takeOver: 'હું આગળ સંભાળું',
+    takeOverNote: 'હવે તમે સલાહકારની ભૂમિકા સંભાળી છે. અહીંથી સંવાદ આગળ વધારો.',
     depressedPatient: 'ઉદાસીનતા ધરાવતી દર્દી',
     counsellor: 'સલાહકાર',
     counsellorAI: 'સલાહકાર (AI)',
@@ -1509,11 +1566,13 @@ function applyLocaleToUI() {
   bind('mode-participate-desc', t('participateDesc'));
   bind('rp-start-btn', t('startSession'));
   bind('rp-chat-title', t('roleplayTitle'));
+  bind('rp-back-btn', `← ${t('roleplayBack')}`);
   bind('rp-avatar-name', t('roleplayPersonaName').split(',')[0]);
   bind('rp-avatar-status', t('depressedPatient'));
   bind('rp-user-label', t('counsellor'));
   bind('rp-user-status', t('observing'));
   bind('rp-next-btn', t('next'));
+  bind('rp-takeover-btn', t('takeOver'));
   bind('quiz-title', t('quizTitle'));
   bind('q-label', t('questionOf', { current: 1, total: 5 }));
   const qNext = document.getElementById('q-next');
@@ -1528,6 +1587,7 @@ function applyLocaleToUI() {
   if (trainingMicStatus && trainingMicStatus.classList.contains('active')) trainingMicStatus.textContent = t('transcribing');
   const rpMicStatus = document.getElementById('rp-mic-status');
   if (rpMicStatus && rpMicStatus.classList.contains('active')) rpMicStatus.textContent = t('transcribing');
+  syncRoleplayChrome();
   renderHomeSessionCard();
 }
 
@@ -1879,6 +1939,10 @@ function waitForTTSPlayback(seq, context, epoch) {
   });
 }
 
+function _isTTSBlockedByPause(item) {
+  return Boolean(item && item.context === 'training' && isPaused && !item.allowWhilePaused);
+}
+
 function _notifyTTSWaiters() {
   const pending = [];
   for (const w of ttsWaiters) {
@@ -1898,9 +1962,7 @@ async function _drainTTSQueue() {
   if (ttsPlaying) return;
   ttsPlaying = true;
   while (ttsQueue.length > 0) {
-    // Hold here between items while the user has paused, unless this item is
-    // an explicit question response that should be allowed through.
-    while (isPaused && !(ttsQueue[0] && ttsQueue[0].allowWhilePaused)) {
+    while (_isTTSBlockedByPause(ttsQueue[0])) {
       await sleep(150);
     }
     const item = ttsQueue.shift();
@@ -2619,6 +2681,8 @@ function togglePause() {
 ══════════════════════════════════════════════════ */
 let rpMode     = null;
 let rpStreaming = false;
+let rpWatchComplete = false;
+let rpRequestController = null;
 
 function selectMode(mode) {
   rpMode = mode;
@@ -2627,42 +2691,146 @@ function selectMode(mode) {
   document.getElementById('rp-start-btn').disabled = false;
 }
 
+function abortRoleplayRequest() {
+  if (!rpRequestController) return;
+  try { rpRequestController.abort(); } catch (_) {}
+  rpRequestController = null;
+}
+
+function beginRoleplayRequest() {
+  abortRoleplayRequest();
+  rpRequestController = new AbortController();
+  return rpRequestController;
+}
+
+function clearRoleplayRequest(controller) {
+  if (rpRequestController === controller) rpRequestController = null;
+}
+
+function flushRoleplayAudio() {
+  setTTSContext('none');
+  if (currentScreen === 'roleplay') setTTSContext('roleplay');
+}
+
+function appendRoleplayNote(text) {
+  if (!text) return;
+  const chat = document.getElementById('rp-chat');
+  if (!chat) return;
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble note';
+  bubble.innerHTML = `<div class="msg-label">${t('sessionNote')}</div>${escapeHtml(text)}`;
+  chat.appendChild(bubble);
+  scrollToBottom(chat);
+}
+
+function syncRoleplayChrome() {
+  const modeSelect = document.getElementById('rp-mode-select');
+  const chatView = document.getElementById('rp-chat-view');
+  const watchBar = document.getElementById('rp-watch-bar');
+  const participateBar = document.getElementById('rp-participate-bar');
+  const nextBtn = document.getElementById('rp-next-btn');
+  const takeoverBtn = document.getElementById('rp-takeover-btn');
+  const userLabel = document.getElementById('rp-user-label');
+  const userStatus = document.getElementById('rp-user-status');
+
+  if (!modeSelect || !chatView || !watchBar || !participateBar || !nextBtn || !takeoverBtn || !userLabel || !userStatus) return;
+
+  const inChat = Boolean(rpMode);
+  const inWatch = rpMode === 'watch';
+  const inParticipate = rpMode === 'participate';
+
+  modeSelect.style.display = inChat ? 'none' : 'flex';
+  chatView.style.display = inChat ? 'flex' : 'none';
+  watchBar.style.display = inWatch ? '' : 'none';
+  participateBar.style.display = inParticipate ? '' : 'none';
+
+  userLabel.textContent = inWatch ? t('counsellorAI') : t('you');
+  userStatus.textContent = inWatch ? t('observing') : t('traineeCounsellor');
+
+  nextBtn.disabled = rpStreaming || rpWatchComplete;
+  nextBtn.textContent = rpWatchComplete ? t('sessionComplete') : t('next');
+  takeoverBtn.disabled = rpStreaming;
+}
+
+function resetRoleplayState() {
+  abortRoleplayRequest();
+  rpStreaming = false;
+  rpWatchComplete = false;
+  rpMode = null;
+  roleplaySessionId = null;
+  if (rpRecorder && rpRecorder.state !== 'inactive') {
+    try { rpRecorder.stop(); } catch (_) {}
+  }
+  flushRoleplayAudio();
+  document.getElementById('rp-chat').innerHTML = '';
+  document.getElementById('rp-input').value = '';
+  document.querySelectorAll('.mode-option-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('rp-start-btn').disabled = true;
+  document.getElementById('rp-next-btn').disabled = false;
+  setMicStatus('rp-mic-status', '');
+  syncRoleplayChrome();
+}
+
+function goBackFromRoleplay() {
+  resetRoleplayState();
+}
+
+function enterParticipateMode({ appendTakeoverNote = false } = {}) {
+  rpMode = 'participate';
+  syncRoleplayChrome();
+  if (appendTakeoverNote) appendRoleplayNote(t('takeOverNote'));
+  document.getElementById('rp-input')?.focus();
+}
+
+function takeOverRoleplay() {
+  if (!roleplaySessionId || rpMode !== 'watch' || rpStreaming) return;
+  enterParticipateMode({ appendTakeoverNote: true });
+}
+
 async function startRoleplay() {
-  document.getElementById('rp-mode-select').style.display = 'none';
-  document.getElementById('rp-chat-view').style.display   = 'flex';
+  if (!rpMode) return;
 
-  roleplaySessionId = await createSession(
-    localeConfig().roleplayPersona,
-    rpMode === 'watch' ? 'roleplay_watch' : 'roleplay_participate'
-  );
+  abortRoleplayRequest();
+  flushRoleplayAudio();
+  document.getElementById('rp-chat').innerHTML = '';
+  document.getElementById('rp-input').value = '';
+  rpWatchComplete = false;
+  rpStreaming = false;
+  syncRoleplayChrome();
 
-  if (rpMode === 'watch') {
-    document.getElementById('rp-watch-bar').style.display   = '';
-    document.getElementById('rp-user-label').textContent    = t('counsellorAI');
-    document.getElementById('rp-user-status').textContent   = t('observing');
-    advanceRoleplay();
-  } else {
-    document.getElementById('rp-participate-bar').style.display = '';
-    document.getElementById('rp-user-label').textContent    = t('you');
-    document.getElementById('rp-user-status').textContent   = t('traineeCounsellor');
+  try {
+    roleplaySessionId = await createSession(
+      localeConfig().roleplayPersona,
+      rpMode === 'watch' ? 'roleplay_watch' : 'roleplay_participate'
+    );
+
+    if (rpMode === 'watch') {
+      advanceRoleplay();
+    } else {
+      enterParticipateMode();
+    }
+  } catch (e) {
+    console.error('Roleplay start error', e);
+    resetRoleplayState();
   }
 }
 
 /* ── Watch mode: stream next scripted exchange ── */
 async function advanceRoleplay() {
-  if (!roleplaySessionId || rpStreaming) return;
+  if (!roleplaySessionId || rpStreaming || rpMode !== 'watch' || rpWatchComplete) return;
   rpStreaming = true;
+  syncRoleplayChrome();
   const streamEpoch = ttsContextEpoch;
-
-  const nextBtn = document.getElementById('rp-next-btn');
-  nextBtn.disabled = true;
   const chat = document.getElementById('rp-chat');
   let bubble = null, text = '', voice = 'meera';
   let skipTTSForMessage = false;
   let messageLastTTSSeq = 0;
+  const controller = beginRoleplayRequest();
 
   try {
-    for await (const ev of openSSE(`${API_BASE}/roleplay/${roleplaySessionId}/watch/next`)) {
+    for await (const ev of openSSE(`${API_BASE}/roleplay/${roleplaySessionId}/watch/next`, {
+      signal: controller.signal,
+    })) {
       switch (ev.type) {
         case 'message_start':
           voice  = ev.voice || 'meera';
@@ -2697,19 +2865,22 @@ async function advanceRoleplay() {
         case 'exchange_end':
           // Each turn waits for its own TTS before moving on.
           rpStreaming = false;
-          if (ev.has_more) { nextBtn.disabled = false; nextBtn.textContent = t('next'); }
-          else             { nextBtn.textContent = t('sessionComplete'); }
+          rpWatchComplete = !ev.has_more;
+          syncRoleplayChrome();
           break;
         case 'watch_end':
           rpStreaming = false;
-          nextBtn.textContent = t('sessionComplete');
+          rpWatchComplete = true;
+          syncRoleplayChrome();
           break;
       }
     }
   } catch (e) {
-    console.error('Roleplay watch error', e);
+    if (e?.name !== 'AbortError') console.error('Roleplay watch error', e);
     rpStreaming = false;
-    nextBtn.disabled = false;
+    syncRoleplayChrome();
+  } finally {
+    clearRoleplayRequest(controller);
   }
 }
 
@@ -2718,10 +2889,13 @@ async function sendRoleplayMessage() {
   const input = document.getElementById('rp-input');
   const text  = input.value.trim();
   if (!text || !roleplaySessionId || rpStreaming) return;
+  if (rpMode !== 'participate') enterParticipateMode();
   input.value = '';
 
   rpStreaming = true;
+  syncRoleplayChrome();
   const chat = document.getElementById('rp-chat');
+  const controller = beginRoleplayRequest();
 
   const ub = document.createElement('div');
   ub.className = 'msg-bubble attendee';
@@ -2736,6 +2910,7 @@ async function sendRoleplayMessage() {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ text }),
+      signal: controller.signal,
     })) {
       switch (ev.type) {
         case 'message_start':
@@ -2767,10 +2942,12 @@ async function sendRoleplayMessage() {
       }
     }
   } catch (e) {
-    console.error('Roleplay message error', e);
+    if (e?.name !== 'AbortError') console.error('Roleplay message error', e);
   } finally {
     // Always clear streaming flag so the input is never permanently locked
     rpStreaming = false;
+    syncRoleplayChrome();
+    clearRoleplayRequest(controller);
   }
 }
 
