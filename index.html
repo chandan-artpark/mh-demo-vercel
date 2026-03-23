@@ -2573,7 +2573,7 @@ async function toggleTrainingMic() {
     trainingRecorder.onstop  = async () => {
       btn.classList.remove('recording');
       stream.getTracks().forEach(t => t.stop());
-      if (isStreaming || !trainingSessionId) return;
+      if (!trainingSessionId || (isStreaming && !isPaused)) return;
 
       btn.disabled = true;
       setMicStatus('training-mic-status', t('transcribing'));
@@ -2967,7 +2967,7 @@ async function toggleRoleplayMic() {
     rpRecorder.onstop  = async () => {
       btn.classList.remove('recording');
       stream.getTracks().forEach(t => t.stop());
-      if (rpStreaming || !roleplaySessionId) return;
+      if (!roleplaySessionId || (rpStreaming && !isPaused)) return;
 
       btn.disabled = true;
       setMicStatus('rp-mic-status', t('transcribing'));
