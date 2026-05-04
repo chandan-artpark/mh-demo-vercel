@@ -252,7 +252,7 @@
     cursor: default;
   }
 
-  /* ── Pause / Play control ── */
+  /* ── Pause / Mute controls ── */
   .pause-wrap {
     display: none;
     flex-direction: column;
@@ -520,12 +520,61 @@
   /* ─────────────────────────────────────────
      SCREEN 1: Training – Focused
   ───────────────────────────────────────── */
+  .training-heading-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+    padding: 10px 16px 4px;
+    flex-shrink: 0;
+  }
+
   .session-label {
     font-size: 13px;
     font-weight: 700;
     color: var(--ink-muted);
-    padding: 10px 16px 4px;
-    flex-shrink: 0;
+    line-height: 1.35;
+    padding: 0;
+  }
+
+  .mute-wrap {
+    display: none;
+    flex: 0 0 auto;
+  }
+  .mute-wrap.show { display: flex; }
+  .mute-btn {
+    width: 38px;
+    height: 38px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 999px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.09);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .mute-btn:hover:not(:disabled) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+  }
+  .mute-btn.muted {
+    background: var(--honey-light);
+    border-color: var(--honey);
+    color: #7a5c00;
+  }
+  .mute-btn.muted:hover {
+    background: #fef0a8;
+    border-color: #e8b820;
+  }
+  .mute-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
   }
 
   .flashcard-wrap {
@@ -1181,9 +1230,15 @@
       <button class="support-btn" id="support-btn" onclick="toggleSupportPanel()">🚨 Support</button>
     </div>
 
-    <div class="session-label" id="session-label">Session 5: Deep-dive into Distress &amp; Depression in CMD</div>
-
-    <p class="scroll-hint-label" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
+    <div class="training-heading-row">
+      <div>
+        <div class="session-label" id="session-label">Session 5: Deep-dive into Distress &amp; Depression in CMD</div>
+        <p class="scroll-hint-label" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
+      </div>
+      <div class="mute-wrap" id="mute-wrap">
+        <button class="mute-btn" id="mute-btn" onclick="toggleTTSMute()" aria-label="Mute audio" title="Mute audio">🔊</button>
+      </div>
+    </div>
 
     <div class="flashcard-wrap" id="flashcard-wrap">
       <div class="scroll-hint"></div>
@@ -1419,6 +1474,9 @@ const I18N = {
     pause: 'Pause',
     resume: 'Resume',
     pauseHint: 'Audio & playback paused',
+    ttsEnabled: 'Audio on',
+    ttsMuted: 'Audio muted',
+    ttsMutedHint: 'Fast flashcards',
   },
   gu: {
     appTitle: 'CHW AI માનસિક આરોગ્ય ટ્રેનર',
@@ -1492,6 +1550,9 @@ const I18N = {
     pause: 'થોભો',
     resume: 'ચાલુ કરો',
     pauseHint: 'ઑડિઓ અને પ્લેબૅક થોભ્યો',
+    ttsEnabled: 'ઑડિઓ ચાલુ',
+    ttsMuted: 'ઑડિઓ મ્યૂટ',
+    ttsMutedHint: 'ઝડપી ફ્લેશકાર્ડ',
   },
 };
 let appLocale = localStorage.getItem('app_locale') === 'gu' ? 'gu' : 'en';
@@ -1507,6 +1568,10 @@ function t(key, vars = {}) {
     phrase = phrase.replaceAll(`{${k}}`, String(v));
   });
   return phrase;
+}
+
+function labelWithoutLeadingIcon(label = '') {
+  return String(label).replace(/^(📖|🎭|✏️)\s*/u, '').trim();
 }
 
 function switchLocale(nextLocale) {
@@ -1526,9 +1591,9 @@ function applyLocaleToUI() {
   bind('home-title', t('homeTitle'));
   bind('home-copy', t('homeCopy'));
   bind('home-modes-label', t('homeModesLabel'));
-  bind('home-training-title', t('tabTraining'));
-  bind('home-roleplay-title', t('tabRoleplay'));
-  bind('home-quiz-title', t('tabQuiz'));
+  bind('home-training-title', labelWithoutLeadingIcon(t('tabTraining')));
+  bind('home-roleplay-title', labelWithoutLeadingIcon(t('tabRoleplay')));
+  bind('home-quiz-title', labelWithoutLeadingIcon(t('tabQuiz')));
   bind('home-training-desc', t('homeTrainingDesc'));
   bind('home-roleplay-desc', t('homeRoleplayDesc'));
   bind('home-quiz-desc', t('homeQuizDesc'));
@@ -1555,6 +1620,7 @@ function applyLocaleToUI() {
   bind('flashcard-text', t('loadingFirstExchange'));
   bind('training-continue-btn', trainingComplete ? t('sessionComplete') : t('trainingContinue'));
   updatePausePlayBtn();
+  updateTTSMuteBtn();
   bind('rp-ms-title', t('roleplayTitle'));
   bind('rp-ms-subtitle', t('roleplaySubtitle'));
   bind('rp-persona-name', t('roleplayPersonaName'));
@@ -1873,6 +1939,8 @@ let ttsPlayedSeq       = 0;
 let ttsWaiters         = [];
 let _activeAudioEl     = null;
 let _activePlaybackControl = null;
+let _activeTTSItem     = null;
+let isTTSMuted         = localStorage.getItem('tts_muted') === '1';
 
 // ── audio unlock (browser autoplay policy) ──────────────────────────────────
 let _audioUnlocked = false;
@@ -1911,6 +1979,7 @@ function enqueueTTS(text, voice = 'meera') {
 function enqueueTTSForContext(text, voice = 'meera', context = 'training', options = {}) {
   if (!text || !text.trim()) return;
   if (context !== currentTTSContext) return;
+  if (isTTSMuted) return;
   const normalized = text.trim().replace(/\s+/g, ' ');
   // Skip punctuation/noise-only snippets that frequently fail upstream.
   if (!/[A-Za-z0-9\u0900-\u097F\u0A80-\u0AFF]/.test(normalized)) return;
@@ -1957,6 +2026,56 @@ function _notifyTTSWaiters() {
   ttsWaiters = pending;
 }
 
+function flushTTSPlayback({ resolveWaiters = false } = {}) {
+  const maxQueuedSeq = ttsQueue.reduce((max, item) => Math.max(max, item.seq || 0), 0);
+  const activeSeq = _activeTTSItem?.seq || 0;
+  if (_activePlaybackControl) {
+    try { _activePlaybackControl.cancel(); } catch (_) {}
+    _activePlaybackControl = null;
+  }
+  if (_activeAudioEl) {
+    try { _activeAudioEl.pause(); _activeAudioEl.removeAttribute('src'); _activeAudioEl.load(); } catch (_) {}
+    _activeAudioEl = null;
+  }
+  ttsQueue = [];
+  if (resolveWaiters) {
+    ttsContextEpoch += 1;
+    const maxSeq = Math.max(maxQueuedSeq, activeSeq);
+    if (maxSeq > ttsPlayedSeq) ttsPlayedSeq = maxSeq;
+    _notifyTTSWaiters();
+  }
+}
+
+function updateTTSMuteBtn() {
+  const btn = document.getElementById('mute-btn');
+  const wrap = document.getElementById('mute-wrap');
+  if (!btn) return;
+  if (isTTSMuted) {
+    btn.textContent = '🔇';
+    btn.setAttribute('aria-label', t('ttsMuted'));
+    btn.setAttribute('title', t('ttsMuted'));
+    btn.classList.add('muted');
+    if (wrap) wrap.classList.add('muted-state');
+  } else {
+    btn.textContent = '🔊';
+    btn.setAttribute('aria-label', t('ttsEnabled'));
+    btn.setAttribute('title', t('ttsEnabled'));
+    btn.classList.remove('muted');
+    if (wrap) wrap.classList.remove('muted-state');
+  }
+}
+
+function toggleTTSMute() {
+  isTTSMuted = !isTTSMuted;
+  localStorage.setItem('tts_muted', isTTSMuted ? '1' : '0');
+  if (isTTSMuted) {
+    flushTTSPlayback({ resolveWaiters: true });
+  } else if (ttsQueue.length > 0 && !ttsPlaying) {
+    _drainTTSQueue();
+  }
+  updateTTSMuteBtn();
+}
+
 // ── internal drain loop ──────────────────────────────────────────────────────
 async function _drainTTSQueue() {
   if (ttsPlaying) return;
@@ -1975,10 +2094,12 @@ async function _drainTTSQueue() {
       continue;
     }
     try {
+      _activeTTSItem = item;
       await _playTTS(item);
     } catch (e) {
       console.warn('TTS playback item failed (swallowed):', e?.message);
     } finally {
+      if (_activeTTSItem === item) _activeTTSItem = null;
       if (item.seq > ttsPlayedSeq) {
         ttsPlayedSeq = item.seq;
         _notifyTTSWaiters();
@@ -2003,6 +2124,7 @@ function setTTSContext(context) {
     try { _activeAudioEl.pause(); _activeAudioEl.removeAttribute('src'); _activeAudioEl.load(); } catch (_) {}
     _activeAudioEl = null;
   }
+  _activeTTSItem = null;
   _notifyTTSWaiters();
 }
 
@@ -2216,6 +2338,7 @@ function updateChromeForScreen() {
   if (moduleWrap) moduleWrap.classList.toggle('show', canShowModuleJump);
 
   showPauseWrap(appStarted && currentScreen === 'training' && !!trainingSessionId);
+  showMuteWrap(appStarted && currentScreen === 'training' && !!trainingSessionId);
 }
 
 function renderHomeSessionCard() {
@@ -2342,6 +2465,7 @@ async function consumeTrainingStream(sseIter, options = {}) {
   let skipTTSForMessage = false;
   let lastTTSSeq = 0;
   let messageLastTTSSeq = 0;
+  let completedMessageCount = 0;
   const streamEpoch = ttsContextEpoch;
 
   for await (const ev of sseIter) {
@@ -2352,6 +2476,9 @@ async function consumeTrainingStream(sseIter, options = {}) {
         // while the user has paused. When the user resumes, the gate opens and we
         // animate normally into the next message.
         while (isPaused && !allowWhilePaused) { await sleep(150); }
+        if (completedMessageCount > 0) {
+          await sleep(3500);
+        }
         const isIntroFlashcard = Boolean(ev.no_tts) || isIntroFlashcardMessage(ev.role, ev.speaker);
         skipTTSForMessage = isIntroFlashcard;
         spk   = isIntroFlashcard
@@ -2401,6 +2528,7 @@ async function consumeTrainingStream(sseIter, options = {}) {
         if (spk) {
           chatHistory.push({ name: spk.name, bubbleClass: spk.bubbleClass, text: text.trim() });
           renderChatHistory();
+          completedMessageCount += 1;
         }
         break;
       }
@@ -2424,8 +2552,11 @@ async function advanceTraining() {
   trainingAdvanceAbortController = new AbortController();
 
   try {
+    const params = new URLSearchParams();
+    if (isTTSMuted) params.set('muted', '1');
+    const streamUrl = `${API_BASE}/training/${trainingSessionId}/next/stream${params.toString() ? `?${params}` : ''}`;
     const result = await consumeTrainingStream(
-      openSSE(`${API_BASE}/training/${trainingSessionId}/next/stream`, {
+      openSSE(streamUrl, {
         signal: trainingAdvanceAbortController.signal,
       })
     );
@@ -2613,6 +2744,11 @@ function toggleZoom() {
 /* ── Pause / Play (outside phone) ── */
 function showPauseWrap(show) {
   const wrap = document.getElementById('pause-wrap');
+  if (wrap) wrap.classList.toggle('show', Boolean(show));
+}
+
+function showMuteWrap(show) {
+  const wrap = document.getElementById('mute-wrap');
   if (wrap) wrap.classList.toggle('show', Boolean(show));
 }
 
