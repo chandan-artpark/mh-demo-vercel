@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atmiyata Digital – AI Mental Health Trainer</title>
+<title>Artpark x CMHLP – MH Trainer</title>
+<!-- Apply saved theme immediately to prevent flash of wrong theme -->
+<script>(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;500;700&family=Nunito:wght@400;600;700;800&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,6 +30,12 @@
     --radius-md: 14px;
     --radius-sm: 10px;
     --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    /* additional semantic tokens */
+    --surface: #ffffff;
+    --bezel-ring: #e8e5df;
+    --sage-dk: #1e5c40;
+    --sky-dk: #1a5f8a;
+    --honey-dk: #7a5c00;
   }
 
   body {
@@ -69,7 +77,7 @@
 
   .support-panel {
     position: absolute;
-    top: 48px;
+    top: 46px;
     right: 12px;
     z-index: 29;
     width: min(280px, calc(100% - 24px));
@@ -120,7 +128,7 @@
     z-index: 28;
     background: transparent;
     display: none;
-    border-radius: 36px;
+    border-radius: 22px 22px 0 0;
   }
   .support-overlay.open { display: block; }
 
@@ -256,9 +264,9 @@
   .pause-wrap {
     display: none;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     flex: 0 0 auto;
-    min-width: 112px;
+    min-width: 115px;
   }
   .pause-wrap.show { display: flex; }
   .pause-play-btn {
@@ -266,7 +274,8 @@
     background: #fff;
     color: var(--ink);
     border-radius: 999px;
-    padding: 12px 16px;
+    padding: 0 14px;
+    height: 48px;
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
@@ -300,7 +309,7 @@
     cursor: default;
   }
   .pause-hint {
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: var(--ink-muted);
@@ -317,11 +326,11 @@
   /* ── Phone shell ── */
   .phone {
     width: 360px;
-    height: 700px;
+    height: min(735px, calc(100vh - 250px));
     margin-top: 8px;
     background: var(--white);
     border-radius: 36px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.14), 0 0 0 8px #e8e5df;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.14), 0 0 0 8px var(--bezel-ring);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -459,11 +468,11 @@
     display: flex;
     gap: 6px;
     align-items: center;
-    padding: 10px 12px;
+    padding: 10px 12px 8px;
     border-bottom: 1px solid var(--border);
     flex-wrap: nowrap;
     flex-shrink: 0;
-    min-height: 50px;
+    min-height: 46px;
     position: relative;
   }
   .chip {
@@ -520,43 +529,135 @@
   /* ─────────────────────────────────────────
      SCREEN 1: Training – Focused
   ───────────────────────────────────────── */
+  /* ── Training chrome — inside the phone frame so total phone size matches roleplay/quiz ── */
+  .training-chrome {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .training-chrome.show { display: flex; }
+  [data-theme="dark"] .training-chrome { background: var(--surface); }
+
   .training-heading-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 10px;
-    padding: 10px 16px 4px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 4px;
     flex-shrink: 0;
   }
 
   .session-label {
-    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 7px;
+    min-width: 0;
+  }
+  .session-heading-copy {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+  }
+  .session-title-line {
+    flex: 1 0 100%;
+    font-size: 11.5px;
     font-weight: 700;
     color: var(--ink-muted);
-    line-height: 1.35;
-    padding: 0;
+    line-height: 1.2;
+  }
+  .session-sub-label {
+    width: fit-content;
+    max-width: 100%;
+    border-radius: 999px;
+    padding: 2px 7px;
+    background: var(--sage-pale);
+    color: #1e5c40;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    line-height: 1;
   }
 
   .mute-wrap {
     display: none;
     flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
   }
-  .mute-wrap.show { display: flex; }
+  .mute-wrap.show { display: flex; align-items: center; gap: 6px; }
+
+  .reset-session-btn {
+    height: 30px;
+    border: 1.5px solid #e8b4b8;
+    background: #fff0f0;
+    color: #b03050;
+    border-radius: 999px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .reset-session-btn:hover:not(:disabled) {
+    background: #fde8ec;
+    border-color: #c04060;
+  }
+  .reset-session-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  [data-theme="dark"] .reset-session-btn {
+    background: rgba(180,60,80,0.12);
+    border-color: #804060;
+    color: #f08090;
+  }
+  [data-theme="dark"] .reset-session-btn:hover:not(:disabled) {
+    background: rgba(180,60,80,0.22);
+    border-color: #f08090;
+  }
+  /* Sidebar reset button — full-width row below the jump chips */
+  .sidebar-reset-btn {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+    height: 34px;
+    font-size: 12px;
+    padding: 0 14px;
+  }
   .mute-btn {
-    width: 38px;
-    height: 38px;
+    min-width: 86px;
+    height: 34px;
     border: 1.5px solid var(--border);
     background: #fff;
     color: var(--ink);
     border-radius: 999px;
-    font-size: 16px;
+    padding: 0 12px;
+    font-size: 11.5px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0,0,0,0.09);
     transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 7px;
     line-height: 1;
+    white-space: nowrap;
   }
   .mute-btn:hover:not(:disabled) {
     border-color: var(--sage);
@@ -580,7 +681,7 @@
   .flashcard-wrap {
     flex: 1;
     min-height: 0;
-    padding: 12px 16px;
+    padding: 4px 14px 10px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -594,6 +695,10 @@
   .flashcard.speaker-trainer  { background: var(--sage-light); }
   .flashcard.speaker-attendee { background: var(--sky-light); }
   .flashcard.speaker-other    { background: var(--honey-light); }
+  .flashcard.manual-next {
+    cursor: pointer;
+    box-shadow: inset 0 0 0 2px rgba(30, 92, 64, 0.12);
+  }
 
   .flashcard {
     background: var(--sage-light);
@@ -605,7 +710,7 @@
     justify-content: center;
     text-align: center;
     transition: all 0.5s cubic-bezier(.4,0,.2,1);
-    min-height: 300px;
+    min-height: 280px;
     position: relative;
     overflow-y: auto;
   }
@@ -670,11 +775,11 @@
 
   /* ── Bottom actions ── */
   .bottom-bar {
-    padding: 10px 16px 14px;
+    padding: 12px 14px 12px;
     border-top: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     flex-shrink: 0;
   }
   .btn-continue {
@@ -696,38 +801,74 @@
   .btn-continue:disabled { opacity: 0.45; cursor: default; transform: none; }
   .training-actions-row {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    align-items: stretch;
+    gap: 8px;
   }
   .training-actions-row .btn-continue {
     flex: 1 1 auto;
     width: auto;
-    padding: 12px 14px;
+    height: 48px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .input-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 8px;
+    column-gap: 7px;
     row-gap: 4px;
     align-items: center;
   }
-  .text-input {
+  .chat-pill {
     width: 100%;
     min-width: 0;
     border: 1.5px solid var(--border);
     border-radius: 50px;
-    padding: 11px 16px;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 5px 3px 13px;
+    transition: border-color 0.2s;
+  }
+  .chat-pill:focus-within { border-color: var(--sage); }
+  .text-input {
+    width: 100%;
+    min-width: 0;
+    border: none;
+    padding: 7px 2px;
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
     color: var(--ink-soft);
-    background: var(--bg);
+    background: transparent;
     outline: none;
-    transition: border-color 0.2s;
   }
-  .text-input:focus { border-color: var(--sage); }
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    transition: transform 0.15s, opacity 0.15s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover:not(:disabled) { transform: scale(1.05); }
+  .send-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
   .mic-btn {
-    width: 42px; height: 42px;
+    width: 40px; height: 40px;
     background: var(--sage-light);
     border: none;
     border-radius: 50%;
@@ -869,7 +1010,7 @@
   }
   .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--sage), #5aac85);
+    background: linear-gradient(90deg, var(--sage), var(--sage-dk));
     border-radius: 50px;
     transition: width 0.4s ease;
   }
@@ -969,18 +1110,169 @@
   .btn-continue-arrow:hover { background: #444; transform: scale(1.01); }
   .btn-continue-arrow:disabled { opacity: 0.4; cursor: default; transform: none; }
 
-  .scroll-hint-label {
-    text-align: center;
-    font-size: 11px;
+  /* ─── Quiz session picker ─────────────────── */
+  #quiz-session-picker {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #quiz-active {
+    display: none;          /* shown by JS when a session is selected */
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .quiz-picker-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .quiz-picker-header h2 {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .quiz-picker-sub {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-top: 4px;
+  }
+  .quiz-session-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .quiz-session-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    user-select: none;
+  }
+  .quiz-session-card:hover:not(.locked):not(.done):not(.generating) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    transform: translateY(-1px);
+  }
+  .quiz-session-card.done {
+    border-color: var(--sage);
+    background: var(--sage-light);
+    cursor: default;
+  }
+  .quiz-session-card.locked { opacity: 0.50; cursor: not-allowed; }
+  .quiz-session-card.generating { opacity: 0.75; cursor: wait; }
+  .quiz-card-num {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .quiz-card-title {
+    font-family: 'Lora', serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+  }
+  .quiz-card-badge {
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 50px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+  .quiz-card-badge.ready      { background: var(--sage-pale);   color: var(--sage-dk); }
+  .quiz-card-badge.done       { background: var(--sage);        color: #fff; }
+  .quiz-card-badge.locked     { background: var(--border);      color: var(--ink-muted); }
+  .quiz-card-badge.generating { background: #fef0a8;            color: #7a5c00; }
+
+  /* ─── Quiz active panel header ─────────────── */
+  .quiz-header-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .quiz-back-link {
+    font-size: 11.5px;
     font-weight: 700;
     color: var(--ink-muted);
-    padding: 4px 0;
-    letter-spacing: 0.5px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .quiz-back-link:hover { color: var(--sage-dk); }
+  .quiz-active-title {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ─── Quiz navigation row (Back + Next) ─────── */
+  .quiz-nav-row {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-quiz-prev {
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .btn-quiz-prev:hover:not(:disabled) { background: var(--bg); border-color: var(--sage); }
+  .btn-quiz-prev:disabled { opacity: 0.30; cursor: default; }
+  .btn-continue-arrow { flex: 1; }
+
+  .scroll-hint-label {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    padding: 0 14px 5px;
+    letter-spacing: 0.35px;
+    line-height: 1.05;
     cursor: pointer;
     user-select: none;
     flex-shrink: 0;
   }
-  .scroll-hint-label:hover { color: var(--ink); }
+  .scroll-hint-label:hover { color: var(--ink-soft); }
+  /* When hosted in the chrome strip outside the phone */
+  .chrome-scroll-hint {
+    padding: 2px 14px 6px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+    font-size: 10px;
+  }
 
   /* ═══════════════════════════════════════════
      NEW: Typing indicator dots
@@ -1053,6 +1345,58 @@
     text-align: center;
     margin-top: -6px;
     line-height: 1.55;
+  }
+  .rp-persona-picker {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .rp-persona-option {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+    text-align: left;
+  }
+  .rp-persona-option:hover:not(.selected) {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    transform: translateY(-1px);
+  }
+  .rp-persona-option.selected {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    outline: 2px solid var(--sage);
+    outline-offset: 1px;
+  }
+  .rp-persona-option-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .rp-persona-option-name {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .rp-persona-option-meta {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-muted);
+    line-height: 1.35;
+    margin-top: 2px;
   }
   .rp-ms-persona-card {
     background: var(--sage-pale);
@@ -1140,13 +1484,692 @@
   .rp-watch-actions .rp-action-btn {
     min-width: 122px;
   }
+
+  /* ═══════════════════════════════════════════
+     DARK MODE TOGGLE BUTTON (outside phone)
+  ═══════════════════════════════════════════ */
+  .phone-outer {
+    position: relative;
+    width: 360px;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .phone-outer .phone {
+    margin-top: 0;
+  }
+  .dark-toggle {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    user-select: none;
+    z-index: 100;
+    letter-spacing: 0.3px;
+  }
+  .dark-toggle:hover {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+  }
+
+  .logout-btn {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    user-select: none;
+    z-index: 100;
+    letter-spacing: 0.3px;
+  }
+  .logout-btn:hover {
+    border-color: var(--blush);
+    background: var(--blush-light);
+    color: var(--ink);
+  }
+
+  /* ═══════════════════════════════════════════
+     DARK MODE — variable overrides + component fixes
+  ═══════════════════════════════════════════ */
+  [data-theme="dark"] {
+    /* Base palette */
+    --bg: #1c1a17;
+    --border: #3b3835;
+    --white: #1e1c1a;
+    --surface: #252320;
+    --ink: #e0dbd5;
+    --ink-soft: #aea9a3;
+    --ink-muted: #76716b;
+    --bezel-ring: #2b2825;
+    /* Speaker colours — kept hue, lifted lightness for dark bg */
+    --sage-light: #1a3c2d;
+    --sage-pale: #122619;
+    --sky-light: #112235;
+    --honey-light: #2a2200;
+    --blush-light: #3a1717;
+    /* Resolved speaker text colours */
+    --sage-dk: #6abf94;
+    --sky-dk: #6ab4d8;
+    --honey-dk: #d4ab3a;
+  }
+
+  /* Body background */
+  [data-theme="dark"] body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(123,196,160,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(253,232,232,0.05) 0%, transparent 50%);
+  }
+
+  /* Phone shell */
+  [data-theme="dark"] .phone {
+    background: var(--white);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.50), 0 0 0 8px var(--bezel-ring);
+  }
+  [data-theme="dark"] .training-chrome {
+    background: var(--surface);
+  }
+
+  /* App header */
+  [data-theme="dark"] .app-header h1 { color: var(--ink); }
+  [data-theme="dark"] .app-header p  { color: var(--ink-muted); }
+  [data-theme="dark"] .lang-btn.active { background: #9bc8b4; color: #0f1e17; }
+  [data-theme="dark"] .lang-switch   { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .lang-btn      { color: var(--ink-muted); }
+
+  /* Screen tabs */
+  [data-theme="dark"] .screen-tabs { background: var(--surface); }
+  [data-theme="dark"] .tab-btn     { color: var(--ink-muted); }
+  [data-theme="dark"] .tab-btn.active { background: #9bc8b4; color: #0f1e17; }
+
+  /* Module jump chips */
+  [data-theme="dark"] .module-chip           { background: var(--surface); border-color: var(--border); color: var(--ink); }
+  [data-theme="dark"] .module-chip.active    { background: #9bc8b4; color: #0f1e17; border-color: #9bc8b4; }
+  [data-theme="dark"] .module-jump-label     { color: var(--ink-muted); }
+
+  /* Home screen */
+  [data-theme="dark"] .home-screen {
+    background: linear-gradient(180deg, #1e1c1a 0%, #191714 100%);
+  }
+  [data-theme="dark"] .home-hero {
+    background: linear-gradient(135deg, rgba(123,196,160,0.09) 0%, rgba(245,200,66,0.07) 100%);
+    border-color: rgba(123,196,160,0.14);
+    box-shadow: none;
+  }
+  [data-theme="dark"] .home-kicker      { color: var(--sage-dk); }
+  [data-theme="dark"] .home-title       { color: var(--ink); }
+  [data-theme="dark"] .home-copy        { color: var(--ink-soft); }
+  [data-theme="dark"] .home-section-title { color: var(--ink-muted); }
+  [data-theme="dark"] .home-mode-card   { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .home-mode-name   { color: var(--ink); }
+  [data-theme="dark"] .home-mode-desc   { color: var(--ink-soft); }
+  [data-theme="dark"] .home-session-card { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .home-session-label { color: var(--ink-muted); }
+  [data-theme="dark"] .home-session-title { color: var(--ink); }
+  [data-theme="dark"] .home-session-meta  { color: var(--ink-soft); }
+
+  /* Support panel & popover */
+  [data-theme="dark"] .support-panel        { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .support-panel h3     { color: var(--ink); }
+  [data-theme="dark"] .support-panel p      { color: var(--ink-soft); }
+  [data-theme="dark"] .support-panel li     { color: var(--ink); }
+  [data-theme="dark"] .support-panel .support-note { background: var(--honey-light); color: var(--honey-dk); }
+  [data-theme="dark"] .attendees-popover    { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .attendees-popover h4 { color: var(--ink-muted); }
+  [data-theme="dark"] .attendees-popover li { color: var(--ink); }
+
+  /* Participant chips */
+  [data-theme="dark"] .chip.green   { color: var(--sage-dk); }
+  [data-theme="dark"] .chip.blue    { color: var(--sky-dk); }
+  [data-theme="dark"] .chip.yellow  { color: var(--honey-dk); }
+  [data-theme="dark"] .chip.speaking { outline-color: var(--ink); }
+
+  /* Training heading + controls */
+  [data-theme="dark"] .session-title-line  { color: var(--ink-muted); }
+  [data-theme="dark"] .session-sub-label   { color: var(--sage-dk); background: var(--sage-pale); }
+  [data-theme="dark"] .mute-btn            { background: var(--surface); color: var(--ink); }
+  [data-theme="dark"] .mute-btn.muted      { background: var(--honey-light); border-color: var(--honey); color: var(--honey-dk); }
+  [data-theme="dark"] .mute-btn.muted:hover { background: #3a2e00; }
+
+  /* Scroll hint */
+  [data-theme="dark"] .scroll-hint-label { color: var(--ink); }
+
+  /* Flashcard */
+  [data-theme="dark"] .flashcard p                    { color: var(--sage-dk); }
+  [data-theme="dark"] .flashcard.speaker-attendee p   { color: var(--sky-dk); }
+  [data-theme="dark"] .flashcard.speaker-other p      { color: var(--honey-dk); }
+  [data-theme="dark"] .flashcard::before {
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.05) 0%, transparent 60%);
+  }
+
+  /* Typing dots */
+  [data-theme="dark"] .flashcard.speaker-trainer  .typing-dots span { background: var(--sage-dk); }
+  [data-theme="dark"] .flashcard.speaker-attendee .typing-dots span { background: var(--sky-dk); }
+  [data-theme="dark"] .flashcard.speaker-other    .typing-dots span { background: var(--honey-dk); }
+  [data-theme="dark"] .msg-bubble.trainer  .typing-dots span { background: var(--sage-dk); }
+  [data-theme="dark"] .msg-bubble.attendee .typing-dots span { background: #e07070; }
+  [data-theme="dark"] .msg-bubble.note     .typing-dots span { background: var(--sky-dk); }
+
+  /* Bottom bar + primary button */
+  [data-theme="dark"] .bottom-bar        { border-top-color: var(--border); }
+  [data-theme="dark"] .btn-continue          { background: #9bc8b4; color: #0f1e17; }
+  [data-theme="dark"] .btn-continue:hover:not(:disabled)      { background: #82b59e; }
+  [data-theme="dark"] .btn-continue-arrow     { background: #9bc8b4; color: #0f1e17; }
+  [data-theme="dark"] .btn-continue-arrow:hover:not(:disabled) { background: #82b59e; }
+  [data-theme="dark"] .send-btn                { background: #9bc8b4; color: #0f1e17; }
+  [data-theme="dark"] .home-start-btn:disabled { opacity: 0.4; }
+
+  /* Pause / play */
+  [data-theme="dark"] .pause-play-btn             { background: var(--surface); color: var(--ink); }
+  [data-theme="dark"] .pause-play-btn.paused      { background: var(--honey-light); border-color: var(--honey); color: var(--honey-dk); }
+  [data-theme="dark"] .pause-play-btn.paused:hover { background: #3a2e00; }
+  [data-theme="dark"] .pause-hint                  { color: var(--ink-muted); }
+
+  /* Chat input */
+  [data-theme="dark"] .chat-pill   { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .text-input  { color: var(--ink-soft); }
+
+  /* Roleplay */
+  [data-theme="dark"] .rp-header h2        { color: var(--ink); }
+  [data-theme="dark"] .rp-action-btn       { background: var(--surface); color: var(--ink); border-color: var(--border); }
+  [data-theme="dark"] .avatar-name         { color: var(--ink); }
+  [data-theme="dark"] .avatar-status       { color: var(--ink-muted); }
+  [data-theme="dark"] .rp-ms-title         { color: var(--ink); }
+  [data-theme="dark"] .rp-ms-subtitle      { color: var(--ink-muted); }
+  [data-theme="dark"] .rp-persona-option   { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .rp-persona-option-name { color: var(--ink); }
+  [data-theme="dark"] .rp-persona-option-meta { color: var(--ink-muted); }
+  [data-theme="dark"] .rp-ms-persona-name  { color: var(--ink); }
+  [data-theme="dark"] .rp-ms-persona-tag   { color: var(--ink-muted); }
+  [data-theme="dark"] .mode-option-card    { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .mode-option-title   { color: var(--ink); }
+  [data-theme="dark"] .mode-option-desc    { color: var(--ink-muted); }
+
+  /* Quiz */
+  [data-theme="dark"] .quiz-header h2    { color: var(--ink); }
+  [data-theme="dark"] .progress-label    { color: var(--ink-muted); }
+  [data-theme="dark"] .question-text     { color: var(--ink); }
+  [data-theme="dark"] .option-btn        { background: var(--surface); border-color: var(--border); color: var(--ink); }
+  [data-theme="dark"] .option-btn.correct { background: var(--sage-light); border-color: #3a7a5f; color: var(--sage-dk); }
+  [data-theme="dark"] .option-btn.wrong   { background: var(--blush-light); border-color: #7a3030; color: #e07070; }
+  [data-theme="dark"] .feedback-msg.correct { background: var(--sage-light); color: var(--sage-dk); }
+  [data-theme="dark"] .feedback-msg.wrong   { background: var(--blush-light); color: #e07070; }
+
+  /* Dark mode toggle button (self) */
+  [data-theme="dark"] .dark-toggle {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--ink);
+  }
+  [data-theme="dark"] .dark-toggle:hover {
+    background: #2e2c29;
+    border-color: var(--sage);
+  }
+
+  /* Logout button */
+  [data-theme="dark"] .logout-btn {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--ink-muted);
+  }
+  [data-theme="dark"] .logout-btn:hover {
+    background: var(--blush-light);
+    border-color: #7a3030;
+    color: var(--ink);
+  }
+
+  /* Text input & chat pill */
+  [data-theme="dark"] .text-input {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--ink);
+  }
+  [data-theme="dark"] .text-input::placeholder { color: var(--ink-muted); }
+  [data-theme="dark"] .chat-pill {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  /* Pause hover */
+  [data-theme="dark"] .pause-play-btn.paused:hover { background: #3a2e00; }
+
+  /* Auth overlay — dark background + subtle gradient */
+  [data-theme="dark"] #auth-overlay {
+    background: var(--bg) !important;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(123,196,160,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(245,168,168,0.04) 0%, transparent 50%) !important;
+  }
+
+  /* Auth overlay inner sign-in card */
+  [data-theme="dark"] #auth-form-card {
+    background: var(--surface) !important;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.40) !important;
+  }
+
+  /* Auth error box */
+  [data-theme="dark"] #auth-error {
+    background: var(--blush-light) !important;
+    color: #e07070 !important;
+  }
+
+  /* ── Quiz session picker dark mode ── */
+  [data-theme="dark"] .quiz-session-card              { background: var(--surface); border-color: var(--border); color: var(--ink); }
+  [data-theme="dark"] .quiz-session-card.done         { background: #1a3c2d; border-color: #3a7a5f; }
+  [data-theme="dark"] .quiz-session-card:hover:not(.locked):not(.done):not(.generating) { background: #1e2e24; border-color: var(--sage); }
+  [data-theme="dark"] .quiz-card-badge.ready          { background: #1e2e24; color: #9bc8b4; }
+  [data-theme="dark"] .quiz-card-badge.done           { background: var(--sage);  color: #fff; }
+  [data-theme="dark"] .quiz-card-badge.locked         { background: #2e2c29; color: var(--ink-muted); }
+  [data-theme="dark"] .quiz-card-badge.generating     { background: #3a2e00; color: #fef0a8; }
+  [data-theme="dark"] .quiz-back-link                 { color: var(--ink-muted); }
+  [data-theme="dark"] .quiz-back-link:hover           { color: #9bc8b4; }
+  [data-theme="dark"] .btn-quiz-prev                  { border-color: var(--border); color: var(--ink-muted); }
+  [data-theme="dark"] .btn-quiz-prev:hover:not(:disabled) { background: #2e2c29; border-color: var(--sage); }
+
+  /* ── Session Sidebar ── */
+  #session-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 3;
+    overflow: hidden;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+  }
+
+  #sidebar-header {
+    padding: 16px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  #sidebar-app-name {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #sidebar-user-email {
+    font-size: 11px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  #sidebar-new-btn {
+    margin: 10px 12px;
+    flex-shrink: 0;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #sidebar-new-btn:hover { opacity: 0.85; }
+  #sidebar-new-btn:disabled { opacity: 0.45; cursor: default; }
+  [data-theme="dark"] #sidebar-new-btn {
+    background: var(--sage-dk);
+    color: #0d1f16;
+  }
+
+  #sidebar-sessions-label {
+    padding: 4px 16px 4px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  #session-list {
+    flex: 1;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0 8px 8px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .session-list-item {
+    border-radius: 10px;
+    padding: 10px 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: relative;
+  }
+  .session-list-item:hover { background: var(--sage-pale); }
+  .session-list-item.active { background: var(--sage-light); }
+
+  .session-item-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .session-item-title .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sage);
+    flex-shrink: 0;
+  }
+  .session-item-title .status-dot.completed { background: #4caf50; }
+  .session-item-title .status-dot.reset { background: var(--border); }
+
+  .session-item-sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-family: 'Nunito', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .session-item-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 6px;
+    display: none;
+    line-height: 1;
+  }
+  .session-list-item:hover .session-item-menu { display: block; }
+  .session-item-menu:hover { background: var(--border); color: var(--ink); }
+
+  .session-list-empty {
+    padding: 20px 12px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  #sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  #sidebar-logout-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink-muted);
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.15s, color 0.15s;
+    text-align: left;
+  }
+  #sidebar-logout-btn:hover { border-color: var(--blush); color: #c2185b; }
+
+  /* Context menu for session reset */
+  .session-ctx-menu {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+    z-index: 9998;
+    overflow: hidden;
+    min-width: 160px;
+  }
+  .session-ctx-item {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .session-ctx-item:hover { background: var(--sage-pale); }
+  .session-ctx-item.danger { color: #c2185b; }
+  .session-ctx-item.danger:hover { background: var(--blush-light); }
+
+  /* History loading indicator in chat */
+  .history-loading-indicator {
+    text-align: center;
+    padding: 10px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-family: 'Nunito', sans-serif;
+  }
+  .history-loaded-label {
+    text-align: center;
+    padding: 6px 12px;
+    color: var(--ink-muted);
+    font-size: 11px;
+    font-family: 'Nunito', sans-serif;
+    border-top: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  /* Dark mode sidebar */
+  [data-theme="dark"] #session-sidebar {
+    background: var(--surface);
+    border-right-color: var(--border);
+  }
+  [data-theme="dark"] .session-list-item:hover { background: #1e2e24; }
+  [data-theme="dark"] .session-list-item.active { background: #1a3c2d; }
+  [data-theme="dark"] .session-ctx-menu { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] .session-ctx-item:hover { background: #1e2e24; }
+  [data-theme="dark"] .session-ctx-item.danger:hover { background: #3a1a1a; }
+
+  /* When sidebar is visible, push module-jump-wrap to the right of it */
+  body.sidebar-active .module-jump-wrap {
+    left: 276px;
+  }
 </style>
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════════════
+     AUTH OVERLAY  — shown until the user signs in
+     (flex by default; hidden by JS once token is valid)
+══════════════════════════════════════════════════ -->
+<div id="auth-overlay" style="
+  position:fixed; inset:0; z-index:9999;
+  display:flex; align-items:flex-start; justify-content:center;
+  background:var(--bg);
+  background-image: radial-gradient(ellipse at 15% 15%, #d4f0e380 0%, transparent 55%),
+                    radial-gradient(ellipse at 85% 85%, #fde8e880 0%, transparent 55%);
+  overflow-y:auto; padding:40px 20px 60px;
+">
+  <div style="width:100%; max-width:860px; display:flex; flex-direction:column; gap:40px;">
+
+    <!-- Branding header -->
+    <div style="text-align:center; padding-top:8px;">
+      <div style="font-size:40px; margin-bottom:14px;">🧠</div>
+      <h1 style="font-family:'Lora',serif; font-size:30px; font-weight:600; color:var(--ink); letter-spacing:-0.5px; margin-bottom:8px;">Artpark x CMHLP MH Trainer</h1>
+      <p style="font-size:14px; color:var(--ink-muted); line-height:1.6; max-width:480px; margin:0 auto;">An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.</p>
+    </div>
+
+    <!-- Overview cards + sign-in form side by side on wider screens, stacked on mobile -->
+    <div style="display:flex; flex-wrap:wrap; gap:28px; align-items:flex-start; justify-content:center;">
+
+      <!-- Overview: how the session works -->
+      <div style="flex:1; min-width:260px; max-width:400px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--sage-dk); margin-bottom:4px;">How the session works</div>
+        <div style="background:var(--sage-pale); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
+          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">📖</div>
+          <div>
+            <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Training</div>
+            <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Learn through a guided exchange between an AI trainer and trainee group.</div>
+          </div>
+        </div>
+        <div style="background:var(--sky-light); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
+          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">🎭</div>
+          <div>
+            <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Roleplay</div>
+            <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Practice counselling with an AI patient by watching or participating yourself.</div>
+          </div>
+        </div>
+        <div style="background:var(--honey-light); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
+          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">✏️</div>
+          <div>
+            <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Quiz</div>
+            <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Finish with a short knowledge check to reinforce the session.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sign-in form -->
+      <div id="auth-form-card" style="
+        flex:1; min-width:260px; max-width:360px;
+        background:var(--surface); border-radius:20px;
+        padding:36px 28px; box-shadow:0 4px 24px rgba(0,0,0,0.10);
+        display:flex; flex-direction:column; gap:20px;
+      ">
+        <div style="text-align:center;">
+          <h2 style="font-family:'Nunito',sans-serif; font-size:18px; font-weight:800; color:var(--ink);">Sign in to continue</h2>
+          <p style="font-size:12px; color:var(--ink-muted); margin-top:4px; font-family:'Nunito',sans-serif;">Artpark x CMHLP MH Trainer</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <input
+            id="auth-email"
+            type="email"
+            autocomplete="email"
+            placeholder="your email"
+            onkeydown="if(event.key==='Enter') document.getElementById('auth-password').focus()"
+            style="
+              padding:12px 16px; border:1.5px solid var(--border); border-radius:12px;
+              font-size:14px; font-family:'Nunito',sans-serif; outline:none;
+              background:var(--bg); color:var(--ink);
+            "
+          />
+          <div style="position:relative;">
+            <input
+              id="auth-password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Password"
+              onkeydown="if(event.key==='Enter') handleLogin()"
+              style="
+                width:100%; padding:12px 44px 12px 16px; border:1.5px solid var(--border); border-radius:12px;
+                font-size:14px; font-family:'Nunito',sans-serif; outline:none;
+                background:var(--bg); color:var(--ink); box-sizing:border-box;
+              "
+            />
+            <button
+              type="button"
+              onclick="(function(){var i=document.getElementById('auth-password');var b=document.getElementById('pw-eye');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈';})()"
+              id="pw-eye"
+              style="
+                position:absolute; right:12px; top:50%; transform:translateY(-50%);
+                background:none; border:none; cursor:pointer; font-size:16px;
+                padding:4px; line-height:1; color:var(--ink-muted);
+              "
+              aria-label="Toggle password visibility"
+            >👁</button>
+          </div>
+          <div id="auth-error" style="
+            color:#c2185b; font-size:13px; font-family:'Nunito',sans-serif;
+            display:none; padding:8px 12px; background:#fde8e8; border-radius:8px;
+          "></div>
+          <button
+            id="auth-submit"
+            onclick="handleLogin()"
+            style="
+              background:var(--ink); color:#fff; border:none;
+              padding:14px; border-radius:12px;
+              font-size:15px; font-weight:700; font-family:'Nunito',sans-serif;
+              cursor:pointer; transition:opacity 0.15s;
+            "
+          >Sign In</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SESSION SIDEBAR — shown after sign-in
+══════════════════════════════════════════════════ -->
+<aside id="session-sidebar" style="display:none">
+  <div id="sidebar-header">
+    <div id="sidebar-app-name">Artpark x CMHLP</div>
+    <div id="sidebar-user-email"></div>
+  </div>
+  <button id="sidebar-new-btn" onclick="createNewSession()">
+    <span style="font-size:16px;line-height:1">+</span> New Session
+  </button>
+  <div id="sidebar-sessions-label">Sessions</div>
+  <ul id="session-list"></ul>
+  <div id="sidebar-footer">
+    <button id="sidebar-logout-btn" onclick="handleLogout()">Sign Out</button>
+  </div>
+</aside>
+
 <div class="app-header">
-  <h1 id="app-title">CHW AI Mental Health Training</h1>
-  <p id="app-subtitle">AI Mental Health Training Platform</p>
+  <h1 id="app-title">Artpark x CMHLP MH Trainer</h1>
+  <p id="app-subtitle">AI trainer, AI trainees, and guided practice for community mental health workers</p>
   <div class="lang-switch" role="group" aria-label="Language switch">
     <button class="lang-btn active" id="lang-en-btn" onclick="switchLocale('en')">English</button>
     <button class="lang-btn" id="lang-gu-btn" onclick="switchLocale('gu')">ગુજરાતી</button>
@@ -1160,28 +2183,53 @@
 </div>
 
 <div class="module-jump-wrap" id="module-jump-wrap">
-  <div class="module-jump-label" id="module-jump-label">Jump To Module</div>
-  <div class="module-jump-bar" id="module-jump-bar"></div>
+  <div id="module-jump-chips-wrap">
+    <div class="module-jump-label" id="module-jump-label">Jump To Session</div>
+    <div class="module-jump-bar" id="module-jump-bar"></div>
+  </div>
 </div>
 
-<div class="phone">
-  <div class="support-overlay" id="support-overlay" onclick="closeSupportPanel()"></div>
-  <aside class="support-panel" id="support-panel">
-    <h3 id="support-title">Support Resources</h3>
-    <p id="support-subtitle">Resources for emergency and non-emergency support.</p>
-    <ul id="support-list">
-      <li><strong>Emergency:</strong> Call local emergency services immediately.</li>
-      <li><strong>iCall:</strong> 9152987821,</li>
-      <li><strong>Vandrevala Foundation:</strong> +1860-2662-345</li>
-      <li><strong>Tele MANAS:</strong> 1800-891-4416</li>
-    </ul>
-  </aside>
+<div class="phone-outer" id="phone-outer">
+<button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+<button class="logout-btn" id="logout-btn" onclick="handleLogout()" aria-label="Sign out" style="display:none">Sign Out</button>
 
-  <div class="screen home-screen active" id="screen-home">
+<div class="phone">
+
+  <!-- Training chrome: participant chips + session heading live inside the phone frame -->
+  <div class="training-chrome" id="training-chrome">
+    <div class="support-overlay" id="support-overlay" onclick="closeSupportPanel()"></div>
+    <aside class="support-panel" id="support-panel">
+      <h3 id="support-title">Support Resources</h3>
+      <p id="support-subtitle">Resources for emergency and non-emergency support.</p>
+      <ul id="support-list">
+        <li><strong>Emergency:</strong> Call local emergency services immediately.</li>
+        <li><strong>iCall:</strong> 9152987821,</li>
+        <li><strong>Vandrevala Foundation:</strong> +1860-2662-345</li>
+        <li><strong>Tele MANAS:</strong> 1800-891-4416</li>
+      </ul>
+    </aside>
+    <div class="participant-bar" id="participant-bar">
+      <button class="support-btn" id="support-btn" onclick="toggleSupportPanel()">🚨 Support</button>
+    </div>
+    <div class="training-heading-row">
+      <div class="session-heading-copy">
+        <div class="session-label" id="session-label">Session 1</div>
+      </div>
+      <div class="mute-wrap" id="mute-wrap">
+        <span class="session-sub-label" id="session-sub-label-pill">setup</span>
+        <button class="mute-btn" id="mute-btn" onclick="toggleTTSMute()" aria-label="Sound on" title="Sound on" aria-pressed="false">
+          <span id="mute-icon">🔊</span><span id="mute-label">Sound on</span>
+        </button>
+      </div>
+    </div>
+    <p class="scroll-hint-label chrome-scroll-hint" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
+  </div>
+
+  <div class="screen home-screen" id="screen-home">
     <div class="home-shell">
       <section class="home-hero">
         <div class="home-kicker" id="home-kicker">AI training workspace</div>
-        <h2 class="home-title" id="home-title">CHW AI Mental Health Trainer</h2>
+        <h2 class="home-title" id="home-title">Artpark x CMHLP MH Trainer</h2>
         <p class="home-copy" id="home-copy">
           An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.
           Move from structured learning to simulated counselling and a short quiz in one session flow.
@@ -1215,9 +2263,9 @@
 
       <section class="home-session-card">
         <div class="home-session-label" id="home-session-label">Default session</div>
-        <div class="home-session-title" id="home-session-title">Session 5</div>
+        <div class="home-session-title" id="home-session-title">Session 1</div>
         <div class="home-session-meta" id="home-session-meta">Loading session overview…</div>
-        <button class="btn-continue home-start-btn" id="home-start-btn" onclick="startDefaultSession()">Start Session</button>
+        <button class="btn-continue home-start-btn" id="home-start-btn" onclick="startDefaultSession()">Go to Trainer</button>
       </section>
     </div>
   </div>
@@ -1226,45 +2274,35 @@
        SCREEN: Training
   ══════════════════════════════ -->
   <div class="screen" id="screen-training">
-    <div class="participant-bar" id="participant-bar">
-      <button class="support-btn" id="support-btn" onclick="toggleSupportPanel()">🚨 Support</button>
-    </div>
-
-    <div class="training-heading-row">
-      <div>
-        <div class="session-label" id="session-label">Session 5: Deep-dive into Distress &amp; Depression in CMD</div>
-        <p class="scroll-hint-label" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
-      </div>
-      <div class="mute-wrap" id="mute-wrap">
-        <button class="mute-btn" id="mute-btn" onclick="toggleTTSMute()" aria-label="Mute audio" title="Mute audio">🔊</button>
-      </div>
-    </div>
 
     <div class="flashcard-wrap" id="flashcard-wrap">
       <div class="scroll-hint"></div>
 
       <div class="hidden-bubbles" id="chat-history"></div>
 
-      <div class="flashcard speaker-trainer" id="flashcard">
+      <div class="flashcard speaker-trainer" id="flashcard" onclick="resolveManualFlashcardGate()">
         <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;position:relative;">
           <div id="flashcard-speaker-badge" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:0.6;color:var(--ink);">⌛ Loading…</div>
-          <p id="flashcard-text">Loading first exchange…</p>
+          <p id="flashcard-text">Begin Session 1</p>
         </div>
       </div>
     </div>
 
     <div class="bottom-bar">
       <div class="training-actions-row">
-        <button class="btn-continue" id="training-continue-btn" onclick="advanceTraining()">continue</button>
+        <button class="btn-continue" id="training-continue-btn" onclick="advanceTraining()">Begin Session 1</button>
         <div class="pause-wrap" id="pause-wrap">
           <button class="pause-play-btn" id="pause-play-btn" onclick="togglePause()">⏸ <span id="pause-play-label">Pause</span></button>
           <span class="pause-hint" id="pause-hint">Audio &amp; playback paused</span>
         </div>
       </div>
       <div class="input-row">
-        <input class="text-input" id="training-input" type="text"
-               placeholder="ask a question …"
-               onkeydown="if(event.key==='Enter') sendTrainingQuestion()">
+        <div class="chat-pill">
+          <input class="text-input" id="training-input" type="text"
+                 placeholder="send a message"
+                 onkeydown="if(event.key==='Enter') sendTrainingQuestion()">
+          <button class="send-btn" id="training-send-btn" onclick="sendTrainingQuestion()" aria-label="Send message" title="Send message">➤</button>
+        </div>
         <button class="mic-btn" id="training-mic-btn" onclick="toggleTrainingMic()">🎙️</button>
         <span class="mic-status" id="training-mic-status">Transcribing...</span>
       </div>
@@ -1281,8 +2319,11 @@
       <div class="rp-ms-title" id="rp-ms-title">Session 9: Roleplaying</div>
       <div class="rp-ms-subtitle" id="rp-ms-subtitle">Practice counselling with an AI patient.<br>Choose how you'd like to engage.</div>
 
+      <div class="rp-ms-options-label" id="rp-persona-options-label">Choose your patient</div>
+      <div class="rp-persona-picker" id="rp-persona-picker"></div>
+
       <div class="rp-ms-persona-card">
-        <div class="rp-ms-avatar">🧑</div>
+        <div class="rp-ms-avatar" id="rp-persona-avatar">🧑</div>
         <div>
           <div class="rp-ms-persona-name" id="rp-persona-name">Priya, 34</div>
           <div class="rp-ms-persona-tag" id="rp-persona-tag">Presenting with moderate depression · reluctant to open up · gives short, guarded answers</div>
@@ -1294,7 +2335,7 @@
         <div class="mode-option-card" id="mode-watch" onclick="selectMode('watch')">
           <div class="mode-option-icon">👀</div>
           <div class="mode-option-title" id="mode-watch-title">Watch</div>
-          <div class="mode-option-desc" id="mode-watch-desc">Observe a scripted counselling session between an AI counsellor and Priya. Tap Next to advance.</div>
+          <div class="mode-option-desc" id="mode-watch-desc">Watch an AI counsellor and Priya talk live. Tap Next for each exchange.</div>
         </div>
         <div class="mode-option-card" id="mode-participate" onclick="selectMode('participate')">
           <div class="mode-option-icon">🎙️</div>
@@ -1361,63 +2402,650 @@
        SCREEN: Quiz
   ══════════════════════════════ -->
   <div class="screen" id="screen-quiz">
-    <div class="quiz-header">
-      <h2 id="quiz-title">Quiz</h2>
-      <div class="progress-label" id="q-label">Question 1 of 5</div>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="q-progress" style="width: 20%"></div>
+
+    <!-- ── Session Picker Panel ─────────────── -->
+    <div id="quiz-session-picker">
+      <div class="quiz-picker-header">
+        <h2>Quiz</h2>
+        <p class="quiz-picker-sub" id="quiz-picker-sub">Choose a session to test your knowledge</p>
+      </div>
+      <div id="quiz-session-grid" class="quiz-session-grid">
+        <!-- populated by renderQuizSessionPicker() -->
       </div>
     </div>
 
-    <div class="quiz-body">
-      <div class="question-text" id="q-text">Which of the following is a symptom of depression?</div>
-      <div class="options-list" id="q-options"></div>
-      <div class="feedback-msg" id="q-feedback"></div>
+    <!-- ── Active Quiz Panel ─────────────────── -->
+    <div id="quiz-active">
+      <div class="quiz-header">
+        <div class="quiz-header-top">
+          <button class="quiz-back-link" onclick="showQuizPicker()">← Sessions</button>
+          <h2 id="quiz-title" class="quiz-active-title">Quiz</h2>
+        </div>
+        <div class="progress-label" id="q-label">Question 1 of 5</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="q-progress" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <div class="quiz-body">
+        <div class="question-text" id="q-text"></div>
+        <div class="options-list" id="q-options"></div>
+        <div class="feedback-msg" id="q-feedback"></div>
+      </div>
+
+      <div class="quiz-bottom">
+        <div class="quiz-nav-row">
+          <button class="btn-quiz-prev" id="q-prev" onclick="prevQuestion()" disabled>← Back</button>
+          <button class="btn-continue-arrow" id="q-next" onclick="nextQuestion()">Continue →</button>
+        </div>
+      </div>
     </div>
 
-    <div class="quiz-bottom">
-      <button class="btn-continue-arrow" id="q-next" onclick="nextQuestion()" disabled>Continue →</button>
-    </div>
   </div>
 
 </div><!-- /phone -->
+</div><!-- /phone-outer -->
 
 <script>
 /* ══════════════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════════════ */
 const API_BASE = '/api'; // same-origin, backend serves frontend
+
+/* ══════════════════════════════════════════════════
+   AUTH
+   - sessionStorage key: 'auth_token'
+   - All API calls go through apiFetch() which injects
+     the Bearer token automatically.
+   - handleLogin() calls POST /api/auth/login and stores
+     the returned token, then bootstraps the app.
+   - checkAuth() is called on first script execution:
+     if no token, the overlay stays visible; if token
+     exists, the overlay is hidden immediately.
+══════════════════════════════════════════════════ */
+const _AUTH_KEY   = 'auth_token';
+const _EMAIL_KEY  = 'auth_email';
+const _USERID_KEY = 'auth_user_id';
+
+/* ── Auth data helpers (localStorage — survive page refresh) ── */
+function saveAuthData(token, email, userId) {
+  localStorage.setItem(_AUTH_KEY,   token);
+  localStorage.setItem(_EMAIL_KEY,  email  || '');
+  localStorage.setItem(_USERID_KEY, userId || '');
+}
+
+function getAuthToken()  { return localStorage.getItem(_AUTH_KEY); }
+function getAuthEmail()  { return localStorage.getItem(_EMAIL_KEY) || ''; }
+function getAuthUserId() { return localStorage.getItem(_USERID_KEY) || ''; }
+
+function clearAuthData() {
+  localStorage.removeItem(_AUTH_KEY);
+  localStorage.removeItem(_EMAIL_KEY);
+  localStorage.removeItem(_USERID_KEY);
+}
+
+/** Drop-in fetch wrapper that adds Authorization: Bearer <token> */
+function apiFetch(url, options = {}) {
+  const token = getAuthToken();
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+  return fetch(url, { ...options, headers });
+}
+
+async function handleLogin() {
+  const emailEl  = document.getElementById('auth-email');
+  const passEl   = document.getElementById('auth-password');
+  const errEl    = document.getElementById('auth-error');
+  const submitEl = document.getElementById('auth-submit');
+  const email    = (emailEl.value || '').trim();
+  const password = passEl.value || '';
+
+  errEl.style.display = 'none';
+  submitEl.disabled = true;
+  submitEl.textContent = 'Signing in…';
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || 'Invalid email or password.');
+    }
+    const data = await res.json();
+    saveAuthData(data.token, data.email, data.user_id);
+    document.getElementById('auth-overlay').style.display = 'none';
+    _showSidebar(data.email);
+    _hideAppHeaderBranding();
+    await initializeApp();
+    updateDarkToggle();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+    passEl.value = '';
+    passEl.focus();
+  } finally {
+    submitEl.disabled = false;
+    submitEl.textContent = 'Sign In';
+  }
+}
+
+function handleLogout() {
+  clearAuthData();
+  // Navigate to root and reload — cleanest reset.
+  window.location.href = '/';
+}
+
+function _showSidebar(email) {
+  // Initializes sidebar content (email, logout) — visibility is controlled by updateChromeForScreen
+  const emailEl = document.getElementById('sidebar-user-email');
+  if (emailEl) emailEl.textContent = email || getAuthEmail();
+  const oldLogout = document.getElementById('logout-btn');
+  if (oldLogout) oldLogout.style.display = 'none';
+}
+
+function _hideAppHeaderBranding() {
+  const title = document.getElementById('app-title');
+  const subtitle = document.getElementById('app-subtitle');
+  if (title) title.style.display = 'none';
+  if (subtitle) subtitle.style.display = 'none';
+}
+
+function checkAuth() {
+  if (getAuthToken()) {
+    document.getElementById('auth-overlay').style.display = 'none';
+    _showSidebar(getAuthEmail());
+    _hideAppHeaderBranding();
+    return true;
+  }
+  return false; // overlay stays visible
+}
+
+/* ══════════════════════════════════════════════════
+   SESSION SIDEBAR — list, timestamps, context menu
+══════════════════════════════════════════════════ */
+
+function _formatSessionTimestamp(isoStr) {
+  if (!isoStr) return 'Unknown';
+  const d = new Date(isoStr);
+  if (isNaN(d)) return 'Unknown';
+  const now  = new Date();
+  const diff = now - d; // ms
+  const oneDayMs   = 86400000;
+  const oneWeekMs  = 7 * oneDayMs;
+  const oneYearMs  = 365 * oneDayMs;
+  const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const sameCalDay = (a, b) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth()    === b.getMonth()    &&
+    a.getDate()     === b.getDate();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (sameCalDay(d, now)) return `Today, ${timeStr}`;
+  if (sameCalDay(d, yesterday)) return `Yesterday, ${timeStr}`;
+  if (diff < oneWeekMs) {
+    const day = d.toLocaleDateString([], { weekday: 'long' });
+    return `${day}, ${timeStr}`;
+  }
+  if (diff < oneYearMs) {
+    const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return `${dateStr}, ${timeStr}`;
+  }
+  const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  return `${dateStr}, ${timeStr}`;
+}
+
+function _sessionProgressLabel(session) {
+  const p = session.progress || {};
+  const sessNum = p.active_session_id || p.active_session || null;
+  const mode = session.mode || 'training';
+  if (session.status === 'completed') return `Completed · ${mode}`;
+  if (sessNum) return `Session ${sessNum}/8 · ${mode}`;
+  return `New · ${mode}`;
+}
+
+async function loadUserSessions() {
+  try {
+    const res = await apiFetch(`${API_BASE}/session/sessions`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.sessions || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function renderSessionList(sessions) {
+  const list = document.getElementById('session-list');
+  if (!list) return;
+  if (!sessions.length) {
+    list.innerHTML = '<li class="session-list-empty">No sessions yet.<br>Click <strong>+ New Session</strong> to start.</li>';
+    return;
+  }
+  const currentId = _getSessionIdFromUrl();
+  list.innerHTML = sessions.map(s => {
+    const ts  = _formatSessionTimestamp(s.created_at);
+    const sub = _sessionProgressLabel(s);
+    const isActive = s.session_id === currentId;
+    const dotClass = s.status === 'completed' ? 'completed' : s.status === 'reset' ? 'reset' : '';
+    return `<li class="session-list-item${isActive ? ' active' : ''}"
+      onclick="selectSidebarSession('${escapeHtml(s.session_id)}', '${escapeHtml(s.narrative_id)}', '${escapeHtml(s.locale || 'en')}')"
+      data-session-id="${escapeHtml(s.session_id)}">
+      <div class="session-item-title">
+        <span class="status-dot ${dotClass}"></span>
+        ${escapeHtml(ts)}
+      </div>
+      <div class="session-item-sub">${escapeHtml(sub)}</div>
+    </li>`;
+  }).join('');
+}
+
+let _cachedSidebarSessions = [];
+
+async function refreshSessionSidebar() {
+  const sessions = await loadUserSessions();
+  _cachedSidebarSessions = sessions;
+  renderSessionList(sessions);
+}
+
+// Re-render relative timestamps (Today → Yesterday → date) without refetching.
+setInterval(() => {
+  if (_cachedSidebarSessions.length) {
+    renderSessionList(_cachedSidebarSessions);
+  }
+}, 60000);
+
+/* ══════════════════════════════════════════════════
+   URL ROUTING — /c/{session_id} via History API
+══════════════════════════════════════════════════ */
+
+function _getSessionIdFromUrl() {
+  const m = window.location.pathname.match(/^\/c\/([^/]+)$/);
+  return m ? m[1] : null;
+}
+
+function navigateToSession(sessionId) {
+  if (!sessionId) return;
+  const url = `/c/${sessionId}`;
+  if (window.location.pathname !== url) {
+    history.pushState({ sessionId }, '', url);
+  }
+  // Highlight active item in sidebar
+  document.querySelectorAll('.session-list-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.sessionId === sessionId);
+  });
+}
+
+window.addEventListener('popstate', async (ev) => {
+  const sessionId = ev.state?.sessionId || _getSessionIdFromUrl();
+  if (sessionId && getAuthToken()) {
+    await _loadSessionView(sessionId);
+  } else if (!sessionId && getAuthToken()) {
+    // Navigated back to '/' — no session selected, just refresh sidebar
+    await refreshSessionSidebar();
+  }
+});
+
+/* ══════════════════════════════════════════════════
+   SESSION CONTEXT MENU (reset)
+══════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════
+   SESSION RESUME — load chatroom history + state
+══════════════════════════════════════════════════ */
+
+async function loadSessionChatHistory(sessionId) {
+  try {
+    const res = await apiFetch(`${API_BASE}/session/${sessionId}/chatroom?per_page=50`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    // Messages are returned newest-first; reverse for display (oldest first)
+    return (data.messages || []).slice().reverse();
+  } catch (e) {
+    return [];
+  }
+}
+
+function _normalizeSessionId(value) {
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1 ? n : 1;
+}
+
+function _dbMessageToChatItem(msg) {
+  const role    = msg.role    || '';
+  const speaker = msg.speaker || '';
+  const content = msg.content || '';
+  if (!content.trim()) return null;
+  if (role === 'learner') {
+    return { name: 'USER', bubbleClass: 'attendee', text: escapeHtml(content) };
+  }
+  if (role === 'trainer') {
+    return { name: escapeHtml(speaker) || 'Trainer', bubbleClass: 'trainer', text: escapeHtml(content) };
+  }
+  if (role === 'persona' || role === 'attendee') {
+    return { name: escapeHtml(speaker), bubbleClass: 'attendee', text: escapeHtml(content) };
+  }
+  // narrator / other — show as note
+  return { name: 'Session Note', bubbleClass: 'note', text: escapeHtml(content) };
+}
+
+function applyFlashcardSnapshot(snapshot) {
+  const text = String(snapshot?.text || '').trim();
+  if (!text) return false;
+  const card = document.getElementById('flashcard');
+  const badge = document.getElementById('flashcard-speaker-badge');
+  const textEl = document.getElementById('flashcard-text');
+  if (!card || !badge || !textEl) return false;
+  const role = snapshot.role || '';
+  const flashcardKind = snapshot.flashcard_kind || '';
+  const spk = isIntroFlashcardMessage(role, snapshot.speaker)
+    ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'note' }
+    : speakerForRole(role, snapshot.speaker, flashcardKind);
+  card.className = 'flashcard ' + spk.cardClass;
+  badge.textContent = spk.badge;
+  textEl.textContent = text;
+  return true;
+}
+
+function restoreFlashcardForSession(rawMessages, state) {
+  if (state?.last_flashcard && applyFlashcardSnapshot(state.last_flashcard)) return true;
+  if (!Array.isArray(rawMessages) || !rawMessages.length) return false;
+  for (let i = rawMessages.length - 1; i >= 0; i--) {
+    const msg = rawMessages[i];
+    if ((msg.role || '') === 'learner') continue;
+    const content = String(msg.content || '').trim();
+    if (!content) continue;
+    if (applyFlashcardSnapshot({
+      speaker: msg.speaker,
+      role: msg.role,
+      text: content,
+      session: msg.session_num,
+      sub_session: msg.sub_session,
+    })) return true;
+  }
+  return false;
+}
+
+function showBeginSessionPlaceholder(sessionNumber) {
+  const badge = document.getElementById('flashcard-speaker-badge');
+  const textEl = document.getElementById('flashcard-text');
+  const sessionId = _normalizeSessionId(sessionNumber);
+  if (badge) badge.textContent = `⌛ ${t('sessionLoading')}`;
+  if (textEl) textEl.textContent = t('beginSessionNumber', { session: sessionId });
+}
+
+async function _loadSessionView(sessionId) {
+  if (!sessionId) return;
+
+  // Abort any live stream and flush TTS audio
+  if (trainingAdvanceAbortController) {
+    trainingAdvanceAbortController.abort();
+    trainingAdvanceAbortController = null;
+  }
+  if (typeof flushTTSPlayback === 'function') {
+    flushTTSPlayback({ resolveWaiters: true });
+  }
+
+  // Full immediate reset — no stale state from previous session bleeds through.
+  // isStreaming and trainingActionInFlight are reset here so the new session
+  // is immediately interactive even if a prior stream is still unwinding.
+  trainingSessionId = sessionId;
+  trainingGraphStarted = false;
+  trainingAwaitingInput = false;
+  trainingHasUserInterrupt = false;
+  trainingBackendStreamActive = false;
+  trainingComplete = false;
+  isStreaming = false;
+  trainingActionInFlight = false;
+  activeTrainingSubSession = 'setup';
+  trainingAskQueue.length = 0;
+  autoAdvanceAfterQueuedAsk = false;
+  trainingEchoedUserTexts.length = 0;
+  chatHistory.length = 0;
+  renderChatHistory();
+  document.getElementById('flashcard-speaker-badge').textContent = `⌛ ${t('sessionLoading')}`;
+  document.getElementById('flashcard-text').textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
+  updateTrainingActionButton();
+
+  // Show loading indicator
+  const chatEl = document.getElementById('chat-history');
+  if (chatEl) {
+    chatEl.innerHTML = '<div class="history-loading-indicator">Loading history…</div>';
+  }
+
+  // Fetch chatroom history
+  const messages = await loadSessionChatHistory(sessionId);
+  chatHistory.length = 0;
+  trainingEchoedUserTexts.length = 0;
+  for (const msg of messages) {
+    const item = _dbMessageToChatItem(msg);
+    if (item) {
+      chatHistory.push(item);
+      // Pre-seed the echo set so the stream never re-adds messages already in history.
+      if (item.name === 'USER' && item.text) {
+        trainingEchoedUserTexts.push(item.text);
+      }
+    }
+  }
+
+  // Prepend "history loaded" label if we have messages
+  if (chatHistory.length > 0) {
+    chatHistory.unshift({ name: '', bubbleClass: 'history-loaded-label', text: '— Earlier messages —' });
+  }
+
+  renderChatHistory();
+
+  // Fetch session state — backend is authoritative for curriculum session + resume snapshot.
+  try {
+    const stateRes = await apiFetch(`${API_BASE}/session/${sessionId}/state`);
+    if (stateRes.ok) {
+      const state = await stateRes.json();
+      const resolvedSessionId = _normalizeSessionId(state.active_session_id);
+      activeTrainingSessionId   = resolvedSessionId;
+      selectedTrainingSessionId = resolvedSessionId;
+      if (state.graph_started) {
+        trainingGraphStarted = true;
+        if (state.active_sub_session) {
+          activeTrainingSubSession = state.active_sub_session;
+        }
+        trainingComplete           = Boolean(state.training_complete);
+        trainingAwaitingInput      = Boolean(state.awaiting_input);
+        trainingHasUserInterrupt   = Boolean(state.has_user_interrupt);
+        trainingBackendStreamActive = Boolean(state.stream_active);
+      } else if (state.active_sub_session) {
+        activeTrainingSubSession = state.active_sub_session;
+      }
+      if (!restoreFlashcardForSession(messages, state)) {
+        showBeginSessionPlaceholder(selectedTrainingSessionId);
+      }
+      setActiveSessionChip(selectedTrainingSessionId);
+      updateSessionLabel();
+      updateTrainingActionButton();
+      setModuleChipDisabled(!canSwitchSessions());
+    }
+  } catch (e) {
+    console.warn('Could not fetch session state:', e);
+    activeTrainingSessionId   = 1;
+    selectedTrainingSessionId = 1;
+    if (!restoreFlashcardForSession(messages, null)) {
+      showBeginSessionPlaceholder(1);
+    }
+    setActiveSessionChip(1);
+    updateSessionLabel();
+    updateTrainingActionButton();
+    setModuleChipDisabled(!canSwitchSessions());
+  }
+
+  // Highlight in sidebar
+  navigateToSession(sessionId);
+  appStarted = true;
+  showScreen('training');
+}
+
+async function selectSidebarSession(sessionId, narrativeId, locale) {
+  if (!sessionId) return;
+  // Switch locale if needed
+  if (locale && locale !== appLocale) {
+    appLocale = locale;
+    applyLocaleToUI();
+  }
+  // Load the session view
+  await _loadSessionView(sessionId);
+  // Make sure we're on the training screen
+  showScreen('training');
+  // Lazily load narrative metadata for the session
+  try {
+    const narrativeMeta = await loadTrainingNarrativeMeta(narrativeId);
+    trainingNarrativeMeta = narrativeMeta;
+    applyTrainingSessionMetadata(narrativeMeta?.sessions);
+    trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+    trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+      ? narrativeMeta.live_personas
+      : (Array.isArray(narrativeMeta?.participants?.attendees)
+          ? narrativeMeta.participants.attendees
+          : V2_TRAINING_PERSONAS);
+    renderParticipantBar();
+    renderSessionJumpChips();
+    updateSessionLabel();
+    updateTrainingActionButton();
+  } catch (e) {
+    console.warn('Could not load narrative meta:', e);
+  }
+}
+
+async function createNewSession() {
+  const btn = document.getElementById('sidebar-new-btn');
+  if (btn) btn.disabled = true;
+  try {
+    // Abort any live stream and flush TTS so old session content stops writing
+    if (trainingAdvanceAbortController) {
+      trainingAdvanceAbortController.abort();
+      trainingAdvanceAbortController = null;
+    }
+    if (typeof flushTTSPlayback === 'function') {
+      flushTTSPlayback({ resolveWaiters: true });
+    }
+
+    const trainingNarrative = localeConfig().trainingNarrative;
+    const newId = await createSession(trainingNarrative, 'training');
+    trainingSessionId = newId;
+    // Reset to session 1 for a brand-new session
+    resetTrainingViewForSession(1);
+    // appStarted = true so pills and tabs remain visible; graph hasn't started yet
+    // (trainingGraphStarted is already false after resetTrainingViewForSession)
+    appStarted = true;
+    navigateToSession(newId);
+    showScreen('training');
+    await refreshSessionSidebar();
+    // Load narrative meta so the UI is ready
+    try {
+      const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
+      trainingNarrativeMeta = narrativeMeta;
+      applyTrainingSessionMetadata(narrativeMeta?.sessions);
+      trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+      trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+        ? narrativeMeta.live_personas
+        : (Array.isArray(narrativeMeta?.participants?.attendees)
+            ? narrativeMeta.participants.attendees
+            : V2_TRAINING_PERSONAS);
+      renderParticipantBar();
+      renderSessionJumpChips();
+      renderHomeSessionCard();
+      updateSessionLabel();
+      updateTrainingActionButton();
+    } catch(e) { /* non-fatal */ }
+  } catch (e) {
+    console.error('Failed to create new session:', e);
+    alert('Could not create a new session. Please try again.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// v2_agent backend: training + roleplay + generated quiz + TTS
+const DEMO_FEATURES = { training: true, roleplay: true, quiz: true };
+// v2 LangGraph trainees (3 female + 1 male) — must match backend voice_config.V2_TRAINING_PERSONAS
+const V2_TRAINING_PERSONAS = ['Ramesh', 'Priya', 'Simran', 'Sejal'];
+const ROLEPLAY_PERSONAS = {
+  priya: {
+    id: 'priya',
+    avatar: '👩',
+    name: { en: 'Priya', gu: 'પ્રિયા' },
+    displayName: { en: 'Priya, 34', gu: 'પ્રિયા, 34' },
+    pickerLabel: {
+      en: 'Low mood, guarded',
+      gu: 'ઉદાસ, ઓછી ખુલાસાખોર',
+    },
+    summary: {
+      en: 'Presenting with moderate depression · reluctant to open up · gives short, guarded answers',
+      gu: 'મધ્યમ ડિપ્રેશનના લક્ષણો · ઓછી ખુલાસાખોર · ટૂંકા જવાબ આપે છે',
+    },
+    status: {
+      en: 'Depressed patient',
+      gu: 'ઉદાસીનતા ધરાવતી દર્દી',
+    },
+  },
+  mohan: {
+    id: 'mohan',
+    avatar: '👨',
+    name: { en: 'Mohan', gu: 'મોહન' },
+    displayName: { en: 'Mohan, shopkeeper', gu: 'મોહન, દુકાનદાર' },
+    pickerLabel: {
+      en: 'Shop stress, withdrawn',
+      gu: 'ધંધાની ચિંતા, અંદર ખેંચાયેલ',
+    },
+    summary: {
+      en: 'Neighbourhood shopkeeper under heavy financial stress · withdrawn from family · opens up slowly',
+      gu: 'સ્થાનિક દુકાનદાર · ભારે આર્થિક તાણ હેઠળ · પરિવારથી દૂર થતો ગયો છે અને ધીમે ધીમે ખુલે છે',
+    },
+    status: {
+      en: 'Financially stressed shopkeeper',
+      gu: 'આર્થિક તાણવાળા દુકાનદાર',
+    },
+  },
+};
+const ROLEPLAY_PERSONA_ORDER = ['priya', 'mohan'];
 const CONTENT_BY_LOCALE = {
   en: {
     trainingNarrative: 'session_5_english',
     quizNarrative: 'session_5_english',
-    roleplayPersona: 'priya',
     ttsLocale: 'en',
   },
   gu: {
     trainingNarrative: 'session_5_gujarati',
     quizNarrative: 'session_5_gujarati',
-    roleplayPersona: 'priya',
     ttsLocale: 'gu',
   },
 };
 const I18N = {
   en: {
-    appTitle: 'CHW AI Mental Health Trainer',
+    sessionPill: 'Session {session}',
+    sessionQuiz: 'Session {session} Quiz',
+    darkMode: '🌙 Dark Mode',
+    lightMode: '☀ Light Mode',
+    appTitle: 'Artpark x CMHLP MH Trainer',
     appSubtitle: 'AI trainer, AI trainees, and guided practice for community mental health workers',
     homeKicker: 'AI training workspace',
-    homeTitle: 'CHW AI Mental Health Trainer',
+    homeTitle: 'Artpark x CMHLP MH Trainer',
     homeCopy: 'An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.<br>Move from structured learning to simulated counselling and a short quiz in one session flow.',
     homeModesLabel: 'How the session works',
     homeTrainingDesc: 'Learn through a guided exchange between an AI trainer and trainee group.',
     homeRoleplayDesc: 'Practice counselling with an AI patient by watching or participating yourself.',
     homeQuizDesc: 'Finish with a short knowledge check to reinforce the session.',
     homeSessionLabel: 'Default session',
-    homeSessionMeta: '{modules} modules · Starts with Training and unlocks Roleplay and Quiz in the same workspace.',
+    homeSessionMeta: 'Sessions 1-10 · Open the trainer, select a session, then begin from the trainer card.',
+    goToTrainer: 'Go to Trainer',
+    beginSessionNumber: 'Begin Session {session}',
     tabTraining: '📖 Training',
     tabRoleplay: '🎭 Roleplay',
     tabQuiz: '✏️ Quiz',
-    moduleJump: 'Jump To Module',
+    moduleJump: 'Jump To Session',
     supportButton: '🌸 Support',
     supportTitle: 'Support Resources',
     supportSubtitle: 'Resources for emergency and non-emergency support.',
@@ -1430,18 +3058,22 @@ const I18N = {
     backToFocus: '↓ Back to focus',
     loadingFirstExchange: 'Loading first exchange…',
     trainingContinue: 'Continue',
-    askPlaceholder: 'ask a question …',
+    mutedNext: 'Next',
+    askPlaceholder: 'send a message',
+    sendMessage: 'Send message',
     transcribing: 'Transcribing...',
+    roleplayChoosePatient: 'Choose your patient',
     roleplayTitle: 'Session 9: Roleplaying',
     roleplaySubtitle: "Practice counselling with an AI patient.<br>Choose how you'd like to engage.",
     roleplayPersonaName: 'Priya, 34',
     roleplayPersonaTag: 'Presenting with moderate depression · reluctant to open up · gives short, guarded answers',
     roleplayChooseMode: 'Choose your mode',
     watch: 'Watch',
-    watchDesc: 'Observe a scripted counselling session between an AI counsellor and Priya. Tap Next to advance.',
+    watchDesc: 'Watch an AI counsellor and {name} talk live. Tap Next for each exchange.',
     participate: 'Participate',
-    participateDesc: "Take the counsellor's role. Talk to Priya yourself via text or voice.",
+    participateDesc: "Take the counsellor's role. Talk to {name} yourself via text or voice.",
     startSession: 'Start Session',
+    startSessionNumber: 'Start Session {session}',
     roleplayBack: 'Back',
     takeOver: 'Take Over',
     takeOverNote: 'You have taken over the counsellor role. Continue the conversation from here.',
@@ -1461,8 +3093,14 @@ const I18N = {
     notQuite: '❌ Not quite — {explanation}',
     answerSubmitted: '✅ Answer submitted.',
     quizComplete: 'Quiz Complete!',
-    quizDoneBody: 'Great work on completing Session 5.<br>Your responses have been saved.',
+    quizDoneBody: 'Great work! Your responses have been saved.',
     restartQuiz: 'Restart Quiz',
+    quizChooseSession: 'Choose a session',
+    quizSessionDone: 'Done ✓',
+    quizSessionReady: 'Ready',
+    quizSessionLocked: 'Locked',
+    quizSessionGenerating: 'Generating…',
+    quizBackToSessions: 'All Sessions',
     allAttendees: 'All Attendees',
     more: 'more',
     attendee: 'Attendee',
@@ -1474,26 +3112,31 @@ const I18N = {
     pause: 'Pause',
     resume: 'Resume',
     pauseHint: 'Audio & playback paused',
-    ttsEnabled: 'Audio on',
-    ttsMuted: 'Audio muted',
-    ttsMutedHint: 'Fast flashcards',
+    ttsEnabled: 'Sound on',
+    ttsMuted: 'Muted',
   },
   gu: {
-    appTitle: 'CHW AI માનસિક આરોગ્ય ટ્રેનર',
+    sessionPill: 'સત્ર {session}',
+    sessionQuiz: 'સત્ર {session} ક્વિઝ',
+    darkMode: '🌙 ડાર્ક મોડ',
+    lightMode: '☀ લાઈટ મોડ',
+    appTitle: 'Artpark x CMHLP MH ટ્રેનર',
     appSubtitle: 'સમુદાય આરોગ્ય કાર્યકરો માટે AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત અભ્યાસ',
     homeKicker: 'AI તાલીમ વર્કસ્પેસ',
-    homeTitle: 'CHW AI માનસિક આરોગ્ય ટ્રેનર',
+    homeTitle: 'Artpark x CMHLP MH ટ્રેનર',
     homeCopy: 'આ એક ઇન્ટરેક્ટિવ અભ્યાસ જગ્યા છે જ્યાં સમુદાય આરોગ્ય કાર્યકરો AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત દર્દી સંવાદો સાથે શીખે છે.<br>એક જ સત્રમાં ગોઠવેલ તાલીમ, simulated counselling અને ટૂંકી ક્વિઝ સુધી આગળ વધો.',
     homeModesLabel: 'સત્ર કેવી રીતે આગળ વધે છે',
     homeTrainingDesc: 'AI ટ્રેનર અને ભાગલેનાર જૂથ વચ્ચેના માર્ગદર્શિત સંવાદથી શીખો.',
     homeRoleplayDesc: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો, જોઈને અથવા પોતે ભાગ લઈને.',
     homeQuizDesc: 'સત્રને મજબૂત કરવા અંતે ટૂંકી ક્વિઝ આપો.',
     homeSessionLabel: 'ડિફૉલ્ટ સત્ર',
-    homeSessionMeta: '{modules} મોડ્યુલ · તાલીમથી શરૂઆત થાય છે અને પછી એ જ વર્કસ્પેસમાં ભૂમિકાભિનય અને ક્વિઝ ખુલશે.',
+    homeSessionMeta: 'સત્ર 1-10 · ટ્રેનર ખોલો, સત્ર પસંદ કરો, પછી ટ્રેનર કાર્ડથી શરૂ કરો.',
+    goToTrainer: 'ટ્રેનર પર જાઓ',
+    beginSessionNumber: 'સત્ર {session} શરૂ કરો',
     tabTraining: '📖 તાલીમ',
     tabRoleplay: '🎭 ભૂમિકાભિનય',
     tabQuiz: '✏️ ક્વિઝ',
-    moduleJump: 'મોડ્યુલ પર જાઓ',
+    moduleJump: 'સત્ર પસંદ કરો',
     supportButton: '🌸 સહાય',
     supportTitle: 'સહાય સંસાધનો',
     supportSubtitle: 'આપાતકાલીન અને સામાન્ય સહાય માટેના સંસાધનો.',
@@ -1506,18 +3149,22 @@ const I18N = {
     backToFocus: '↓ ફરી મુખ્ય દૃશ્ય પર જાઓ',
     loadingFirstExchange: 'પ્રથમ સંવાદ લોડ થઈ રહ્યો છે…',
     trainingContinue: 'આગળ વધો',
-    askPlaceholder: 'કોઈ સવાલ પૂછો…',
+    mutedNext: 'આગળ',
+    askPlaceholder: 'સંદેશ મોકલો',
+    sendMessage: 'સંદેશ મોકલો',
     transcribing: 'વાણી લખાણમાં ફેરવાઈ રહી છે...',
+    roleplayChoosePatient: 'તમારો દર્દી પસંદ કરો',
     roleplayTitle: 'સત્ર 9: ભૂમિકાભિનય',
     roleplaySubtitle: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો.<br>તમે કેવી રીતે જોડાશો તે પસંદ કરો.',
     roleplayPersonaName: 'પ્રિયા, 34',
     roleplayPersonaTag: 'મધ્યમ ડિપ્રેશનના લક્ષણો · ઓછી ખુલાસાખોર · ટૂંકા જવાબ આપે છે',
     roleplayChooseMode: 'તમારો મોડ પસંદ કરો',
     watch: 'જોવો',
-    watchDesc: 'AI સલાહકાર અને પ્રિયા વચ્ચેનો સ્ક્રિપ્ટેડ સત્ર જુઓ. આગળ વધવા Next દબાવો.',
+    watchDesc: 'AI સલાહકાર અને {name} વચ્ચેની લાઇવ વાતચીત જુઓ. દરેક વાર Next દબાવો.',
     participate: 'ભાગ લો',
-    participateDesc: 'તમે સલાહકારની ભૂમિકા ભજવો. ટેક્સ્ટ અથવા વાણીથી પ્રિયા સાથે વાત કરો.',
+    participateDesc: 'તમે સલાહકારની ભૂમિકા ભજવો. ટેક્સ્ટ અથવા વાણીથી {name} સાથે વાત કરો.',
     startSession: 'સત્ર શરૂ કરો',
+    startSessionNumber: 'સત્ર {session} શરૂ કરો',
     roleplayBack: 'પાછા જાઓ',
     takeOver: 'હું આગળ સંભાળું',
     takeOverNote: 'હવે તમે સલાહકારની ભૂમિકા સંભાળી છે. અહીંથી સંવાદ આગળ વધારો.',
@@ -1537,8 +3184,14 @@ const I18N = {
     notQuite: '❌ પૂરતું નહીં — {explanation}',
     answerSubmitted: '✅ જવાબ મોકલાયો.',
     quizComplete: 'ક્વિઝ પૂર્ણ!',
-    quizDoneBody: 'સત્ર 5 પૂર્ણ કરવા બદલ અભિનંદન.<br>તમારા જવાબો સચવાઈ ગયા છે.',
+    quizDoneBody: 'સારું કામ! તમારા જવાબો સચવાઈ ગયા છે.',
     restartQuiz: 'ક્વિઝ ફરી શરૂ કરો',
+    quizChooseSession: 'સત્ર પસંદ કરો',
+    quizSessionDone: 'પૂર્ણ ✓',
+    quizSessionReady: 'તૈયાર',
+    quizSessionLocked: 'બંધ',
+    quizSessionGenerating: 'બની રહ્યું છે…',
+    quizBackToSessions: 'બધા સત્ર',
     allAttendees: 'બધા ભાગલેનાર',
     more: 'વધુ',
     attendee: 'ભાગલેનાર',
@@ -1550,9 +3203,8 @@ const I18N = {
     pause: 'થોભો',
     resume: 'ચાલુ કરો',
     pauseHint: 'ઑડિઓ અને પ્લેબૅક થોભ્યો',
-    ttsEnabled: 'ઑડિઓ ચાલુ',
-    ttsMuted: 'ઑડિઓ મ્યૂટ',
-    ttsMutedHint: 'ઝડપી ફ્લેશકાર્ડ',
+    ttsEnabled: 'સાઉન્ડ ચાલુ',
+    ttsMuted: 'મ્યૂટ',
   },
 };
 let appLocale = localStorage.getItem('app_locale') === 'gu' ? 'gu' : 'en';
@@ -1574,10 +3226,84 @@ function labelWithoutLeadingIcon(label = '') {
   return String(label).replace(/^(📖|🎭|✏️)\s*/u, '').trim();
 }
 
-function switchLocale(nextLocale) {
+function getRoleplayPersona(personaId = selectedRoleplayPersonaId) {
+  return ROLEPLAY_PERSONAS[personaId] || ROLEPLAY_PERSONAS.priya;
+}
+
+function getRoleplayPersonaText(field, persona = getRoleplayPersona()) {
+  const value = persona?.[field];
+  if (!value || typeof value !== 'object') return '';
+  return value[appLocale] || value.en || '';
+}
+
+function renderRoleplayPersonaPicker() {
+  const picker = document.getElementById('rp-persona-picker');
+  if (!picker) return;
+  picker.innerHTML = ROLEPLAY_PERSONA_ORDER.map((personaId) => {
+    const persona = getRoleplayPersona(personaId);
+    const selected = personaId === selectedRoleplayPersonaId;
+    return `
+      <button
+        type="button"
+        class="rp-persona-option${selected ? ' selected' : ''}"
+        onclick="selectRoleplayPersona('${personaId}')"
+        aria-pressed="${selected ? 'true' : 'false'}"
+      >
+        <span class="rp-persona-option-avatar">${persona.avatar}</span>
+        <span>
+          <span class="rp-persona-option-name">${escapeHtml(getRoleplayPersonaText('name', persona))}</span>
+          <span class="rp-persona-option-meta">${escapeHtml(getRoleplayPersonaText('pickerLabel', persona))}</span>
+        </span>
+      </button>
+    `;
+  }).join('');
+}
+
+function updateRoleplayPersonaUI() {
+  const persona = getRoleplayPersona();
+  const shortName = getRoleplayPersonaText('name', persona);
+  const displayName = getRoleplayPersonaText('displayName', persona);
+  const summary = getRoleplayPersonaText('summary', persona);
+  const status = getRoleplayPersonaText('status', persona);
+  const bindText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  bindText('rp-persona-avatar', persona.avatar || '🧑');
+  bindText('rp-persona-name', displayName);
+  bindText('rp-persona-tag', summary);
+  bindText('mode-watch-desc', t('watchDesc', { name: shortName }));
+  bindText('mode-participate-desc', t('participateDesc', { name: shortName }));
+  bindText('rp-avatar-name', shortName);
+  bindText('rp-avatar-status', status);
+}
+
+function selectRoleplayPersona(personaId) {
+  if (!ROLEPLAY_PERSONAS[personaId]) return;
+  selectedRoleplayPersonaId = personaId;
+  renderRoleplayPersonaPicker();
+  updateRoleplayPersonaUI();
+}
+
+async function switchLocale(nextLocale) {
   if (!['en', 'gu'].includes(nextLocale) || nextLocale === appLocale) return;
+  // Block if a session has been started or has any history — only new unstarted sessions can switch
+  const sessionHasContent = trainingGraphStarted || chatHistory.length > 0;
+  if (sessionHasContent) return;
+  track('locale_switch', { from: appLocale, to: nextLocale });
+  appLocale = nextLocale;
   localStorage.setItem('app_locale', nextLocale);
-  window.location.reload();
+  applyLocaleToUI();
+  // Re-fetch narrative metadata for the new locale so session titles update.
+  const trainingNarrative = localeConfig().trainingNarrative;
+  try {
+    const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
+    applyTrainingSessionMetadata(narrativeMeta?.sessions);
+    renderSessionJumpChips();
+    renderHomeSessionCard();
+    updateSessionLabel();
+  } catch(e) { /* non-fatal — UI labels already updated via applyLocaleToUI */ }
 }
 
 function applyLocaleToUI() {
@@ -1598,7 +3324,7 @@ function applyLocaleToUI() {
   bind('home-roleplay-desc', t('homeRoleplayDesc'));
   bind('home-quiz-desc', t('homeQuizDesc'));
   bind('home-session-label', t('homeSessionLabel'));
-  bind('home-start-btn', t('startSession'));
+  bind('home-start-btn', t('goToTrainer'));
   bind('tab-training', t('tabTraining'));
   bind('tab-roleplay', t('tabRoleplay'));
   bind('tab-quiz', t('tabQuiz'));
@@ -1617,24 +3343,26 @@ function applyLocaleToUI() {
   }
   bind('scroll-hint-text', isZoomed ? t('backToFocus') : t('scrollUp'));
   bind('flashcard-speaker-badge', `⌛ ${t('sessionLoading')}`);
-  bind('flashcard-text', t('loadingFirstExchange'));
-  bind('training-continue-btn', trainingComplete ? t('sessionComplete') : t('trainingContinue'));
+  bind('flashcard-text', t('beginSessionNumber', { session: selectedTrainingSessionId }));
+  bind('training-continue-btn', trainingComplete ? t('sessionComplete') : t('beginSessionNumber', { session: selectedTrainingSessionId }));
+  const trainingInput = document.getElementById('training-input');
+  if (trainingInput) trainingInput.placeholder = t('askPlaceholder');
+  const trainingSendBtn = document.getElementById('training-send-btn');
+  if (trainingSendBtn) {
+    trainingSendBtn.setAttribute('aria-label', t('sendMessage'));
+    trainingSendBtn.setAttribute('title', t('sendMessage'));
+  }
   updatePausePlayBtn();
   updateTTSMuteBtn();
+  bind('rp-persona-options-label', t('roleplayChoosePatient'));
   bind('rp-ms-title', t('roleplayTitle'));
   bind('rp-ms-subtitle', t('roleplaySubtitle'));
-  bind('rp-persona-name', t('roleplayPersonaName'));
-  bind('rp-persona-tag', t('roleplayPersonaTag'));
   bind('rp-options-label', t('roleplayChooseMode'));
   bind('mode-watch-title', t('watch'));
-  bind('mode-watch-desc', t('watchDesc'));
   bind('mode-participate-title', t('participate'));
-  bind('mode-participate-desc', t('participateDesc'));
   bind('rp-start-btn', t('startSession'));
   bind('rp-chat-title', t('roleplayTitle'));
   bind('rp-back-btn', `← ${t('roleplayBack')}`);
-  bind('rp-avatar-name', t('roleplayPersonaName').split(',')[0]);
-  bind('rp-avatar-status', t('depressedPatient'));
   bind('rp-user-label', t('counsellor'));
   bind('rp-user-status', t('observing'));
   bind('rp-next-btn', t('next'));
@@ -1645,16 +3373,18 @@ function applyLocaleToUI() {
   if (qNext && qNext.style.display !== 'none') {
     qNext.textContent = currentQ === questions.length - 1 && questions.length > 0 ? t('finish') : t('trainingContinue');
   }
-  const trainingInput = document.getElementById('training-input');
-  if (trainingInput) trainingInput.placeholder = t('askPlaceholder');
   const rpInput = document.getElementById('rp-input');
   if (rpInput) rpInput.placeholder = t('roleplayInputPlaceholder');
   const trainingMicStatus = document.getElementById('training-mic-status');
   if (trainingMicStatus && trainingMicStatus.classList.contains('active')) trainingMicStatus.textContent = t('transcribing');
   const rpMicStatus = document.getElementById('rp-mic-status');
   if (rpMicStatus && rpMicStatus.classList.contains('active')) rpMicStatus.textContent = t('transcribing');
+  renderRoleplayPersonaPicker();
+  updateRoleplayPersonaUI();
   syncRoleplayChrome();
   renderHomeSessionCard();
+  updateTrainingActionButton();
+  updateDarkToggle();
 }
 
 /* ══════════════════════════════════════════════════
@@ -1663,13 +3393,192 @@ function applyLocaleToUI() {
 let trainingSessionId = null;
 let quizSessionId     = null;
 let roleplaySessionId = null;
-let trainingModules   = [];
-let trainingNextExchangeIndex = 0;
-let trainingCurrentExchangeIndex = -1;
-let moduleSkipInFlight = false;
+let uiEventSeq = 0;
+let _lastClickByKey = {};
+
+/* ── UI telemetry ─────────────────────────────────────────
+ * track() posts events to POST /api/telemetry. The backend
+ * forwards them into v2_agent/store.py (kind="ui"). Uses
+ * navigator.sendBeacon when available so page_unload survives.
+ * The call is fire-and-forget: failures are swallowed.
+ * ─────────────────────────────────────────────────────────── */
+function track(event, data = {}, meta = {}) {
+  try {
+    const normalized = String(event || 'ui.event');
+    let category = 'ui';
+    let action = normalized;
+    if (normalized.includes('.')) {
+      const parts = normalized.split('.');
+      category = parts[0] || 'ui';
+      action = parts.slice(1).join('.') || 'event';
+    }
+    const traceId = meta.traceId || null;
+    const body = JSON.stringify({
+      schema_version: 1,
+      source: 'ui',
+      category,
+      action,
+      status: meta.status || 'info',
+      reason_code: meta.reasonCode || null,
+      trace_id: traceId,
+      seq: ++uiEventSeq,
+      event: normalized,
+      session_id: trainingSessionId || roleplaySessionId || quizSessionId || null,
+      data: {
+        ts_perf_ms: Math.round(performance.now()),
+        ts_iso: new Date().toISOString(),
+        screen: currentScreen,
+        ...data,
+      },
+    });
+    const url = `${API_BASE}/telemetry`;
+    const blob = new Blob([body], { type: 'application/json' });
+    let sent = false;
+    if (navigator.sendBeacon) {
+      sent = navigator.sendBeacon(url, blob);
+    }
+    if (!sent) {
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(traceId ? { 'X-Trace-Id': traceId } : {}),
+        },
+        body,
+        keepalive: true,
+      }).catch(() => {});
+    }
+  } catch (e) {
+    /* swallow — telemetry must never break the UI */
+  }
+}
+
+window.addEventListener('pagehide', () => track('page_unload', {}));
+window.addEventListener('beforeunload', () => track('page_unload', {}));
+
+function newTraceId() {
+  return `trace-${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+}
+
+function trainingButtonSnapshot() {
+  const btn = document.getElementById('training-continue-btn');
+  return {
+    button_disabled: Boolean(btn?.disabled),
+    is_streaming: Boolean(isStreaming),
+    backend_stream_active: Boolean(trainingBackendStreamActive),
+    awaiting_input: Boolean(trainingAwaitingInput),
+    has_user_interrupt: Boolean(trainingHasUserInterrupt),
+    is_paused: Boolean(isPaused),
+    tts_playing: Boolean(ttsPlaying),
+  };
+}
+
+function beginTrainingActionTrace(action, extras = {}) {
+  const traceId = newTraceId();
+  const nowMs = Date.now();
+  const dedupeKey = `${action}:${trainingSessionId || 'none'}`;
+  const last = _lastClickByKey[dedupeKey] || 0;
+  const clickIntervalMs = last ? (nowMs - last) : null;
+  _lastClickByKey[dedupeKey] = nowMs;
+
+  track('ui.button_click', {
+    action,
+    dedupe_key: dedupeKey,
+    click_interval_ms: clickIntervalMs,
+    ...trainingButtonSnapshot(),
+    ...extras,
+  }, { traceId, status: 'intent' });
+
+  return { traceId, action, dedupeKey, clickIntervalMs };
+}
+
+function trackRequestDispatch(traceMeta, route, method, payload = {}) {
+  if (!traceMeta?.traceId) return;
+  track('ui.request_dispatch', {
+    route,
+    method,
+    ...trainingButtonSnapshot(),
+    ...payload,
+  }, { traceId: traceMeta.traceId, status: 'intent' });
+}
+
+function trackRequestResponse(traceMeta, route, method, ok, statusCode, payload = {}) {
+  if (!traceMeta?.traceId) return;
+  track('ui.request_response', {
+    route,
+    method,
+    ok: Boolean(ok),
+    status_code: statusCode ?? null,
+    ...trainingButtonSnapshot(),
+    ...payload,
+  }, {
+    traceId: traceMeta.traceId,
+    status: ok ? 'accepted' : 'rejected',
+    reasonCode: ok ? '' : `http_${statusCode || 0}`,
+  });
+}
+
+function trackTrainingActionBlocked(traceMeta, action, reason, payload = {}) {
+  if (!traceMeta?.traceId) return;
+  track('ui.button_blocked', {
+    action,
+    reason,
+    ...trainingButtonSnapshot(),
+    ...payload,
+  }, {
+    traceId: traceMeta.traceId,
+    status: 'rejected',
+    reasonCode: reason,
+  });
+}
+
+let selectedRoleplayPersonaId = 'priya';
+let TRAINING_SESSION_IDS = Array.from({ length: 10 }, (_, idx) => idx + 1);
+let TRAINING_SESSION_TITLES = {
+  1: 'Introduction & Understanding AI',
+  2: 'Informal Care & Role of a Champion',
+  3: 'Identifying Distress, CMD, and SMD',
+  4: 'Referral Process & Providing Support',
+  5: 'Core Counselling Skills & Active Listening',
+  6: 'Problem-Solving & Behavioural Activation',
+  7: 'Referral to a Mental Health Professional',
+  8: 'Counselling Skills, Problem Solving & BA',
+  9: 'Champions Session Overview',
+  10: 'Socio-Cultural Factors & Severe Distress',
+};
+const GUJARATI_SESSION_TITLES = {
+  1: 'પરિચય અને AI ને સમજવું',
+  2: 'અનૌપચારિક સંભાળ અને ચેમ્પિયનની ભૂમિકા',
+  3: 'તણાવ, CMD અને SMD ની ઓળખ',
+  4: 'રેફરલ પ્રક્રિયા અને સહાય પૂરી પાડવી',
+  5: 'મુખ્ય કાઉન્સેલિંગ કૌશલ્યો અને સક્રિય શ્રવણ',
+  6: 'સમસ્યા-નિવારણ અને વર્તણૂક સક્રિયકરણ',
+  7: 'માનસિક આરોગ્ય વ્યાવસાયિક પાસે રેફરલ',
+  8: 'કાઉન્સેલિંગ કૌશલ્યો, સમસ્યા નિવારણ અને BA',
+  9: 'ચેમ્પિયન્સ સત્રની ઝાંખી',
+  10: 'સામાજિક-સાંસ્કૃતિક પરિબળો અને ગંભીર તણાવ',
+};
+
+function getLocalizedSessionTitle(sessionId) {
+  if (appLocale === 'gu') {
+    return GUJARATI_SESSION_TITLES[sessionId] || TRAINING_SESSION_TITLES[sessionId] || '';
+  }
+  return TRAINING_SESSION_TITLES[sessionId] || '';
+}
+let TRAINING_SESSION_SUB_SESSIONS = {};
+let sessionSwitchInFlight = false;
 let trainingTrainerName = t('trainer');
 let trainingAttendees = [];
 let trainingNarrativeMeta = null;
+ let selectedTrainingSessionId = 1;
+ let activeTrainingSessionId = 1;
+ let activeTrainingSubSession = 'setup';
+ let latestQuizSessionNumber = null;
+ let lastQuizGenerationStatus = {};   // {sessionNumber: statusString} — updated by refreshTrainingState
+ let trainingGraphStarted = false;
+ let trainingAwaitingInput = false;
+let trainingHasUserInterrupt = false;
+let trainingBackendStreamActive = false;
 let appStarted = false;
 let currentScreen = 'home';
 
@@ -1677,6 +3586,9 @@ let currentScreen = 'home';
    SHARED HELPERS
 ══════════════════════════════════════════════════ */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const TRAINING_MESSAGE_GAP_MS = 200;
+const DIRECT_TTS_MAX_URL_TEXT_CHARS = 0;  // Always use authenticated POST fetch; direct Audio.src GET lacks auth headers
+const TTS_POST_MIN_TEXT_CHARS = 180;
 
 function escapeHtml(text = '') {
   return String(text)
@@ -1765,7 +3677,7 @@ function setSpeakingChipForSpeaker(name, role) {
   let selected = null;
   if (role === 'trainer') {
     selected = bar.querySelector(`[data-chip-key="trainer:${CSS.escape(trainingTrainerName)}"]`);
-  } else if (name && trainingAttendees.includes(name)) {
+  } else if (name && isTrainingAttendee(name)) {
     selected = bar.querySelector(`[data-chip-key="attendee:${CSS.escape(name)}"]`);
   }
 
@@ -1800,11 +3712,21 @@ function appendStreamingBubble(container, bubbleClass, name) {
 // Fetch-based SSE reader — accepts a URL string or an already-fetched Response.
 async function* openSSE(urlOrRes, options = {}) {
   let res;
+  const traceMeta = options.traceMeta || null;
   if (typeof urlOrRes === 'string') {
+    const method = options.method || 'GET';
+    const reqHeaders = {
+      Accept: 'text/event-stream',
+      ...(options.headers || {}),
+      ...(traceMeta?.traceId ? { 'X-Trace-Id': traceMeta.traceId } : {}),
+      ...(getAuthToken() ? { 'Authorization': `Bearer ${getAuthToken()}` } : {}),
+    };
+    trackRequestDispatch(traceMeta, urlOrRes, method, {});
     res = await fetch(urlOrRes, {
       ...options,
-      headers: { Accept: 'text/event-stream', ...(options.headers || {}) },
+      headers: reqHeaders,
     });
+    trackRequestResponse(traceMeta, urlOrRes, method, res.ok, res.status, {});
   } else {
     res = urlOrRes;
   }
@@ -1827,7 +3749,7 @@ async function* openSSE(urlOrRes, options = {}) {
 }
 
 async function createSession(narrativeId, mode) {
-  const res = await fetch(`${API_BASE}/session/create`, {
+  const res = await apiFetch(`${API_BASE}/session/create`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ narrative_id: narrativeId, mode, locale: appLocale }),
@@ -1836,50 +3758,66 @@ async function createSession(narrativeId, mode) {
 }
 
 async function loadTrainingNarrativeMeta(narrativeId) {
-  const res = await fetch(`${API_BASE}/training/narrative/${narrativeId}`);
+  const res = await apiFetch(`${API_BASE}/training/narrative/${narrativeId}`);
   if (!res.ok) throw new Error(`Narrative meta HTTP ${res.status}`);
   return res.json();
 }
 
-function moduleIndexForExchange(exchangeIndex) {
-  if (!Array.isArray(trainingModules) || !trainingModules.length) return -1;
-  for (const mod of trainingModules) {
-    const start = Number(mod.start_index || 0);
-    const count = Number(mod.exchange_count || 0);
-    const endExclusive = start + count;
-    if (exchangeIndex >= start && exchangeIndex < endExclusive) {
-      return Number(mod.index);
-    }
-  }
-  if (exchangeIndex >= 0 && trainingModules.length) {
-    return Number(trainingModules[trainingModules.length - 1].index);
-  }
-  return -1;
+function applyTrainingSessionMetadata(sessions) {
+  if (!Array.isArray(sessions) || sessions.length === 0) return;
+  const normalized = sessions
+    .map((session) => ({
+      id: Number(session?.id),
+      title: typeof session?.title === 'string' ? session.title.trim() : '',
+      subSessions: Array.isArray(session?.sub_sessions)
+        ? session.sub_sessions.map((item) => String(item).trim()).filter(Boolean)
+        : [],
+    }))
+    .filter((session) => Number.isInteger(session.id) && session.id >= 1)
+    .sort((a, b) => a.id - b.id);
+  if (normalized.length === 0) return;
+
+  TRAINING_SESSION_IDS = normalized.map((session) => session.id);
+  TRAINING_SESSION_TITLES = Object.fromEntries(
+    normalized.map((session) => [session.id, session.title || `Session ${session.id}`])
+  );
+  TRAINING_SESSION_SUB_SESSIONS = Object.fromEntries(
+    normalized.map((session) => [session.id, session.subSessions])
+  );
 }
 
-function setActiveModuleChip(moduleIndex) {
+function setActiveSessionChip(sessionId) {
   document.querySelectorAll('.module-chip').forEach((chip) => {
-    chip.classList.toggle('active', Number(chip.dataset.moduleIndex) === moduleIndex);
+    chip.classList.toggle('active', Number(chip.dataset.sessionId) === Number(sessionId));
   });
 }
 
-function renderModuleJumpChips() {
+function canSwitchSessions() {
+  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  if (isStreaming || sessionSwitchInFlight || isPaused) return false;
+  if (trainingBackendStreamActive && !waitingAtInterrupt) return false;
+  if (trainingGraphStarted && !(waitingAtInterrupt || trainingComplete)) return false;
+  return true;
+}
+
+function renderSessionJumpChips() {
   const wrap = document.getElementById('module-jump-wrap');
   const bar = document.getElementById('module-jump-bar');
   if (!wrap || !bar) return;
-  if (!Array.isArray(trainingModules) || trainingModules.length <= 1) {
+  if (!Array.isArray(TRAINING_SESSION_IDS) || TRAINING_SESSION_IDS.length <= 1) {
     wrap.classList.remove('show');
     bar.innerHTML = '';
     return;
   }
-  wrap.classList.add('show');
-  bar.innerHTML = trainingModules.map((mod, idx) => `
-    <button class="module-chip" data-module-index="${idx}" onclick="skipToModule(${idx})" title="${mod.title || `${t('moduleJump')} ${idx + 1}`}">
-      ${mod.title || `${t('moduleJump')} ${idx + 1}`}
+    wrap.classList.add('show');
+  bar.innerHTML = TRAINING_SESSION_IDS.map((sessionId) => `
+    <button class="module-chip" data-session-id="${sessionId}" onclick="switchToTrainingSession(${sessionId})" title="${escapeHtml(`${t('sessionPill', { session: sessionId })}: ${getLocalizedSessionTitle(sessionId)}`)}">
+      ${t('sessionPill', { session: sessionId })}
     </button>
   `).join('');
-  setActiveModuleChip(0);
+  setActiveSessionChip(selectedTrainingSessionId);
   updateChromeForScreen();
+  setModuleChipDisabled(!canSwitchSessions());
 }
 
 function setModuleChipDisabled(disabled) {
@@ -1888,30 +3826,30 @@ function setModuleChipDisabled(disabled) {
   });
 }
 
-async function skipToModule(moduleIndex) {
-  if (!trainingSessionId || isStreaming || moduleSkipInFlight || isPaused) return;
-  moduleSkipInFlight = true;
+async function switchToTrainingSession(sessionId) {
+  const sessionNumber = Number(sessionId);
+  if (!canSwitchSessions()) return;
+  if (!trainingGraphStarted) {
+    resetTrainingViewForSession(sessionNumber);
+    return;
+  }
+  if (!trainingSessionId) return;
+  sessionSwitchInFlight = true;
   setModuleChipDisabled(true);
   const continueBtn = document.getElementById('training-continue-btn');
   continueBtn.disabled = true;
   try {
-    const res = await fetch(`${API_BASE}/training/${trainingSessionId}/skip-module/${moduleIndex}`, {
+    const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${sessionNumber}`, {
       method: 'POST',
     });
-    if (!res.ok) throw new Error(`Skip module HTTP ${res.status}`);
-    const data = await res.json();
-    trainingComplete = false;
-    trainingNextExchangeIndex = Number(data.next_exchange_index || 0);
-    trainingCurrentExchangeIndex = trainingNextExchangeIndex - 1;
-    continueBtn.textContent = t('trainingContinue');
-    setActiveModuleChip(Number(moduleIndex));
-    await advanceTraining();
+    if (!res.ok) throw new Error(`Start session HTTP ${res.status}`);
+    resetTrainingViewForSession(sessionNumber);
   } catch (e) {
-    console.error('Skip module error', e);
+    console.error('Session switch error', e);
     continueBtn.disabled = false;
   } finally {
-    moduleSkipInFlight = false;
-    setModuleChipDisabled(false);
+    sessionSwitchInFlight = false;
+    setModuleChipDisabled(!canSwitchSessions());
   }
 }
 
@@ -1919,15 +3857,16 @@ async function skipToModule(moduleIndex) {
    TTS AUDIO QUEUE
    ─────────────────────────────────────────────────
    Design:
-   • Sentences are enqueued immediately on SSE sentence events.
-   • Playback uses streaming endpoint `/tts/stream` per sentence.
+   • One TTS request is enqueued per flashcard on message_end.
+   • Playback uses streaming endpoint `/tts/stream` per flashcard.
    • Exactly one active request/playback at a time (no request flood).
    • Playback remains strictly sequential for clean turn control.
    • Context switches cancel in-flight audio and flush stale queue.
  ══════════════════════════════════════════════════ */
 
-const TTS_TIMEOUT_MS   = 25000;   // max ms overall for playback to start+finish
+const TTS_TIMEOUT_MS   = 90000;   // max ms overall for playback to start+finish
 const TTS_STALL_MS     = 60000;   // safety net stall timer
+const TTS_WAIT_CAP_MS  = 120000;  // cap waitForTTSPlayback so SSE cannot hang forever
 const TTS_DEBUG_LOGS   = true;
 
 let ttsQueue           = [];
@@ -1972,15 +3911,15 @@ function waitForAudioUnlock() {
 }
 
 // ── public enqueue API ───────────────────────────────────────────────────────
-function enqueueTTS(text, voice = 'meera') {
+function enqueueTTS(text, voice = 'roopa') {
   return enqueueTTSForContext(text, voice, currentTTSContext);
 }
 
-function enqueueTTSForContext(text, voice = 'meera', context = 'training', options = {}) {
+function enqueueTTSForContext(text, voice = 'roopa', context = 'training', options = {}) {
   if (!text || !text.trim()) return;
   if (context !== currentTTSContext) return;
   if (isTTSMuted) return;
-  const normalized = text.trim().replace(/\s+/g, ' ');
+  const normalized = text.trim().replace(/\*\*/g, '').replace(/\s+/g, ' ');
   // Skip punctuation/noise-only snippets that frequently fail upstream.
   if (!/[A-Za-z0-9\u0900-\u097F\u0A80-\u0AFF]/.test(normalized)) return;
   const item = {
@@ -2006,6 +3945,25 @@ function waitForTTSPlayback(seq, context, epoch) {
   return new Promise(resolve => {
     ttsWaiters.push({ seq, context, epoch, resolve });
   });
+}
+
+function waitForTTSPlaybackCapped(seq, context, epoch, capMs = TTS_WAIT_CAP_MS) {
+  if (!seq) return Promise.resolve();
+  return Promise.race([
+    waitForTTSPlayback(seq, context, epoch),
+    sleep(capMs).then(() => {
+      if (TTS_DEBUG_LOGS) console.warn(`[TTS] wait cap fired for seq=${seq}`);
+      if (seq > ttsPlayedSeq) {
+        ttsPlayedSeq = seq;
+        _notifyTTSWaiters();
+      }
+    }),
+  ]);
+}
+
+function ttsTimeoutForText(text) {
+  const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  return Math.min(180000, Math.max(TTS_TIMEOUT_MS, 3500 + words * 420));
 }
 
 function _isTTSBlockedByPause(item) {
@@ -2050,16 +4008,22 @@ function updateTTSMuteBtn() {
   const btn = document.getElementById('mute-btn');
   const wrap = document.getElementById('mute-wrap');
   if (!btn) return;
+  const icon = document.getElementById('mute-icon');
+  const label = document.getElementById('mute-label');
   if (isTTSMuted) {
-    btn.textContent = '🔇';
+    if (icon) icon.textContent = '🔇';
+    if (label) label.textContent = t('ttsMuted');
     btn.setAttribute('aria-label', t('ttsMuted'));
     btn.setAttribute('title', t('ttsMuted'));
+    btn.setAttribute('aria-pressed', 'true');
     btn.classList.add('muted');
     if (wrap) wrap.classList.add('muted-state');
   } else {
-    btn.textContent = '🔊';
+    if (icon) icon.textContent = '🔊';
+    if (label) label.textContent = t('ttsEnabled');
     btn.setAttribute('aria-label', t('ttsEnabled'));
     btn.setAttribute('title', t('ttsEnabled'));
+    btn.setAttribute('aria-pressed', 'false');
     btn.classList.remove('muted');
     if (wrap) wrap.classList.remove('muted-state');
   }
@@ -2070,8 +4034,10 @@ function toggleTTSMute() {
   localStorage.setItem('tts_muted', isTTSMuted ? '1' : '0');
   if (isTTSMuted) {
     flushTTSPlayback({ resolveWaiters: true });
-  } else if (ttsQueue.length > 0 && !ttsPlaying) {
-    _drainTTSQueue();
+  } else {
+    if (ttsQueue.length > 0 && !ttsPlaying) {
+      _drainTTSQueue();
+    }
   }
   updateTTSMuteBtn();
 }
@@ -2107,6 +4073,8 @@ async function _drainTTSQueue() {
     }
   }
   ttsPlaying = false;
+  // Re-evaluate the Continue button now that audio has finished.
+  updateTrainingActionButton();
 }
 
 // ── context / cancel ─────────────────────────────────────────────────────────
@@ -2133,24 +4101,56 @@ async function _playTTS(item) {
   if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) return;
   const startedAt = performance.now();
   const waitMs = Math.round(startedAt - item.enqueuedAt);
-  const params = new URLSearchParams({ text: item.text });
-  if (item.voice) params.set('voice', item.voice);
-  params.set('locale', localeConfig().ttsLocale);
-  const streamUrl = `${API_BASE}/tts/stream?${params.toString()}`;
+  let objectUrl = null;
+  let audioSrc = null;
+  try {
+    if (item.text.length <= DIRECT_TTS_MAX_URL_TEXT_CHARS && item.text.length < TTS_POST_MIN_TEXT_CHARS) {
+      const params = new URLSearchParams();
+      params.set('text', item.text);
+      if (item.voice) params.set('voice', item.voice);
+      params.set('locale', localeConfig().ttsLocale);
+      audioSrc = `${API_BASE}/tts/stream?${params.toString()}`;
+    } else {
+      const fetchStartedAt = performance.now();
+      const res = await apiFetch(`${API_BASE}/tts/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: item.text,
+          voice: item.voice || null,
+          locale: localeConfig().ttsLocale,
+        }),
+      });
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        throw new Error(`TTS HTTP ${res.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
+      }
+      const blob = await res.blob();
+      if (!blob.size) throw new Error('TTS returned empty audio');
+      objectUrl = URL.createObjectURL(blob);
+      audioSrc = objectUrl;
+      if (TTS_DEBUG_LOGS) {
+        console.info(`[TTS] fetched blob seq=${item.seq} fetchMs=${Math.round(performance.now() - fetchStartedAt)} bytes=${blob.size}`);
+      }
+    }
+  } catch (e) {
+    console.warn('TTS fetch failed:', e?.message || e);
+    throw e;
+  }
   if (TTS_DEBUG_LOGS) {
-    console.info(`[TTS] start seq=${item.seq} waited=${waitMs}ms url=/tts/stream`);
+    console.info(`[TTS] start seq=${item.seq} waited=${waitMs}ms via ${objectUrl ? 'POST blob' : 'direct stream'}`);
   }
 
   return new Promise((resolve) => {
     const done = () => { resolve(); };
     const guard = _epochGuard(item.epoch, done);
-    const a = new Audio(streamUrl);
+    const a = new Audio(audioSrc);
     _activeAudioEl = a;
     a.preload = 'auto';
     let finished = false;
     let overallTimeout = null;
     let stallTimer = null;
-    const overallState = { remaining: TTS_TIMEOUT_MS, startedAt: 0 };
+    const overallState = { remaining: ttsTimeoutForText(item.text), startedAt: 0 };
     const stallState = { remaining: TTS_STALL_MS, startedAt: 0 };
 
     const clearManagedTimer = (state, timerRefName, preserveRemaining = false) => {
@@ -2245,6 +4245,10 @@ async function _playTTS(item) {
       }
       if (_activeAudioEl === a) _activeAudioEl = null;
       try { a.pause(); a.removeAttribute('src'); a.load(); } catch (_) {}
+      if (objectUrl) {
+        try { URL.revokeObjectURL(objectUrl); } catch (_) {}
+        objectUrl = null;
+      }
     };
 
     // Stall watchdog: reset on timeupdate so it triggers only on real freeze.
@@ -2310,7 +4314,12 @@ function _epochGuard(epoch, resolve) {
    SCREEN SWITCHING
 ══════════════════════════════════════════════════ */
 function showScreen(name) {
+  if (name === 'roleplay' && !DEMO_FEATURES.roleplay) name = 'training';
+  if (name === 'quiz' && !DEMO_FEATURES.quiz) name = 'training';
+  const prevScreen = currentScreen;
   currentScreen = name;
+  if (prevScreen !== name) track('screen_switch', { from: prevScreen, to: name });
+  if (prevScreen === 'quiz' && name !== 'quiz') _stopQuizPickerPolling();  // leaving quiz
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   const screenEl = document.getElementById(`screen-${name}`);
@@ -2320,63 +4329,201 @@ function showScreen(name) {
   if (activeTabId) document.getElementById(activeTabId)?.classList.add('active');
   const ttsContext = name === 'training' ? 'training' : (name === 'roleplay' ? 'roleplay' : 'none');
   setTTSContext(ttsContext);
-  if (name === 'quiz' && !quizLoaded) loadQuizQuestions();
+  if (name === 'quiz' && DEMO_FEATURES.quiz) {
+    if (quizPanelMode === 'active' && quizLoaded) {
+      // Resume the active quiz — show the active panel
+      const picker = document.getElementById('quiz-session-picker');
+      const active = document.getElementById('quiz-active');
+      if (picker) picker.style.display = 'none';
+      if (active) active.style.display = 'flex';
+    } else {
+      // Default: show session picker
+      showQuizPicker();
+    }
+  }
   updateChromeForScreen();
 }
 
+function applyDemoFeatures() {
+  const hide = (id, on) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = on ? '' : 'none';
+  };
+  hide('tab-roleplay', DEMO_FEATURES.roleplay);
+  hide('tab-quiz', DEMO_FEATURES.quiz);
+  document.querySelectorAll('.home-mode-card.roleplay').forEach(el => {
+    el.style.display = DEMO_FEATURES.roleplay ? '' : 'none';
+  });
+  document.querySelectorAll('.home-mode-card.quiz').forEach(el => {
+    el.style.display = DEMO_FEATURES.quiz ? '' : 'none';
+  });
+  if (!DEMO_FEATURES.roleplay && !DEMO_FEATURES.quiz) {
+    const copy = document.getElementById('home-copy');
+    if (copy) {
+      copy.innerHTML = 'Live AI training with an AI trainer and trainee group (LangGraph backend). Roleplay and quiz will be added in a later integration step.';
+    }
+  }
+}
+
 function updateChromeForScreen() {
+  // Sidebar is only visible on trainer screens (training/roleplay/quiz), not on the home screen
+  const onHome = currentScreen === 'home';
+  const sidebar = document.getElementById('session-sidebar');
+  if (sidebar && getAuthToken()) {
+    sidebar.style.display = onHome ? 'none' : 'flex';
+    document.body.classList.toggle('sidebar-active', !onHome);
+  }
+
   const tabs = document.getElementById('screen-tabs');
   if (tabs) tabs.classList.toggle('hidden', !appStarted);
 
   const moduleWrap = document.getElementById('module-jump-wrap');
-  const canShowModuleJump = (
-    appStarted &&
-    currentScreen === 'training' &&
-    Array.isArray(trainingModules) &&
-    trainingModules.length > 1
-  );
+  const isOnTraining = appStarted && currentScreen === 'training';
+  const hasMultipleSessions = Array.isArray(TRAINING_SESSION_IDS) && TRAINING_SESSION_IDS.length > 1;
+  const sessionLoaded = isOnTraining && !!trainingSessionId;
+  const canShowModuleJump = isOnTraining && hasMultipleSessions;
   if (moduleWrap) moduleWrap.classList.toggle('show', canShowModuleJump);
+  // Show jump-to-session chips only when there are multiple sessions
+  const chipsWrap = document.getElementById('module-jump-chips-wrap');
+  if (chipsWrap) chipsWrap.style.display = (isOnTraining && hasMultipleSessions) ? '' : 'none';
+  // Show training chrome inside the phone frame only on training screen
+  const chrome = document.getElementById('training-chrome');
+  if (chrome) chrome.classList.toggle('show', isOnTraining);
 
-  showPauseWrap(appStarted && currentScreen === 'training' && !!trainingSessionId);
-  showMuteWrap(appStarted && currentScreen === 'training' && !!trainingSessionId);
+  showPauseWrap(sessionLoaded);
+  showMuteWrap(sessionLoaded);
+
+  // Disable language switch once a session has started or has history; only new empty sessions can switch
+  const langEnBtn = document.getElementById('lang-en-btn');
+  const langGuBtn = document.getElementById('lang-gu-btn');
+  const langLocked = trainingGraphStarted || chatHistory.length > 0;
+  if (langEnBtn) {
+    langEnBtn.disabled = langLocked;
+    langEnBtn.title = langLocked ? 'Cannot switch language during an active session' : '';
+    langEnBtn.style.opacity = langLocked ? '0.45' : '';
+    langEnBtn.style.cursor = langLocked ? 'not-allowed' : '';
+  }
+  if (langGuBtn) {
+    langGuBtn.disabled = langLocked;
+    langGuBtn.title = langLocked ? 'Cannot switch language during an active session' : '';
+    langGuBtn.style.opacity = langLocked ? '0.45' : '';
+    langGuBtn.style.cursor = langLocked ? 'not-allowed' : '';
+  }
 }
 
 function renderHomeSessionCard() {
   const titleEl = document.getElementById('home-session-title');
   const metaEl = document.getElementById('home-session-meta');
+  const startBtn = document.getElementById('home-start-btn');
   if (titleEl) {
-    titleEl.textContent = trainingNarrativeMeta?.title || 'Session 5';
+    const title = getLocalizedSessionTitle(selectedTrainingSessionId);
+    titleEl.textContent = title
+      ? `${t('sessionPill', { session: selectedTrainingSessionId })}: ${title}`
+      : t('sessionPill', { session: selectedTrainingSessionId });
   }
   if (metaEl) {
-    const moduleCount = Array.isArray(trainingModules) && trainingModules.length ? trainingModules.length : 1;
-    metaEl.innerHTML = t('homeSessionMeta', { modules: moduleCount });
+    metaEl.innerHTML = t('homeSessionMeta');
+  }
+  if (startBtn) {
+    startBtn.textContent = t('goToTrainer');
   }
 }
 
-async function startDefaultSession() {
-  if (trainingSessionId) {
-    appStarted = true;
-    showScreen('training');
+function updateSessionLabel() {
+  const sessionLabel = document.getElementById('session-label');
+  if (!sessionLabel) return;
+  const title = getLocalizedSessionTitle(activeTrainingSessionId);
+  const sessionTitle = title
+    ? `${t('sessionPill', { session: activeTrainingSessionId })}: ${title}`
+    : t('sessionPill', { session: activeTrainingSessionId });
+  const subSession = String(activeTrainingSubSession || '').trim();
+  sessionLabel.innerHTML = `<span class="session-title-line">${escapeHtml(sessionTitle)}</span>`;
+  const subLabelPill = document.getElementById('session-sub-label-pill');
+  if (subLabelPill) {
+    subLabelPill.textContent = subSession;
+    subLabelPill.style.display = subSession ? '' : 'none';
+  }
+}
+
+function updateTrainingActionButton() {
+  const btn = document.getElementById('training-continue-btn');
+  if (!btn) return;
+  const interactionBusy = trainingActionInFlight || isStreaming || isPaused || ttsPlaying;
+  if (manualFlashcardGate) {
+    btn.textContent = t('mutedNext');
+    btn.disabled = isPaused;
     return;
   }
+  if (trainingComplete) {
+    btn.textContent = t('sessionComplete');
+    btn.disabled = true;
+    return;
+  }
+  if (!trainingGraphStarted) {
+    btn.textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
+    btn.disabled = interactionBusy;
+    return;
+  }
+  btn.textContent = t('trainingContinue');
+  // Keep Continue clickable even when backend stream_active lags during phase transitions.
+  // Click attempts are guarded/logged in advance/continue handlers.
+  btn.disabled = interactionBusy;
+}
 
+async function ensureTrainingSessionCreated() {
+  if (trainingSessionId) return;
+  const trainingNarrative = localeConfig().trainingNarrative;
+  trainingSessionId = await createSession(trainingNarrative, 'training');
+  // Push URL and refresh sidebar
+  navigateToSession(trainingSessionId);
+  refreshSessionSidebar().catch(() => {});
+}
+
+function resetTrainingViewForSession(sessionNumber) {
+  clearTrainingBackendIdleWatch();
+  clearManualFlashcardGate();
+  selectedTrainingSessionId = sessionNumber;
+  activeTrainingSessionId = sessionNumber;
+  activeTrainingSubSession = 'setup';
+  trainingGraphStarted = false;
+  trainingAwaitingInput = false;
+  trainingHasUserInterrupt = false;
+  trainingBackendStreamActive = false;
+  trainingComplete = false;
+  latestQuizSessionNumber = null;
+  quizSessionId = null;
+  quizLoaded = false;
+  quizPanelMode = 'picker';
+  selectedQuizSessionNumber = null;
+  quizAnswerState = [];
+  questions = [];
+  currentQ = 0;
+  trainingAskQueue.length = 0;
+  trainingEchoedUserTexts.length = 0;
+  autoAdvanceAfterQueuedAsk = false;
+  chatHistory.length = 0;
+  renderChatHistory();
+  document.getElementById('flashcard-speaker-badge').textContent = `⌛ ${t('sessionLoading')}`;
+  document.getElementById('flashcard-text').textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
+  setActiveSessionChip(selectedTrainingSessionId);
+  updateSessionLabel();
+  renderHomeSessionCard();
+  updateTrainingActionButton();
+}
+
+async function startDefaultSession() {
   const btn = document.getElementById('home-start-btn');
   if (btn) btn.disabled = true;
 
+
   try {
-    const trainingNarrative = localeConfig().trainingNarrative;
-    const sessionLabel = document.getElementById('session-label');
-    trainingSessionId = await createSession(trainingNarrative, 'training');
-    trainingNextExchangeIndex = 0;
-    trainingCurrentExchangeIndex = -1;
-    trainingComplete = false;
+    await ensureTrainingSessionCreated();
+    resetTrainingViewForSession(selectedTrainingSessionId);
     appStarted = true;
-    if (sessionLabel && trainingNarrativeMeta?.title) {
-      sessionLabel.textContent = trainingNarrativeMeta.title;
-    }
     updatePausePlayBtn();
+    updateSessionLabel();
+    updateTrainingActionButton();
     showScreen('training');
-    await advanceTraining();
   } catch (e) {
     console.warn('Unable to start default session:', e.message);
     appStarted = false;
@@ -2388,8 +4535,23 @@ async function startDefaultSession() {
 /* ══════════════════════════════════════════════════
    TRAINING – DATA
 ══════════════════════════════════════════════════ */
-function speakerForRole(role, name) {
+function isTrainingAttendee(name) {
+  const n = typeof name === 'string' ? name.trim() : '';
+  if (!n) return false;
+  const lower = n.toLowerCase();
+  return trainingAttendees.some(a => String(a).toLowerCase() === lower);
+}
+
+function speakerForRole(role, name, flashcardKind) {
   const normalizedName = typeof name === 'string' ? name.trim() : '';
+  if (role === 'learner' || flashcardKind === 'user') {
+    return {
+      name: 'USER',
+      badge: '💬 USER',
+      cardClass: 'speaker-attendee',
+      bubbleClass: 'attendee',
+    };
+  }
   if (role === 'trainer' || normalizedName === trainingTrainerName) {
     return {
       name: normalizedName || trainingTrainerName || t('trainer'),
@@ -2398,7 +4560,7 @@ function speakerForRole(role, name) {
       bubbleClass: 'trainer',
     };
   }
-  if (role === 'attendee' || (normalizedName && trainingAttendees.includes(normalizedName))) {
+  if (role === 'attendee' || isTrainingAttendee(normalizedName)) {
     return {
       name: normalizedName || t('attendee'),
       badge: `🙋 ${normalizedName || t('attendee')}`,
@@ -2426,7 +4588,7 @@ function roleplayMessageMeta(role, speaker) {
   }
   return {
     bubbleClass: role === 'persona' ? 'trainer' : 'attendee',
-    label: speaker || (role === 'persona' ? t('roleplayPersonaName').split(',')[0] : t('counsellor')),
+    label: speaker || (role === 'persona' ? getRoleplayPersonaText('name') : t('counsellor')),
     skipTTS: false,
   };
 }
@@ -2440,50 +4602,246 @@ let trainingComplete = false;
 let isPaused        = false;
 const chatHistory    = [];
 const trainingAskQueue = [];
+const trainingEchoedUserTexts = [];
 let trainingAskRunnerActive = false;
 let autoAdvanceAfterQueuedAsk = false;
 let trainingAdvanceAbortController = null;
 let interruptTrainingForAsk = false;
+let trainingActionInFlight = false;
+let manualFlashcardGate = null;
+let trainingBackendIdleWatchTimer = null;
+const TRAINING_BACKEND_IDLE_WAIT_MS = 12000;
+const TRAINING_BACKEND_IDLE_WATCH_MS = 700;
+
+function resolveManualFlashcardGate() {
+  if (isPaused) return false;
+  if (!manualFlashcardGate) return false;
+  const gate = manualFlashcardGate;
+  manualFlashcardGate = null;
+  document.getElementById('flashcard')?.classList.remove('manual-next');
+  gate.resolve();
+  updateTrainingActionButton();
+  return true;
+}
+
+function clearManualFlashcardGate() {
+  if (!manualFlashcardGate) return;
+  const gate = manualFlashcardGate;
+  manualFlashcardGate = null;
+  document.getElementById('flashcard')?.classList.remove('manual-next');
+  gate.resolve();
+  updateTrainingActionButton();
+}
+
+function renderTrainingUserEcho(text) {
+  const cleaned = String(text || '').trim();
+  if (!cleaned) return;
+  trainingEchoedUserTexts.push(cleaned);
+  chatHistory.push({ name: 'USER', bubbleClass: 'attendee', text: cleaned });
+  renderChatHistory();
+}
+
+function consumeEchoedUserText(text) {
+  const cleaned = String(text || '').trim();
+  if (!cleaned) return false;
+  // Check presence but do NOT remove — the same message can be re-echoed by
+  // subsequent /continue or /advance streams and must be suppressed every time.
+  return trainingEchoedUserTexts.includes(cleaned);
+}
+
+function waitForManualFlashcardAdvance() {
+  clearManualFlashcardGate();
+  return new Promise((resolve) => {
+    const gate = { resolve };
+    manualFlashcardGate = gate;
+    document.getElementById('flashcard')?.classList.add('manual-next');
+    updateTrainingActionButton();
+  });
+}
+
+function applyTrainingStateSnapshot(data) {
+  trainingGraphStarted = Boolean(data.graph_started);
+  trainingAwaitingInput = Boolean(data.awaiting_input);
+  trainingHasUserInterrupt = Boolean(data.has_user_interrupt);
+  trainingBackendStreamActive = Boolean(data.stream_active);
+  if (!trainingBackendStreamActive && trainingBackendIdleWatchTimer) {
+    clearTimeout(trainingBackendIdleWatchTimer);
+    trainingBackendIdleWatchTimer = null;
+  }
+  trainingComplete = Boolean(data.training_complete) || trainingComplete;
+  if (data.active_session_id != null) {
+    const resolvedSessionId = _normalizeSessionId(data.active_session_id);
+    activeTrainingSessionId = resolvedSessionId;
+    // Only sync the user's chip selection when the backend graph is actually running.
+    // Before the session starts, the user's chip pick (selectedTrainingSessionId) takes priority.
+    if (data.graph_started) {
+      selectedTrainingSessionId = resolvedSessionId;
+    }
+  }
+  if (typeof data.active_sub_session === 'string' && data.active_sub_session.trim()) {
+    activeTrainingSubSession = data.active_sub_session.trim();
+  }
+  const completedSessions = Object.entries(data.session_completed || {})
+    .filter(([, done]) => Boolean(done))
+    .map(([id]) => Number(id))
+    .filter(Number.isInteger);
+  const quizStatusSessions = Object.keys(data.quiz_generation_status || {})
+    .map(id => Number(id))
+    .filter(Number.isInteger);
+  // Update global quiz status map for the session picker
+  lastQuizGenerationStatus = {};
+  for (const [k, v] of Object.entries(data.quiz_generation_status || {})) {
+    lastQuizGenerationStatus[Number(k)] = typeof v === 'object' ? (v.status || v) : v;
+  }
+  const candidates = [...completedSessions, ...quizStatusSessions];
+  if (Boolean(data.training_complete) && Number.isInteger(activeTrainingSessionId)) {
+    candidates.push(activeTrainingSessionId);
+  }
+  if (candidates.length) {
+    const nextQuizSession = Math.max(...candidates);
+    if (latestQuizSessionNumber !== nextQuizSession) {
+      latestQuizSessionNumber = nextQuizSession;
+      quizLoaded = false;
+      currentQ = 0;
+    }
+  }
+}
+
+async function refreshTrainingState() {
+  if (!trainingSessionId) return;
+  try {
+    const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/state`);
+    if (!res.ok) return;
+    const data = await res.json();
+    applyTrainingStateSnapshot(data);
+    setActiveSessionChip(selectedTrainingSessionId);
+    updateSessionLabel();
+    renderHomeSessionCard();
+    setModuleChipDisabled(!canSwitchSessions());
+    updateTrainingActionButton();
+  } catch (_) {
+    // noop: UI keeps current state if polling fails
+  }
+}
+
+function scheduleTrainingBackendIdleWatch() {
+  if (trainingBackendIdleWatchTimer || !trainingSessionId) return;
+  trainingBackendIdleWatchTimer = setTimeout(async () => {
+    trainingBackendIdleWatchTimer = null;
+    if (!trainingSessionId) return;
+    await refreshTrainingState();
+    const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+    if (!isStreaming && trainingBackendStreamActive && !waitingAtInterrupt) {
+      scheduleTrainingBackendIdleWatch();
+    }
+  }, TRAINING_BACKEND_IDLE_WATCH_MS);
+}
+
+function clearTrainingBackendIdleWatch() {
+  if (!trainingBackendIdleWatchTimer) return;
+  clearTimeout(trainingBackendIdleWatchTimer);
+  trainingBackendIdleWatchTimer = null;
+}
+
+async function waitForTrainingBackendIdle(timeoutMs = TRAINING_BACKEND_IDLE_WAIT_MS) {
+  if (!trainingSessionId) return true;
+  const startedAt = Date.now();
+  while (Date.now() - startedAt <= timeoutMs) {
+    try {
+      const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/state`);
+      if (!res.ok) return false;
+      const data = await res.json();
+      applyTrainingStateSnapshot(data);
+      setActiveSessionChip(selectedTrainingSessionId);
+      updateSessionLabel();
+      renderHomeSessionCard();
+      setModuleChipDisabled(!canSwitchSessions());
+      updateTrainingActionButton();
+      if (!trainingBackendStreamActive) {
+        clearTrainingBackendIdleWatch();
+        return true;
+      }
+    } catch (_) {
+      scheduleTrainingBackendIdleWatch();
+      return false;
+    }
+    await sleep(120);
+  }
+  scheduleTrainingBackendIdleWatch();
+  return false;
+}
 
 function renderChatHistory() {
   const el = document.getElementById('chat-history');
-  el.innerHTML = chatHistory.map(h => `
-    <div class="msg-bubble ${h.bubbleClass}">
+  el.innerHTML = chatHistory.map(h => {
+    if (h.bubbleClass === 'history-loaded-label') {
+      return `<div class="history-loaded-label">${h.text}</div>`;
+    }
+    return `<div class="msg-bubble ${h.bubbleClass}">
       <div class="msg-label">${h.name}</div>${h.text}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // Shared SSE consumer that renders into the training flashcard.
-// TTS is enqueued per sentence, but training progression waits for the
-// last enqueued TTS item of that flashcard to finish playback.
+// TTS is enqueued once per flashcard when message_end arrives.
 async function consumeTrainingStream(sseIter, options = {}) {
   const card   = document.getElementById('flashcard');
   const badge  = document.getElementById('flashcard-speaker-badge');
   const textEl = document.getElementById('flashcard-text');
   const allowWhilePaused = Boolean(options.allowWhilePaused);
-  let spk = null, text = '', voice = 'meera';
+  let spk = null, text = '', voice = 'roopa';
   let skipTTSForMessage = false;
+  // Separate flag: only intro flashcards skip the manual gate; user/learner cards
+  // should still pause and wait for a click-to-next tap after each card.
+  let skipManualGateForMessage = false;
   let lastTTSSeq = 0;
   let messageLastTTSSeq = 0;
   let completedMessageCount = 0;
   const streamEpoch = ttsContextEpoch;
+  // Capture the session at stream start — bail out if session changes mid-stream
+  // (prevents stale stream events from bleeding into a newly switched session).
+  const streamSessionId = trainingSessionId;
 
   for await (const ev of sseIter) {
     switch (ev.type) {
       case 'message_start': {
+        // Guard: if the session changed since this stream started, stop processing.
+        if (trainingSessionId !== streamSessionId) {
+          return { event: null, lastTTSSeq, epoch: streamEpoch };
+        }
+        track('sse_message_start', {
+          speaker: ev.speaker || null,
+          role: ev.role || null,
+          session: ev.session ?? null,
+          sub_session: ev.sub_session || null,
+        });
         // Wait here before showing a new speaker card. This is the pause gate —
         // it keeps the current card visible and prevents any new TTS from starting
         // while the user has paused. When the user resumes, the gate opens and we
         // animate normally into the next message.
         while (isPaused && !allowWhilePaused) { await sleep(150); }
         if (completedMessageCount > 0) {
-          await sleep(3500);
+          await sleep(TRAINING_MESSAGE_GAP_MS);
         }
-        const isIntroFlashcard = Boolean(ev.no_tts) || isIntroFlashcardMessage(ev.role, ev.speaker);
-        skipTTSForMessage = isIntroFlashcard;
+        const isUserFlashcard = ev.flashcard_kind === 'user' || ev.role === 'learner';
+        const isIntroFlashcard = isIntroFlashcardMessage(ev.role, ev.speaker);
+        if (Number.isInteger(ev.session) && ev.session >= 1) {
+          activeTrainingSessionId = ev.session;
+          selectedTrainingSessionId = ev.session;
+          setActiveSessionChip(selectedTrainingSessionId);
+        }
+        if (typeof ev.sub_session === 'string' && ev.sub_session.trim()) {
+          activeTrainingSubSession = ev.sub_session.trim();
+        }
+        updateSessionLabel();
+        skipTTSForMessage = isIntroFlashcard || isUserFlashcard;
+        // User flashcards skip TTS (no audio) but should still gate on click-to-next
+        // when muted so the user can read at their own pace.
+        skipManualGateForMessage = isIntroFlashcard;
         spk   = isIntroFlashcard
           ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'note' }
-          : speakerForRole(ev.role, ev.speaker);
+          : speakerForRole(ev.role, ev.speaker, ev.flashcard_kind);
         voice = ev.voice || 'meera';
         text  = '';
         messageLastTTSSeq = 0;
@@ -2508,31 +4866,54 @@ async function consumeTrainingStream(sseIter, options = {}) {
         textEl.textContent = text;
         break;
       }
-      case 'sentence': {
-        if (skipTTSForMessage) break;
-        // Enqueue TTS immediately per sentence
-        const s = ev.text.trim();
-        if (s) {
-          const seq = enqueueTTSForContext(s, voice, 'training', { allowWhilePaused });
+      case 'message_end': {
+        track('sse_message_end', { speaker: spk?.name || null, role: ev.role || null });
+        const finalText = text.trim();
+        if (!skipTTSForMessage && finalText) {
+          const seq = enqueueTTSForContext(finalText, voice, 'training', { allowWhilePaused });
           if (seq) {
             lastTTSSeq = seq;
             messageLastTTSSeq = seq;
           }
         }
-        break;
-      }
-      case 'message_end': {
-        if (!skipTTSForMessage) {
-          await waitForTTSPlayback(messageLastTTSSeq, 'training', streamEpoch);
-        }
         if (spk) {
-          chatHistory.push({ name: spk.name, bubbleClass: spk.bubbleClass, text: text.trim() });
-          renderChatHistory();
+          const alreadyEchoedUser = spk.name === 'USER' && consumeEchoedUserText(finalText);
+          if (!alreadyEchoedUser) {
+            chatHistory.push({ name: spk.name, bubbleClass: spk.bubbleClass, text: finalText });
+            renderChatHistory();
+          }
           completedMessageCount += 1;
         }
+        if (!skipManualGateForMessage) {
+          // Show "Next" button immediately (same as muted mode). TTS plays in background;
+          // clicking Next cancels any remaining audio and advances to the next card.
+          await waitForManualFlashcardAdvance();
+          flushTTSPlayback({ resolveWaiters: true });
+        }
         break;
       }
-      case 'exchange_end':
+      case 'exchange_end': {
+        track('sse_exchange_end', {
+          has_more: ev.has_more ?? null,
+          awaiting_input: Boolean(ev.awaiting_input),
+          has_interrupt: ev.has_user_interrupt ?? null,
+        });
+        trainingAwaitingInput = Boolean(ev.awaiting_input);
+        trainingHasUserInterrupt = (ev.has_user_interrupt != null)
+          ? Boolean(ev.has_user_interrupt)
+          : Boolean(ev.awaiting_input);
+        trainingBackendStreamActive = false;
+        updateTrainingActionButton();
+        return { event: ev, lastTTSSeq, epoch: streamEpoch };
+      }
+      case 'error': {
+        track('sse_error', { message: ev.message || null, run_state: ev.run_state || null });
+        const message = ev.message || 'Training stream error';
+        textEl.textContent = message;
+        chatHistory.push({ name: t('sessionNote'), bubbleClass: 'note', text: message });
+        renderChatHistory();
+        break;
+      }
       case 'done':
         return { event: ev, lastTTSSeq, epoch: streamEpoch };
     }
@@ -2542,94 +4923,224 @@ async function consumeTrainingStream(sseIter, options = {}) {
 
 /* ── Training: advance scripted exchange ── */
 async function advanceTraining() {
-  if (!trainingSessionId || isStreaming || trainingComplete || isPaused) return;
-  if (isZoomed) toggleZoom();
-  const renderedExchangeIndex = trainingNextExchangeIndex;
+  const traceMeta = beginTrainingActionTrace('advance_or_continue', { route_hint: 'advance' });
+  if (resolveManualFlashcardGate()) return;
+  if (trainingActionInFlight) {
+    trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'training_action_in_flight');
+    return;
+  }
+  trainingActionInFlight = true;
+  try {
+    await advanceTrainingImpl(traceMeta);
+  } finally {
+    trainingActionInFlight = false;
+    updateTrainingActionButton();
+  }
+}
 
-  isStreaming = true;
+async function advanceTrainingImpl(traceMeta) {
+  if (isStreaming || trainingComplete || isPaused || ttsPlaying) {
+    trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'advance_guard_blocked', {
+      training_complete: Boolean(trainingComplete),
+    });
+    return;
+  }
+  if (trainingSessionId) {
+    await refreshTrainingState();
+    const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+    if (trainingBackendStreamActive && !waitingAtInterrupt) {
+      trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'backend_stream_busy');
+      return;
+    }
+  }
+  if (trainingGraphStarted && (trainingAwaitingInput || trainingHasUserInterrupt)) {
+    // Auto-chain through consecutive silent interrupts (e.g. multiple check_user_participation
+    // calls with no streamed content between them).  trainingActionInFlight stays true
+    // throughout, so updateTrainingActionButton() keeps the button disabled — no flickering.
+    let _continueLoops = 0;
+    while (_continueLoops < 8 && !trainingComplete && !isPaused) {
+      await continueTrainingNow(traceMeta);
+      _continueLoops++;
+      if (!(trainingAwaitingInput || trainingHasUserInterrupt) || isStreaming || trainingComplete) break;
+    }
+    return;
+  }
+  await ensureTrainingSessionCreated();
+  if (isZoomed) toggleZoom();
   const btn = document.getElementById('training-continue-btn');
+  clearTrainingBackendIdleWatch();
+  isStreaming = true;
+  trainingBackendStreamActive = true;
   btn.disabled = true;
+  setModuleChipDisabled(true);
+
+  if (!trainingGraphStarted) {
+    try {
+      const startRes = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${selectedTrainingSessionId}`, {
+        method: 'POST',
+        headers: traceMeta?.traceId ? { 'X-Trace-Id': traceMeta.traceId } : {},
+      });
+      trackRequestResponse(traceMeta, `/training/${trainingSessionId}/start-session/${selectedTrainingSessionId}`, 'POST', startRes.ok, startRes.status, {});
+      if (!startRes.ok) {
+        console.error('Unable to configure session start', await startRes.text());
+        isStreaming = false;
+        trainingBackendStreamActive = false;
+        btn.disabled = false;
+        setModuleChipDisabled(!canSwitchSessions());
+        return;
+      }
+    } catch (e) {
+      console.error('Unable to configure session start', e);
+      isStreaming = false;
+      trainingBackendStreamActive = false;
+      btn.disabled = false;
+      setModuleChipDisabled(!canSwitchSessions());
+      return;
+    }
+  }
+
   trainingAdvanceAbortController = new AbortController();
 
   try {
     const params = new URLSearchParams();
     if (isTTSMuted) params.set('muted', '1');
-    const streamUrl = `${API_BASE}/training/${trainingSessionId}/next/stream${params.toString() ? `?${params}` : ''}`;
+    const streamUrl = `${API_BASE}/training/${trainingSessionId}/advance${params.toString() ? `?${params}` : ''}`;
     const result = await consumeTrainingStream(
       openSSE(streamUrl, {
         signal: trainingAdvanceAbortController.signal,
+        traceMeta,
       })
     );
-    trainingCurrentExchangeIndex = renderedExchangeIndex;
-    trainingNextExchangeIndex = renderedExchangeIndex + 1;
-    setActiveModuleChip(moduleIndexForExchange(trainingCurrentExchangeIndex));
-    await waitForTTSPlayback(result.lastTTSSeq, 'training', result.epoch);
     const ev = result.event;
     if (ev?.type === 'exchange_end' && ev.has_more === false) {
       trainingComplete = true;
-      btn.textContent  = t('sessionComplete');
-    } else {
-      btn.disabled = false;
     }
+    await refreshTrainingState();
+    if (!trainingComplete) btn.disabled = false;
   } catch (e) {
     const wasInterrupted = Boolean(trainingAdvanceAbortController?.signal?.aborted && interruptTrainingForAsk);
-    if (wasInterrupted) {
-      // Backend increments exchange index when /next/stream starts. Keep frontend
-      // cursor in sync when we intentionally interrupt for immediate Q&A.
-      trainingCurrentExchangeIndex = renderedExchangeIndex;
-      trainingNextExchangeIndex = renderedExchangeIndex + 1;
-      setActiveModuleChip(moduleIndexForExchange(trainingCurrentExchangeIndex));
-    } else {
+    if (!wasInterrupted) {
       console.error('Training advance error', e);
+      await refreshTrainingState();
       btn.disabled = false;
     }
   }
   interruptTrainingForAsk = false;
   trainingAdvanceAbortController = null;
+  clearManualFlashcardGate();
   isStreaming = false;
+  updateTrainingActionButton();
+  setModuleChipDisabled(!canSwitchSessions());
   runTrainingAskQueue();
 }
 
 /* ── Training: free-text Q&A ── */
-async function askTrainingNow(text) {
+async function askTrainingNow(text, traceMeta = null) {
   if (!text || !trainingSessionId || isStreaming) return;
-  chatHistory.push({ name: t('you'), bubbleClass: 'attendee', text });
-  renderChatHistory();
+  if (trainingBackendStreamActive) return;
   if (isZoomed) toggleZoom();
 
+  clearTrainingBackendIdleWatch();
   isStreaming = true;
+  trainingBackendStreamActive = true;
   document.getElementById('training-continue-btn').disabled = true;
 
   try {
-    const result = await consumeTrainingStream(openSSE(`${API_BASE}/training/${trainingSessionId}/ask`, {
+    const result = await consumeTrainingStream(openSSE(`${API_BASE}/training/${trainingSessionId}/input`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(traceMeta?.traceId ? { 'X-Trace-Id': traceMeta.traceId } : {}) },
       body:    JSON.stringify({ text }),
+      traceMeta,
     }), { allowWhilePaused: true });
-    await waitForTTSPlayback(result.lastTTSSeq, 'training', result.epoch);
-  } catch (e) { console.error('Training ask error', e); }
-
-  // Unlock after full flashcard TTS playback completes
-  isStreaming = false;
-  if (!trainingComplete && !isPaused) {
-    document.getElementById('training-continue-btn').disabled = false;
+    await refreshTrainingState();
+  } catch (e) {
+    console.error('Training ask error', e);
+    await refreshTrainingState();
   }
+
+  isStreaming = false;
+  clearManualFlashcardGate();
+  updateTrainingActionButton();
+  setModuleChipDisabled(!canSwitchSessions());
+}
+
+async function continueTrainingNow(traceMeta = null) {
+  const localTrace = traceMeta || beginTrainingActionTrace('continue', { route_hint: 'continue' });
+  if (!trainingSessionId || isStreaming || isPaused) {
+    trackTrainingActionBlocked(localTrace, 'continue', 'continue_guard_blocked', {
+      missing_session: !trainingSessionId,
+    });
+    return;
+  }
+  await refreshTrainingState();
+  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  if (trainingBackendStreamActive && !waitingAtInterrupt) {
+    trackTrainingActionBlocked(localTrace, 'continue', 'backend_stream_busy');
+    return;
+  }
+  if (!waitingAtInterrupt) {
+    trackTrainingActionBlocked(localTrace, 'continue', 'no_interrupt_pending');
+    return;
+  }
+  if (isZoomed) toggleZoom();
+
+  clearTrainingBackendIdleWatch();
+  isStreaming = true;
+  trainingBackendStreamActive = true;
+  const btn = document.getElementById('training-continue-btn');
+  btn.disabled = true;
+  setModuleChipDisabled(true);
+
+  try {
+    const result = await consumeTrainingStream(openSSE(`${API_BASE}/training/${trainingSessionId}/continue`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(localTrace?.traceId ? { 'X-Trace-Id': localTrace.traceId } : {}) },
+      body: JSON.stringify({ action: 'continue' }),
+      traceMeta: localTrace,
+    }), { allowWhilePaused: true });
+    const ev = result.event;
+    if (ev?.type === 'done') {
+      // Backend queued our continue (stream was still active). Keep isStreaming=true
+      // so the button stays locked until the backend's main stream finishes processing.
+      // This prevents the user from re-clicking Continue and flooding the ask_queue
+      // with duplicate resumes that silently skip participation checkpoints.
+      await waitForTrainingBackendIdle(15_000);
+    }
+    if (ev?.type === 'exchange_end' && ev.has_more === false) {
+      trainingComplete = true;
+    }
+    await refreshTrainingState();
+  } catch (e) {
+    console.error('Training continue error', e);
+    await refreshTrainingState();
+  }
+
+  clearManualFlashcardGate();
+  isStreaming = false;
+  updateTrainingActionButton();
+  setModuleChipDisabled(!canSwitchSessions());
+  runTrainingAskQueue();
 }
 
 async function runTrainingAskQueue() {
-  if (trainingAskRunnerActive || !trainingSessionId || isStreaming) return;
+  if (trainingAskRunnerActive || !trainingSessionId || isStreaming || trainingBackendStreamActive) return;
   trainingAskRunnerActive = true;
   try {
     while (trainingAskQueue.length > 0) {
-      if (isStreaming || !trainingSessionId) break;
-      const queuedText = trainingAskQueue.shift();
-      await askTrainingNow(queuedText);
+      if (isStreaming || trainingBackendStreamActive || !trainingSessionId) break;
+      const queuedItem = trainingAskQueue.shift();
+      if (!queuedItem) continue;
+      if (typeof queuedItem === 'string') {
+        await askTrainingNow(queuedItem);
+        continue;
+      }
+      await askTrainingNow(queuedItem.text, queuedItem.traceMeta || null);
     }
   } finally {
     trainingAskRunnerActive = false;
   }
 
-  if (autoAdvanceAfterQueuedAsk && !trainingComplete && !isStreaming) {
+  if (autoAdvanceAfterQueuedAsk && !trainingComplete && !isStreaming && !trainingBackendStreamActive) {
     autoAdvanceAfterQueuedAsk = false;
     if (isPaused) {
       isPaused = false;
@@ -2647,8 +5158,8 @@ async function runTrainingAskQueue() {
   }
 }
 
-function enqueueTrainingQuestion(text) {
-  trainingAskQueue.push(text);
+function enqueueTrainingQuestion(text, traceMeta = null) {
+  trainingAskQueue.push({ text, traceMeta });
   runTrainingAskQueue();
 }
 
@@ -2656,28 +5167,36 @@ async function sendTrainingQuestion() {
   const input = document.getElementById('training-input');
   const text  = input.value.trim();
   if (!text || !trainingSessionId) return;
+  const traceMeta = beginTrainingActionTrace('input_submit', { source: 'text', text_len: text.length });
+  track('ui.input_submit', { source: 'text', text_len: text.length }, { traceId: traceMeta.traceId, status: 'intent' });
   input.value = '';
+  renderTrainingUserEcho(text);
 
-  if (isStreaming) {
-    autoAdvanceAfterQueuedAsk = true;
-    enqueueTrainingQuestion(text);
-    if (!isPaused) {
-      togglePause();
-    }
-    if (trainingAdvanceAbortController && !trainingAdvanceAbortController.signal.aborted) {
-      interruptTrainingForAsk = true;
-      try { trainingAdvanceAbortController.abort(); } catch (_) {}
-    }
+  if (isStreaming || trainingBackendStreamActive) {
+    // SSE stream is active: the trainer is currently generating.
+    // Fire-and-forget POST to /input — the backend queues the message in
+    // UserInputQueue so it gets injected at the next tool-call boundary
+    // (after the current dialog finishes) without aborting the stream.
+    apiFetch(`${API_BASE}/training/${trainingSessionId}/input`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Trace-Id': traceMeta.traceId },
+      body:    JSON.stringify({ text }),
+    }).then((res) => {
+      trackRequestResponse(traceMeta, `${API_BASE}/training/${trainingSessionId}/input`, 'POST', res.ok, res.status, { source: 'midstream' });
+    }).catch(e => {
+      track('ui.request_response', { route: `${API_BASE}/training/${trainingSessionId}/input`, method: 'POST', source: 'midstream', error: String(e || '') }, { traceId: traceMeta.traceId, status: 'error', reasonCode: 'network_error' });
+      console.error('[training] mid-stream ask error', e);
+    });
     return;
   }
 
   if (isPaused) {
     autoAdvanceAfterQueuedAsk = true;
-    enqueueTrainingQuestion(text);
+    enqueueTrainingQuestion(text, traceMeta);
     return;
   }
 
-  await askTrainingNow(text);
+  await askTrainingNow(text, traceMeta);
   runTrainingAskQueue();
 }
 
@@ -2693,7 +5212,12 @@ function setMicStatus(id, text = '') {
 
 async function toggleTrainingMic() {
   const btn = document.getElementById('training-mic-btn');
-  if (btn.classList.contains('recording')) { trainingRecorder?.stop(); return; }
+  if (btn.classList.contains('recording')) {
+    track('mic_toggle', { state: 'stop' });
+    trainingRecorder?.stop();
+    return;
+  }
+  track('mic_toggle', { state: 'start' });
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -2712,7 +5236,7 @@ async function toggleTrainingMic() {
       const fd = new FormData();
       fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'q.webm');
       try {
-        const res = await fetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
+        const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         const transcript = (data.text || '').trim();
@@ -2806,10 +5330,11 @@ function togglePause() {
       if (btn) btn.disabled = false;
     }
     // Re-enable module-jump chips.
-    setModuleChipDisabled(false);
+    setModuleChipDisabled(!canSwitchSessions());
     runTrainingAskQueue();
   }
   updatePausePlayBtn();
+  updateTrainingActionButton();
 }
 
 /* ══════════════════════════════════════════════════
@@ -2936,7 +5461,7 @@ async function startRoleplay() {
 
   try {
     roleplaySessionId = await createSession(
-      localeConfig().roleplayPersona,
+      selectedRoleplayPersonaId,
       rpMode === 'watch' ? 'roleplay_watch' : 'roleplay_participate'
     );
 
@@ -2951,7 +5476,7 @@ async function startRoleplay() {
   }
 }
 
-/* ── Watch mode: stream next scripted exchange ── */
+/* ── Watch mode: stream next AI counsellor + patient exchange ── */
 async function advanceRoleplay() {
   if (!roleplaySessionId || rpStreaming || rpMode !== 'watch' || rpWatchComplete) return;
   rpStreaming = true;
@@ -2982,18 +5507,14 @@ async function advanceRoleplay() {
           text += ev.text;
           if (bubble) { bubble.querySelector('.bubble-content').textContent = text; scrollToBottom(chat); }
           break;
-        case 'sentence': {
-          if (skipTTSForMessage) break;
-          const s = ev.text.trim();
-          if (s) {
-            const seq = enqueueTTSForContext(s, voice, 'roleplay');
-            if (seq) messageLastTTSSeq = seq;
-          }
-          break;
-        }
         case 'message_end': {
           if (!skipTTSForMessage) {
-            await waitForTTSPlayback(messageLastTTSSeq, 'roleplay', streamEpoch);
+            const finalText = text.trim();
+            if (finalText) {
+              const seq = enqueueTTSForContext(finalText, voice, 'roleplay');
+              if (seq) messageLastTTSSeq = seq;
+            }
+            await waitForTTSPlaybackCapped(messageLastTTSSeq, 'roleplay', streamEpoch);
           }
           bubble = null;
           break;
@@ -3062,13 +5583,11 @@ async function sendRoleplayMessage() {
           currentText += ev.text;
           if (bubble) { bubble.querySelector('.bubble-content').textContent = currentText; scrollToBottom(chat); }
           break;
-        case 'sentence': {
-          if (skipTTSForMessage) break;
-          const s = ev.text.trim();
-          if (s) enqueueTTSForContext(s, voice, 'roleplay');
-          break;
-        }
         case 'message_end': {
+          if (!skipTTSForMessage) {
+            const finalText = currentText.trim();
+            if (finalText) enqueueTTSForContext(finalText, voice, 'roleplay');
+          }
           break;
         }
         case 'done':
@@ -3111,7 +5630,7 @@ async function toggleRoleplayMic() {
       const fd = new FormData();
       fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'rp.webm');
       try {
-        const res = await fetch(`${API_BASE}/roleplay/${roleplaySessionId}/audio/transcribe`, { method: 'POST', body: fd });
+        const res = await apiFetch(`${API_BASE}/roleplay/${roleplaySessionId}/audio/transcribe`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         const transcript = (data.text || '').trim();
@@ -3134,42 +5653,251 @@ async function toggleRoleplayMic() {
 /* ══════════════════════════════════════════════════
    QUIZ
 ══════════════════════════════════════════════════ */
-let questions  = [];
-let currentQ   = 0;
-let answered   = false;
-let quizLoaded = false;
+let questions        = [];
+let currentQ         = 0;
+let answered         = false;
+let quizLoaded       = false;
+let quizLoadInFlight = false;
+let quizAnswerState  = [];          // {selectedIndex, correct, correctIndex, explanation} per question index
+let selectedQuizSessionNumber = null; // session number currently being quizzed
+let quizPanelMode    = 'picker';    // 'picker' | 'active'
+
+// Completed quiz sessions — keyed as "{trainingSessionId}:{sessionNumber}", persisted in localStorage
+let completedQuizSessions = new Set(
+  (() => { try { return JSON.parse(localStorage.getItem('completedQuizSessions') || '[]'); } catch(e) { return []; } })()
+);
+function _persistCompletedQuizSessions() {
+  try { localStorage.setItem('completedQuizSessions', JSON.stringify([...completedQuizSessions])); } catch(e) {}
+}
+function _quizCompletionKey(sessionNumber) {
+  return `${trainingSessionId || ''}:${sessionNumber}`;
+}
+
+/* ── Session Picker ─────────────────────────────── */
+
+function renderQuizSessionPicker() {
+  const grid = document.getElementById('quiz-session-grid');
+  if (!grid) return;
+
+  const sessionNums = Object.keys(TRAINING_SESSION_TITLES).map(Number)
+    .filter(n => n > 0).sort((a, b) => a - b);
+
+  if (!sessionNums.length) {
+    grid.innerHTML = '<p style="padding:16px;color:var(--ink-muted);font-size:13px;grid-column:1/-1;">No sessions available yet. Complete a training session first.</p>';
+    return;
+  }
+
+  const cards = sessionNums.map(num => {
+    const title   = getLocalizedSessionTitle(num);
+    const qStatus = lastQuizGenerationStatus[num];
+    const isDone  = completedQuizSessions.has(_quizCompletionKey(num));
+    const isReady = isDone || qStatus === 'succeeded';
+    const isGenning = !isDone && ['queued', 'running'].includes(qStatus);
+    const isLocked = !isReady && !isGenning;
+
+    let badgeClass, badgeText, cardClass, onclickAttr;
+    if (isDone) {
+      badgeClass = 'done';       badgeText = t('quizSessionDone');
+      cardClass  = 'done';       onclickAttr = '';
+    } else if (isReady) {
+      badgeClass = 'ready';      badgeText = t('quizSessionReady');
+      cardClass  = 'ready';      onclickAttr = `onclick="startSessionQuiz(${num})"`;
+    } else if (isGenning) {
+      badgeClass = 'generating'; badgeText = t('quizSessionGenerating');
+      cardClass  = 'generating'; onclickAttr = '';
+    } else {
+      badgeClass = 'locked';     badgeText = t('quizSessionLocked');
+      cardClass  = 'locked';     onclickAttr = '';
+    }
+
+    return `<div class="quiz-session-card ${cardClass}" ${onclickAttr} role="${isReady ? 'button' : ''}" tabindex="${isReady ? '0' : '-1'}">
+      <div class="quiz-card-num">${t('sessionPill', { session: num })}</div>
+      <div class="quiz-card-title">${escapeHtml(title)}</div>
+      <span class="quiz-card-badge ${badgeClass}">${badgeText}</span>
+    </div>`;
+  });
+
+  grid.innerHTML = cards.join('');
+}
+
+function showQuizPicker() {
+  quizPanelMode = 'picker';
+  const picker = document.getElementById('quiz-session-picker');
+  const active = document.getElementById('quiz-active');
+  if (picker) picker.style.display = 'flex';
+  if (active) active.style.display = 'none';
+  renderQuizSessionPicker();
+  _startQuizPickerPolling();   // begin background refresh while picker is visible
+}
+
+/* ── Background poller — keeps picker cards fresh while generating ──────── */
+
+let _quizPickerPollTimer = null;
+
+function _startQuizPickerPolling() {
+  _stopQuizPickerPolling();
+  if (!_hasGeneratingSessions()) return;  // nothing to wait for
+  _quizPickerPollTimer = setInterval(async () => {
+    if (quizPanelMode !== 'picker') { _stopQuizPickerPolling(); return; }
+    if (trainingSessionId) {
+      try { await refreshTrainingState(); } catch(e) { /* non-fatal */ }
+    }
+    renderQuizSessionPicker();
+    if (!_hasGeneratingSessions()) _stopQuizPickerPolling();
+  }, 8000);  // re-check every 8 s
+}
+
+function _stopQuizPickerPolling() {
+  if (_quizPickerPollTimer) { clearInterval(_quizPickerPollTimer); _quizPickerPollTimer = null; }
+}
+
+function _hasGeneratingSessions() {
+  return Object.values(lastQuizGenerationStatus).some(v => v === 'queued' || v === 'running');
+}
+
+async function startSessionQuiz(sessionNumber) {
+  selectedQuizSessionNumber = sessionNumber;
+  quizPanelMode  = 'active';
+  quizLoaded     = false;
+  currentQ       = 0;
+  answered       = false;
+  quizAnswerState = [];
+  questions      = [];
+
+  const picker = document.getElementById('quiz-session-picker');
+  const active = document.getElementById('quiz-active');
+  if (picker) picker.style.display = 'none';
+  if (active) active.style.display = 'flex';
+
+  await loadQuizQuestions();
+}
+
+/* ── Message helper ─────────────────────────────── */
+
+function renderQuizMessage(message) {
+  const qText     = document.getElementById('q-text');
+  const qOptions  = document.getElementById('q-options');
+  const qFeedback = document.getElementById('q-feedback');
+  const qLabel    = document.getElementById('q-label');
+  const qProgress = document.getElementById('q-progress');
+  const qNext     = document.getElementById('q-next');
+  const qPrev     = document.getElementById('q-prev');
+  if (qText)     qText.textContent = message;
+  if (qOptions)  qOptions.innerHTML = '';
+  if (qFeedback) { qFeedback.className = 'feedback-msg'; qFeedback.textContent = ''; }
+  if (qLabel)    qLabel.textContent = '';
+  if (qProgress) qProgress.style.width = '0%';
+  if (qNext)     { qNext.disabled = true; qNext.style.display = ''; }
+  if (qPrev)     { qPrev.disabled = true; qPrev.style.display = ''; }
+}
+
+/* ── Fallback session number when picker wasn't used ─ */
+
+function targetQuizSessionNumber() {
+  if (Number.isInteger(latestQuizSessionNumber) && latestQuizSessionNumber >= 1) {
+    return latestQuizSessionNumber;
+  }
+  if (trainingComplete && Number.isInteger(activeTrainingSessionId) && activeTrainingSessionId >= 1) {
+    return activeTrainingSessionId;
+  }
+  return null;
+}
+
+/* ── Load quiz questions ────────────────────────── */
 
 async function loadQuizQuestions() {
+  if (quizLoadInFlight) return;
+  quizLoadInFlight = true;
   try {
-    const quizNarrative = localeConfig().quizNarrative;
-    // Lazy-create a dedicated quiz session so resets don't disturb training state
-    if (!quizSessionId) {
-      quizSessionId = await createSession(quizNarrative, 'quiz');
+    await refreshTrainingState();
+    if (!trainingSessionId) {
+      renderQuizMessage('Complete a training session first. The quiz will appear here after the session ends.');
+      return;
     }
-    const res  = await fetch(`${API_BASE}/quiz/${quizNarrative}/questions`);
+    quizSessionId = trainingSessionId;
+
+    const sessionNumber = selectedQuizSessionNumber || targetQuizSessionNumber();
+    if (!sessionNumber) {
+      renderQuizMessage('Complete a training session first. The quiz will appear here after the session ends.');
+      return;
+    }
+    selectedQuizSessionNumber = sessionNumber;
+
+    // Update the active panel title
+    const titleEl = document.getElementById('quiz-title');
+    if (titleEl) titleEl.textContent = t('sessionQuiz', { session: sessionNumber });
+
+    renderQuizMessage('Loading quiz…');
+
+    // Session cards are only clickable when status is "succeeded", so questions
+    // should be available immediately — no blocking poll loop needed.
+    const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/questions`);
+    if (!res.ok) {
+      renderQuizMessage('Quiz is still being prepared. Go back and try again in a moment.');
+      return;
+    }
     const data = await res.json();
-    questions  = data.questions;   // [{ id, text, options }]
+    questions       = data.questions;  // [{ id, text, options }]
+    quizAnswerState = questions.map(() => ({ selectedIndex: null, correct: null, correctIndex: null, explanation: null }));
+
+    // Try to restore saved answers from backend
+    try {
+      const resultsRes = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/results`);
+      if (resultsRes.ok) {
+        const results = await resultsRes.json();
+        for (const [qid, ans] of Object.entries(results.answers || {})) {
+          const idx = questions.findIndex(q => q.id === qid);
+          if (idx >= 0) {
+            quizAnswerState[idx] = {
+              selectedIndex: ans.selected_index ?? null,
+              correct:       ans.correct       ?? null,
+              correctIndex:  ans.correct_index ?? null,
+              explanation:   ans.explanation   ?? '',
+            };
+          }
+        }
+        if (results.completed) {
+          completedQuizSessions.add(_quizCompletionKey(sessionNumber));
+          _persistCompletedQuizSessions();
+        }
+      }
+    } catch(e) { /* non-fatal — continue without restored state */ }
+
     quizLoaded = true;
+    latestQuizSessionNumber = sessionNumber;
     renderQuestion();
-  } catch (e) { console.error('Quiz load error', e); }
+  } catch (e) {
+    console.error('Quiz load error', e);
+    renderQuizMessage('Unable to load the quiz right now.');
+  } finally {
+    quizLoadInFlight = false;
+  }
 }
+
+/* ── Render / Navigate Questions ────────────────── */
 
 function renderQuestion() {
   if (!questions.length) return;
-  const q = questions[currentQ];
-  document.getElementById('q-text').textContent    = q.text;
-  document.getElementById('q-label').textContent   = t('questionOf', { current: currentQ + 1, total: questions.length });
+  const q     = questions[currentQ];
+  const saved = quizAnswerState[currentQ] || {};
+
+  document.getElementById('q-text').textContent     = q.text;
+  document.getElementById('q-label').textContent    = t('questionOf', { current: currentQ + 1, total: questions.length });
   document.getElementById('q-progress').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
 
   const fb = document.getElementById('q-feedback');
   fb.className   = 'feedback-msg';
   fb.textContent = '';
 
-  const nxt = document.getElementById('q-next');
-  nxt.disabled    = true;
-  nxt.textContent = currentQ === questions.length - 1 ? t('finish') : t('trainingContinue');
+  const nxt  = document.getElementById('q-next');
+  const prev = document.getElementById('q-prev');
+  nxt.style.display  = '';
+  prev.style.display = '';
+  nxt.disabled       = false;   // always navigable — answer not required
+  prev.disabled      = (currentQ === 0);
+  nxt.textContent    = currentQ === questions.length - 1 ? t('finish') : t('trainingContinue');
 
-  answered = false;
+  answered = saved.selectedIndex !== null;
 
   const opts = document.getElementById('q-options');
   opts.innerHTML = '';
@@ -3177,9 +5905,30 @@ function renderQuestion() {
     const b = document.createElement('button');
     b.className   = 'option-btn';
     b.textContent = opt;
-    b.onclick     = () => selectOption(i, b);
+
+    if (answered) {
+      // Restore saved answer visual state
+      b.disabled = true;
+      if (i === saved.selectedIndex && saved.correct)               b.classList.add('correct');
+      if (i === saved.selectedIndex && saved.correct === false)     b.classList.add('wrong');
+      if (i === saved.correctIndex  && saved.correct === false &&
+          i !== saved.selectedIndex)                                 b.classList.add('correct');
+    } else {
+      b.onclick = () => selectOption(i, b);
+    }
     opts.appendChild(b);
   });
+
+  // Restore feedback text
+  if (answered && saved.selectedIndex !== null) {
+    if (saved.correct) {
+      fb.textContent = t('correct', { explanation: saved.explanation || '' });
+      fb.className   = 'feedback-msg correct show';
+    } else if (saved.correct === false) {
+      fb.textContent = t('notQuite', { explanation: saved.explanation || '' });
+      fb.className   = 'feedback-msg wrong show';
+    }
+  }
 }
 
 async function selectOption(idx, btn) {
@@ -3190,31 +5939,42 @@ async function selectOption(idx, btn) {
   allBtns.forEach(b => b.disabled = true);
   const fb = document.getElementById('q-feedback');
 
+  let correct, correctIndex, explanation;
   try {
-    const res  = await fetch(`${API_BASE}/quiz/${quizSessionId}/answer`, {
+    const sessionNumber = selectedQuizSessionNumber || targetQuizSessionNumber();
+    const res  = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/answer`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ question_id: questions[currentQ].id, selected_index: idx }),
     });
     const data = await res.json();   // { correct, correct_index, explanation }
-    if (data.correct) {
-      btn.classList.add('correct');
-      fb.textContent = t('correct', { explanation: data.explanation });
-      fb.className   = 'feedback-msg correct show';
-    } else {
-      btn.classList.add('wrong');
-      allBtns[data.correct_index].classList.add('correct');
-      fb.textContent = t('notQuite', { explanation: data.explanation });
-      fb.className   = 'feedback-msg wrong show';
-    }
+    correct      = data.correct;
+    correctIndex = data.correct_index;
+    explanation  = data.explanation || '';
   } catch (e) {
-    // Graceful fallback if backend is unreachable
+    // Offline fallback
+    correct      = null;
+    correctIndex = idx;
+    explanation  = '';
+  }
+
+  if (correct === true) {
+    btn.classList.add('correct');
+    fb.textContent = t('correct', { explanation });
+    fb.className   = 'feedback-msg correct show';
+  } else if (correct === false) {
+    btn.classList.add('wrong');
+    allBtns[correctIndex]?.classList.add('correct');
+    fb.textContent = t('notQuite', { explanation });
+    fb.className   = 'feedback-msg wrong show';
+  } else {
     btn.classList.add('correct');
     fb.textContent = t('answerSubmitted');
     fb.className   = 'feedback-msg correct show';
   }
 
-  document.getElementById('q-next').disabled = false;
+  // Persist answer in per-question state
+  quizAnswerState[currentQ] = { selectedIndex: idx, correct, correctIndex, explanation };
 }
 
 function nextQuestion() {
@@ -3222,30 +5982,59 @@ function nextQuestion() {
     currentQ++;
     renderQuestion();
   } else {
-    document.querySelector('.quiz-body').innerHTML = `
+    _showQuizCompletion();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function _showQuizCompletion() {
+  const sessionNumber = selectedQuizSessionNumber;
+  if (sessionNumber) {
+    completedQuizSessions.add(_quizCompletionKey(sessionNumber));
+    _persistCompletedQuizSessions();
+    // Notify backend of completion (fire-and-forget)
+    apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/complete`, { method: 'POST' })
+      .catch(() => {});
+  }
+  const body = document.querySelector('#quiz-active .quiz-body');
+  if (body) {
+    body.innerHTML = `
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;">
         <div style="font-size:56px">🎉</div>
         <div style="font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--ink)">${escapeHtml(t('quizComplete'))}</div>
         <div style="font-size:14px;color:var(--ink-muted);line-height:1.6">${t('quizDoneBody')}</div>
-        <button onclick="restartQuiz()" style="margin-top:8px;background:var(--sage-light);border:none;border-radius:50px;padding:12px 28px;font-family:'Noto Sans Gujarati','Nunito',sans-serif;font-size:14px;font-weight:800;color:#1e5c40;cursor:pointer;">${escapeHtml(t('restartQuiz'))}</button>
+        <button onclick="showQuizPicker()" style="margin-top:8px;background:var(--sage-light);border:none;border-radius:50px;padding:12px 28px;font-family:'Noto Sans Gujarati','Nunito',sans-serif;font-size:14px;font-weight:800;color:#1e5c40;cursor:pointer;">${escapeHtml(t('quizBackToSessions'))}</button>
       </div>`;
-    document.getElementById('q-next').style.display = 'none';
   }
+  const qNext = document.getElementById('q-next');
+  const qPrev = document.getElementById('q-prev');
+  if (qNext) qNext.style.display = 'none';
+  if (qPrev) qPrev.style.display = 'none';
 }
 
 async function restartQuiz() {
-  if (quizSessionId) {
-    try { await fetch(`${API_BASE}/session/${quizSessionId}/reset`, { method: 'POST' }); }
-    catch (e) { console.warn('Reset failed', e); }
+  currentQ        = 0;
+  answered        = false;
+  quizAnswerState = questions.map(() => ({ selectedIndex: null, correct: null, correctIndex: null, explanation: null }));
+  const body = document.querySelector('#quiz-active .quiz-body');
+  if (body) {
+    body.innerHTML = `
+      <div class="question-text" id="q-text"></div>
+      <div class="options-list"  id="q-options"></div>
+      <div class="feedback-msg"  id="q-feedback"></div>`;
   }
-  currentQ = 0;
-  answered = false;
-  document.querySelector('.quiz-body').innerHTML = `
-    <div class="question-text" id="q-text"></div>
-    <div class="options-list"  id="q-options"></div>
-    <div class="feedback-msg"  id="q-feedback"></div>`;
-  document.getElementById('q-next').style.display = '';
-  renderQuestion();
+  const qNext = document.getElementById('q-next');
+  const qPrev = document.getElementById('q-prev');
+  if (qNext) qNext.style.display = '';
+  if (qPrev) qPrev.style.display = '';
+  quizLoaded = false;
+  await loadQuizQuestions();
 }
 
 /* ══════════════════════════════════════════════════
@@ -3254,22 +6043,47 @@ async function restartQuiz() {
 async function initializeApp() {
   const trainingNarrative = localeConfig().trainingNarrative;
 
+  applyDemoFeatures();
   applyLocaleToUI();
   renderParticipantBar();
   renderChatHistory();
+
+  // ── Check for session in URL (e.g. /c/{id} on page refresh) ──
+  const urlSessionId = _getSessionIdFromUrl();
+  if (urlSessionId) {
+    // Attempt to resume — loads chatroom + state; stays on training screen
+    _loadSessionView(urlSessionId).then(() => {
+      refreshSessionSidebar().catch(() => {});
+    }).catch(e => {
+      console.warn('Session resume from URL failed:', e);
+      showScreen('training');
+    });
+  } else {
+    // No session in URL — show the home screen
+    showScreen('home');
+  }
+
   updateChromeForScreen();
+
+  // ── Load session sidebar ──────────────────────────────────
+  refreshSessionSidebar().catch(() => {});
 
   try {
     const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
     trainingNarrativeMeta = narrativeMeta;
-    trainingModules = Array.isArray(narrativeMeta?.modules) ? narrativeMeta.modules : [];
+    applyTrainingSessionMetadata(narrativeMeta?.sessions);
     trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
-    trainingAttendees = Array.isArray(narrativeMeta?.participants?.attendees)
-      ? narrativeMeta.participants.attendees
-      : [];
+    trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+      ? narrativeMeta.live_personas
+      : (Array.isArray(narrativeMeta?.participants?.attendees)
+        ? narrativeMeta.participants.attendees
+        : V2_TRAINING_PERSONAS);
     renderParticipantBar();
-    renderModuleJumpChips();
-    renderHomeSessionCard();
+    renderSessionJumpChips();
+    if (!urlSessionId) renderHomeSessionCard();
+    updateSessionLabel();
+    updateTrainingActionButton();
+    setModuleChipDisabled(!canSwitchSessions());
   } catch (e) {
     console.warn('Backend unavailable — live features disabled:', e.message);
     const homeStartBtn = document.getElementById('home-start-btn');
@@ -3277,7 +6091,30 @@ async function initializeApp() {
   }
 }
 
-initializeApp();
+/* ══════════════════════════════════════════════════
+   DARK MODE TOGGLE
+══════════════════════════════════════════════════ */
+function toggleDarkMode() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  try { localStorage.setItem('theme', next); } catch(e) {}
+  updateDarkToggle();
+}
+
+function updateDarkToggle() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const btn = document.getElementById('dark-toggle');
+  if (btn) btn.textContent = isDark ? t('lightMode') : t('darkMode');
+}
+
+// Only boot the app if the user is already authenticated.
+// If not, the login overlay stays visible until handleLogin() succeeds.
+if (checkAuth()) {
+  initializeApp();
+  updateDarkToggle();
+}
 </script>
 </body>
 </html>
