@@ -10,6 +10,28 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  /* Animatable theme tokens — enables smooth light/dark on flashcards */
+  @property --speaker-trainer-bg { syntax: '<color>'; inherits: true; initial-value: #d4f0e3; }
+  @property --speaker-trainer-fg { syntax: '<color>'; inherits: true; initial-value: #1e5c40; }
+  @property --speaker-ramesh-bg  { syntax: '<color>'; inherits: true; initial-value: #daeef9; }
+  @property --speaker-ramesh-fg  { syntax: '<color>'; inherits: true; initial-value: #1a5f8a; }
+  @property --speaker-simran-bg  { syntax: '<color>'; inherits: true; initial-value: #fde8f0; }
+  @property --speaker-simran-fg  { syntax: '<color>'; inherits: true; initial-value: #9b3060; }
+  @property --speaker-priya-bg   { syntax: '<color>'; inherits: true; initial-value: #ece4f7; }
+  @property --speaker-priya-fg   { syntax: '<color>'; inherits: true; initial-value: #5b3d8a; }
+  @property --speaker-sejal-bg   { syntax: '<color>'; inherits: true; initial-value: #fef3c2; }
+  @property --speaker-sejal-fg   { syntax: '<color>'; inherits: true; initial-value: #7a5c00; }
+  @property --speaker-user-bg    { syntax: '<color>'; inherits: true; initial-value: #f6ddd2; }
+  @property --speaker-user-fg    { syntax: '<color>'; inherits: true; initial-value: #6e2f20; }
+  @property --speaker-other-bg   { syntax: '<color>'; inherits: true; initial-value: #fef3c2; }
+  @property --speaker-other-fg   { syntax: '<color>'; inherits: true; initial-value: #7a5c00; }
+  @property --ink        { syntax: '<color>'; inherits: true; initial-value: #2d2d2d; }
+  @property --ink-soft   { syntax: '<color>'; inherits: true; initial-value: #555555; }
+  @property --ink-muted  { syntax: '<color>'; inherits: true; initial-value: #888888; }
+  @property --surface    { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+  @property --bg         { syntax: '<color>'; inherits: true; initial-value: #f7f5f0; }
+  @property --border     { syntax: '<color>'; inherits: true; initial-value: #e0e0e0; }
+
   :root {
     --sage: #7bc4a0;
     --sage-light: #d4f0e3;
@@ -36,6 +58,47 @@
     --sage-dk: #1e5c40;
     --sky-dk: #1a5f8a;
     --honey-dk: #7a5c00;
+    /* Per-speaker palette (flashcard, chat bubble, participant chip) */
+    --speaker-trainer-bg: #d4f0e3;
+    --speaker-trainer-fg: #1e5c40;
+    --speaker-ramesh-bg: #daeef9;
+    --speaker-ramesh-fg: #1a5f8a;
+    --speaker-simran-bg: #fde8f0;
+    --speaker-simran-fg: #9b3060;
+    --speaker-priya-bg: #ece4f7;
+    --speaker-priya-fg: #5b3d8a;
+    --speaker-sejal-bg: #fef3c2;
+    --speaker-sejal-fg: #7a5c00;
+    --speaker-user-bg: #f6ddd2;
+    --speaker-user-fg: #6e2f20;
+    --speaker-other-bg: #fef3c2;
+    --speaker-other-fg: #7a5c00;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      transition:
+        --speaker-trainer-bg 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-trainer-fg 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-ramesh-bg  0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-ramesh-fg  0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-simran-bg  0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-simran-fg  0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-priya-bg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-priya-fg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-sejal-bg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-sejal-fg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-user-bg    0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-user-fg    0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-other-bg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --speaker-other-fg   0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --ink 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --ink-soft 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --ink-muted 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --surface 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --bg 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+        --border 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
   }
 
   body {
@@ -205,43 +268,91 @@
 
   /* ── Module jump chips (outside phone) ── */
   .module-jump-wrap {
-    width: 300px;
+    width: 280px;
     display: none;
+    flex-direction: column;
     position: fixed;
-    left: 16px;
+    left: 276px;
     top: 110px;
     z-index: 4;
     max-height: calc(100vh - 130px);
-    overflow-y: auto;
     margin: 0;
-    padding-right: 4px;
+    padding: 0;
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
   }
-  .module-jump-wrap.show { display: block; }
+  #module-jump-chips-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+  }
+  .module-jump-wrap.show { display: flex; }
+  /* Collapse together with the sidebar via the hamburger */
+  .module-jump-wrap.pills-collapsed,
+  body.sidebar-is-collapsed .module-jump-wrap {
+    transform: translateX(calc(-100% - 276px));
+    pointer-events: none;
+  }
   .module-jump-label {
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.7px;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: 4px;
-    padding-left: 4px;
+    margin-bottom: 6px;
+    padding-left: 2px;
+    flex-shrink: 0;
   }
   .module-jump-bar {
     display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+    gap: 5px;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(100vh - 160px);
+    padding: 2px 2px 8px;
+    scrollbar-width: thin;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
+  .module-jump-bar::-webkit-scrollbar { width: 5px; }
+  .module-jump-bar::-webkit-scrollbar-track { background: transparent; }
+  .module-jump-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
   .module-chip {
     border: 1px solid var(--border);
     background: #fff;
     color: var(--ink);
-    border-radius: 999px;
-    padding: 6px 10px;
+    border-radius: 12px;
+    padding: 7px 10px;
     font-size: 12px;
+    flex-shrink: 0;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
-    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: 'Nunito', sans-serif;
+    text-align: left;
+  }
+  .module-chip .module-chip-num {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .module-chip .module-chip-desc {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -255,9 +366,19 @@
     color: #fff;
     border-color: var(--ink);
   }
+  .module-chip.active .module-chip-num { color: rgba(255,255,255,0.7); }
+  .module-chip.active .module-chip-desc { color: #fff; }
   .module-chip:disabled {
-    opacity: 0.65;
-    cursor: default;
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .module-chip:disabled:hover {
+    border-color: var(--border);
+    background: #fff;
+  }
+  .module-chip.active:disabled:hover {
+    background: var(--ink);
+    border-color: var(--ink);
   }
 
   /* ── Pause / Mute controls ── */
@@ -326,7 +447,7 @@
   /* ── Phone shell ── */
   .phone {
     width: 360px;
-    height: min(735px, calc(100vh - 250px));
+    height: min(772px, calc(100vh - 213px));
     margin-top: 8px;
     background: var(--white);
     border-radius: 36px;
@@ -486,9 +607,14 @@
     flex-shrink: 1;
     min-width: 0;
   }
-  .chip.green  { background: var(--sage-light);  color: #2a7a58; }
-  .chip.blue   { background: var(--sky-light);   color: #1a5f8a; }
-  .chip.yellow { background: var(--honey-light); color: #7a5c00; }
+  .chip.speaker-trainer { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); }
+  .chip.speaker-ramesh  { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg); }
+  .chip.speaker-simran  { background: var(--speaker-simran-bg);  color: var(--speaker-simran-fg); }
+  .chip.speaker-priya   { background: var(--speaker-priya-bg);   color: var(--speaker-priya-fg); }
+  .chip.speaker-sejal   { background: var(--speaker-sejal-bg);   color: var(--speaker-sejal-fg); }
+  .chip.speaker-user    { background: var(--speaker-user-bg);    color: var(--speaker-user-fg); }
+  .chip.speaker-other   { background: var(--speaker-other-bg);   color: var(--speaker-other-fg); }
+  .chip.speaker-more    { background: var(--bg); color: var(--ink-muted); border: 1px solid var(--border); }
   .chip.speaking { outline: 2.5px solid var(--ink); outline-offset: 2px; }
   .chip.clickable { cursor: pointer; }
   .chip.clickable:hover { filter: brightness(0.98); }
@@ -524,6 +650,14 @@
   .attendees-popover li {
     font-size: 12px;
     color: var(--ink);
+    list-style: none;
+    padding-left: 0;
+    margin-left: -16px;
+  }
+  .attendees-popover .chip-popover {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
   }
 
   /* ─────────────────────────────────────────
@@ -543,6 +677,30 @@
   }
   .training-chrome.show { display: flex; }
   [data-theme="dark"] .training-chrome { background: var(--surface); }
+
+  /* ── Background generation progress bar ── */
+  /* Thin pulsing bar shown at the very top of the phone when the backend is
+     pre-generating dialogue for the next exchange (not yet streaming to screen). */
+  #bkg-gen-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sage), var(--sky), var(--sage));
+    background-size: 200% 100%;
+    border-radius: 0;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    animation: bkgGenSlide 1.6s linear infinite;
+  }
+  #bkg-gen-bar.visible { opacity: 1; }
+  @keyframes bkgGenSlide {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 
   .training-heading-row {
     display: grid;
@@ -691,12 +849,15 @@
 
   .scroll-hint { height: 1px; }
 
-  .flashcard { background: var(--sage-light); }
-  .flashcard.speaker-trainer  { background: var(--sage-light); }
-  .flashcard.speaker-attendee { background: var(--sky-light); }
-  .flashcard.speaker-other    { background: var(--honey-light); }
+  .flashcard { background: var(--speaker-trainer-bg); }
+  .flashcard.speaker-trainer { background: var(--speaker-trainer-bg); }
+  .flashcard.speaker-ramesh  { background: var(--speaker-ramesh-bg); }
+  .flashcard.speaker-simran  { background: var(--speaker-simran-bg); }
+  .flashcard.speaker-priya   { background: var(--speaker-priya-bg); }
+  .flashcard.speaker-sejal   { background: var(--speaker-sejal-bg); }
+  .flashcard.speaker-user    { background: var(--speaker-user-bg); }
+  .flashcard.speaker-other   { background: var(--speaker-other-bg); }
   .flashcard.manual-next {
-    cursor: pointer;
     box-shadow: inset 0 0 0 2px rgba(30, 92, 64, 0.12);
   }
 
@@ -709,28 +870,70 @@
     align-items: flex-start;
     justify-content: center;
     text-align: center;
-    transition: all 0.5s cubic-bezier(.4,0,.2,1);
+    transition:
+      background-color 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.42s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 280px;
     position: relative;
     overflow-y: auto;
+    scroll-behavior: smooth;
+    /* Subtle scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.15) transparent;
   }
+  .flashcard::-webkit-scrollbar { width: 4px; }
+  .flashcard::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+  /* Fade gradient at bottom to indicate scrollable content */
+  .flashcard.overflows::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    display: block;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  .flashcard.speaker-trainer.overflows::after { background: linear-gradient(to bottom, transparent, var(--speaker-trainer-bg)); }
+  .flashcard.speaker-ramesh.overflows::after  { background: linear-gradient(to bottom, transparent, var(--speaker-ramesh-bg)); }
+  .flashcard.speaker-simran.overflows::after  { background: linear-gradient(to bottom, transparent, var(--speaker-simran-bg)); }
+  .flashcard.speaker-priya.overflows::after   { background: linear-gradient(to bottom, transparent, var(--speaker-priya-bg)); }
+  .flashcard.speaker-sejal.overflows::after   { background: linear-gradient(to bottom, transparent, var(--speaker-sejal-bg)); }
+  .flashcard.speaker-user.overflows::after    { background: linear-gradient(to bottom, transparent, var(--speaker-user-bg)); }
+  .flashcard.speaker-other.overflows::after   { background: linear-gradient(to bottom, transparent, var(--speaker-other-bg)); }
   .flashcard::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 60%);
     pointer-events: none;
+    border-radius: inherit;
+  }
+  [data-theme="light"] .flashcard::before {
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 60%);
+  }
+  html.theme-transitioning .flashcard::before {
+    display: none;
+  }
+  #flashcard-speaker-badge {
+    transition: color 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .flashcard p {
     font-family: 'Lora', serif;
     font-size: 22px;
     font-weight: 600;
-    color: #1e5c40;
     line-height: 1.45;
     position: relative;
+    transition: color 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .flashcard.speaker-attendee p { color: #1a5f8a; }
-  .flashcard.speaker-other    p { color: #7a5c00; }
+  .flashcard.speaker-trainer p { color: var(--speaker-trainer-fg); }
+  .flashcard.speaker-ramesh  p { color: var(--speaker-ramesh-fg); }
+  .flashcard.speaker-simran  p { color: var(--speaker-simran-fg); }
+  .flashcard.speaker-priya   p { color: var(--speaker-priya-fg); }
+  .flashcard.speaker-sejal   p { color: var(--speaker-sejal-fg); }
+  .flashcard.speaker-user    p { color: var(--speaker-user-fg); }
+  .flashcard.speaker-other   p { color: var(--speaker-other-fg); }
 
   /* Zoomed out state */
   .flashcard-wrap.zoomed .flashcard {
@@ -750,14 +953,25 @@
     line-height: 1.5;
     animation: bubbleIn 0.3s ease both;
     flex-shrink: 0;
+    transition:
+      background-color 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   }
   @keyframes bubbleIn {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .msg-bubble.trainer  { background: var(--sage-light);  align-self: flex-start; max-width: 85%; }
-  .msg-bubble.attendee { background: var(--blush-light); align-self: flex-end;   max-width: 80%; }
-  .msg-bubble.note     { background: var(--sky-light);   align-self: flex-start; max-width: 90%; }
+  .msg-bubble.speaker-trainer { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); align-self: flex-start; max-width: 85%; }
+  .msg-bubble.speaker-ramesh  { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg);  align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.speaker-simran  { background: var(--speaker-simran-bg);  color: var(--speaker-simran-fg);  align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.speaker-priya   { background: var(--speaker-priya-bg);   color: var(--speaker-priya-fg);   align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.speaker-sejal   { background: var(--speaker-sejal-bg);   color: var(--speaker-sejal-fg);   align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.speaker-user    { background: var(--speaker-user-bg);    color: var(--speaker-user-fg);    align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.speaker-other   { background: var(--speaker-other-bg);   color: var(--speaker-other-fg);   align-self: flex-start; max-width: 90%; }
+  /* Legacy bubble classes from older sessions */
+  .msg-bubble.trainer  { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); align-self: flex-start; max-width: 85%; }
+  .msg-bubble.attendee { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg);  align-self: flex-end;   max-width: 80%; }
+  .msg-bubble.note     { background: var(--speaker-other-bg);   color: var(--speaker-other-fg);   align-self: flex-start; max-width: 90%; }
 
   .msg-label {
     font-size: 10px;
@@ -1158,7 +1372,7 @@
     gap: 6px;
     user-select: none;
   }
-  .quiz-session-card:hover:not(.locked):not(.done):not(.generating) {
+  .quiz-session-card:hover:not(.locked):not(.generating) {
     border-color: var(--sage);
     background: var(--sage-pale);
     transform: translateY(-1px);
@@ -1166,7 +1380,7 @@
   .quiz-session-card.done {
     border-color: var(--sage);
     background: var(--sage-light);
-    cursor: default;
+    cursor: pointer;
   }
   .quiz-session-card.locked { opacity: 0.50; cursor: not-allowed; }
   .quiz-session-card.generating { opacity: 0.75; cursor: wait; }
@@ -1253,25 +1467,38 @@
   .btn-continue-arrow { flex: 1; }
 
   .scroll-hint-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     text-align: center;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 11.5px;
+    font-weight: 800;
     color: var(--ink);
-    padding: 0 14px 5px;
-    letter-spacing: 0.35px;
-    line-height: 1.05;
+    padding: 5px 16px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
     cursor: pointer;
     user-select: none;
     flex-shrink: 0;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.09);
+    transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    margin: 4px auto;
+    align-self: center;
   }
-  .scroll-hint-label:hover { color: var(--ink-soft); }
+  .scroll-hint-label:hover {
+    background: var(--sage-pale);
+    border-color: var(--sage);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.13);
+  }
   /* When hosted in the chrome strip outside the phone */
   .chrome-scroll-hint {
-    padding: 2px 14px 6px;
-    color: var(--ink-muted);
-    border-top: 1px solid var(--border);
-    margin-top: 2px;
-    font-size: 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 
   /* ═══════════════════════════════════════════
@@ -1300,12 +1527,20 @@
     40%            { transform: translateY(-4px) scale(1.05); opacity: 0.85; }
   }
   /* Color the dots to match their card context */
-  .flashcard.speaker-trainer  .typing-dots span { background: #1e5c40; }
-  .flashcard.speaker-attendee .typing-dots span { background: #1a5f8a; }
-  .flashcard.speaker-other    .typing-dots span { background: #7a5c00; }
-  .msg-bubble.trainer  .typing-dots span { background: #1e5c40; }
-  .msg-bubble.attendee .typing-dots span { background: #7a2020; }
-  .msg-bubble.note     .typing-dots span { background: #1a5f8a; }
+  .flashcard.speaker-trainer .typing-dots span,
+  .msg-bubble.speaker-trainer .typing-dots span { background: var(--speaker-trainer-fg); }
+  .flashcard.speaker-ramesh .typing-dots span,
+  .msg-bubble.speaker-ramesh .typing-dots span { background: var(--speaker-ramesh-fg); }
+  .flashcard.speaker-simran .typing-dots span,
+  .msg-bubble.speaker-simran .typing-dots span { background: var(--speaker-simran-fg); }
+  .flashcard.speaker-priya .typing-dots span,
+  .msg-bubble.speaker-priya .typing-dots span { background: var(--speaker-priya-fg); }
+  .flashcard.speaker-sejal .typing-dots span,
+  .msg-bubble.speaker-sejal .typing-dots span { background: var(--speaker-sejal-fg); }
+  .flashcard.speaker-user .typing-dots span,
+  .msg-bubble.speaker-user .typing-dots span { background: var(--speaker-user-fg); }
+  .flashcard.speaker-other .typing-dots span,
+  .msg-bubble.speaker-other .typing-dots span { background: var(--speaker-other-fg); }
 
   /* ═══════════════════════════════════════════
      NEW: Mic button recording state
@@ -1574,6 +1809,21 @@
     --sage-dk: #6abf94;
     --sky-dk: #6ab4d8;
     --honey-dk: #d4ab3a;
+    /* Per-speaker palette — dark mode */
+    --speaker-trainer-bg: #234a38;
+    --speaker-trainer-fg: #c8eed8;
+    --speaker-ramesh-bg: #1a3348;
+    --speaker-ramesh-fg: #b8dcf0;
+    --speaker-simran-bg: #3d2433;
+    --speaker-simran-fg: #f5c4d8;
+    --speaker-priya-bg: #2e2540;
+    --speaker-priya-fg: #d4c4f0;
+    --speaker-sejal-bg: #3a3200;
+    --speaker-sejal-fg: #f0d878;
+    --speaker-user-bg: #4a2b21;
+    --speaker-user-fg: #ffd9cc;
+    --speaker-other-bg: #3a3200;
+    --speaker-other-fg: #f0d878;
   }
 
   /* Body background */
@@ -1608,6 +1858,8 @@
   /* Module jump chips */
   [data-theme="dark"] .module-chip           { background: var(--surface); border-color: var(--border); color: var(--ink); }
   [data-theme="dark"] .module-chip.active    { background: #9bc8b4; color: #0f1e17; border-color: #9bc8b4; }
+  [data-theme="dark"] .module-chip.active .module-chip-num { color: rgba(15,30,23,0.7); }
+  [data-theme="dark"] .module-chip.active .module-chip-desc { color: #0f1e17; }
   [data-theme="dark"] .module-jump-label     { color: var(--ink-muted); }
 
   /* Home screen */
@@ -1642,10 +1894,7 @@
   [data-theme="dark"] .attendees-popover li { color: var(--ink); }
 
   /* Participant chips */
-  [data-theme="dark"] .chip.green   { color: var(--sage-dk); }
-  [data-theme="dark"] .chip.blue    { color: var(--sky-dk); }
-  [data-theme="dark"] .chip.yellow  { color: var(--honey-dk); }
-  [data-theme="dark"] .chip.speaking { outline-color: var(--ink); }
+  [data-theme="dark"] .chip.speaker-more { background: var(--surface); border-color: var(--border); color: var(--ink-muted); }
 
   /* Training heading + controls */
   [data-theme="dark"] .session-title-line  { color: var(--ink-muted); }
@@ -1655,23 +1904,44 @@
   [data-theme="dark"] .mute-btn.muted:hover { background: #3a2e00; }
 
   /* Scroll hint */
-  [data-theme="dark"] .scroll-hint-label { color: var(--ink); }
+  [data-theme="dark"] .scroll-hint-label {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--border);
+  }
+  [data-theme="dark"] .scroll-hint-label:hover {
+    background: #1e2e24;
+    border-color: var(--sage);
+  }
 
-  /* Flashcard */
-  [data-theme="dark"] .flashcard p                    { color: var(--sage-dk); }
-  [data-theme="dark"] .flashcard.speaker-attendee p   { color: var(--sky-dk); }
-  [data-theme="dark"] .flashcard.speaker-other p      { color: var(--honey-dk); }
+  [data-theme="dark"] .chip.speaking { outline-color: var(--ink); }
+
+  /* Flashcard — flat speaker bg in dark; no washed overlay during theme toggle */
   [data-theme="dark"] .flashcard::before {
     background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.05) 0%, transparent 60%);
   }
 
-  /* Typing dots */
-  [data-theme="dark"] .flashcard.speaker-trainer  .typing-dots span { background: var(--sage-dk); }
-  [data-theme="dark"] .flashcard.speaker-attendee .typing-dots span { background: var(--sky-dk); }
-  [data-theme="dark"] .flashcard.speaker-other    .typing-dots span { background: var(--honey-dk); }
-  [data-theme="dark"] .msg-bubble.trainer  .typing-dots span { background: var(--sage-dk); }
-  [data-theme="dark"] .msg-bubble.attendee .typing-dots span { background: #e07070; }
-  [data-theme="dark"] .msg-bubble.note     .typing-dots span { background: var(--sky-dk); }
+  /* Typing dots — fg vars already tuned for dark backgrounds */
+  [data-theme="dark"] .flashcard.speaker-trainer .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-trainer .typing-dots span { background: var(--speaker-trainer-fg); }
+  [data-theme="dark"] .flashcard.speaker-ramesh .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-ramesh .typing-dots span { background: var(--speaker-ramesh-fg); }
+  [data-theme="dark"] .flashcard.speaker-simran .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-simran .typing-dots span { background: var(--speaker-simran-fg); }
+  [data-theme="dark"] .flashcard.speaker-priya .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-priya .typing-dots span { background: var(--speaker-priya-fg); }
+  [data-theme="dark"] .flashcard.speaker-sejal .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-sejal .typing-dots span { background: var(--speaker-sejal-fg); }
+  [data-theme="dark"] .flashcard.speaker-user .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-user .typing-dots span { background: var(--speaker-user-fg); }
+  [data-theme="dark"] .flashcard.speaker-other .typing-dots span,
+  [data-theme="dark"] .msg-bubble.speaker-other .typing-dots span { background: var(--speaker-other-fg); }
+
+  /* Chat history bubbles inherit --speaker-* vars; labels only need soft ink */
+  [data-theme="dark"] .msg-bubble .msg-label {
+    color: inherit;
+    opacity: 0.72;
+  }
 
   /* Bottom bar + primary button */
   [data-theme="dark"] .bottom-bar        { border-top-color: var(--border); }
@@ -1779,7 +2049,7 @@
   /* ── Quiz session picker dark mode ── */
   [data-theme="dark"] .quiz-session-card              { background: var(--surface); border-color: var(--border); color: var(--ink); }
   [data-theme="dark"] .quiz-session-card.done         { background: #1a3c2d; border-color: #3a7a5f; }
-  [data-theme="dark"] .quiz-session-card:hover:not(.locked):not(.done):not(.generating) { background: #1e2e24; border-color: var(--sage); }
+  [data-theme="dark"] .quiz-session-card:hover:not(.locked):not(.generating) { background: #1e2e24; border-color: var(--sage); }
   [data-theme="dark"] .quiz-card-badge.ready          { background: #1e2e24; color: #9bc8b4; }
   [data-theme="dark"] .quiz-card-badge.done           { background: var(--sage);  color: #fff; }
   [data-theme="dark"] .quiz-card-badge.locked         { background: #2e2c29; color: var(--ink-muted); }
@@ -1800,10 +2070,75 @@
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    z-index: 3;
+    z-index: 200;
     overflow: hidden;
     box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+    transform: translateX(0);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), box-shadow 0.28s;
   }
+  /* Collapsed state — works for both desktop and mobile */
+  #session-sidebar.sidebar-collapsed {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+  /* Full-screen overlay when sidebar is open on mobile */
+  #sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    transition: opacity 0.25s;
+  }
+  #sidebar-overlay.visible { display: block; }
+
+  /* Hamburger / collapse toggle button (inside sidebar header) */
+  #sidebar-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+  #sidebar-toggle-btn:hover { background: var(--sage-pale); color: var(--ink); }
+  [data-theme="dark"] #sidebar-toggle-btn:hover { background: #1e2e24; color: var(--ink); }
+
+  /* Hamburger button that floats when sidebar is collapsed */
+  #sidebar-open-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 201;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  #sidebar-open-btn:hover { border-color: var(--sage); background: var(--sage-pale); }
+  #sidebar-open-btn.visible { display: flex; }
+  [data-theme="dark"] #sidebar-open-btn { background: var(--surface); border-color: var(--border); }
+  [data-theme="dark"] #sidebar-open-btn:hover { background: #1e2e24; border-color: var(--sage); }
 
   #sidebar-header {
     padding: 16px 16px 10px;
@@ -1831,7 +2166,9 @@
     font-family: 'Nunito', sans-serif;
   }
 
-  #sidebar-new-btn {
+  .sidebar-primary-btn,
+  #sidebar-new-btn,
+  #sidebar-feedback-btn {
     margin: 10px 12px;
     flex-shrink: 0;
     background: var(--ink);
@@ -1849,9 +2186,21 @@
     align-items: center;
     gap: 6px;
   }
-  #sidebar-new-btn:hover { opacity: 0.85; }
-  #sidebar-new-btn:disabled { opacity: 0.45; cursor: default; }
-  [data-theme="dark"] #sidebar-new-btn {
+  #sidebar-feedback-btn {
+    margin-top: 0;
+  }
+  .sidebar-primary-btn:hover,
+  #sidebar-new-btn:hover,
+  #sidebar-feedback-btn:hover { opacity: 0.85; }
+  .sidebar-primary-btn:disabled,
+  #sidebar-new-btn:disabled,
+  #sidebar-feedback-btn:disabled { opacity: 0.45; cursor: default; }
+  #sidebar-feedback-btn.active {
+    box-shadow: inset 0 0 0 2px var(--sage);
+  }
+  [data-theme="dark"] .sidebar-primary-btn,
+  [data-theme="dark"] #sidebar-new-btn,
+  [data-theme="dark"] #sidebar-feedback-btn {
     background: var(--sage-dk);
     color: #0d1f16;
   }
@@ -1891,6 +2240,12 @@
   .session-list-item:hover { background: var(--sage-pale); }
   .session-list-item.active { background: var(--sage-light); }
 
+  .session-item-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
   .session-item-title {
     font-size: 13px;
     font-weight: 700;
@@ -1902,6 +2257,13 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    flex: 1;
+    min-width: 0;
+  }
+  .session-item-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .session-item-title .status-dot {
     width: 6px;
@@ -1922,22 +2284,90 @@
     text-overflow: ellipsis;
   }
 
+  .session-rename-input {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    border: 1.5px solid var(--sage);
+    border-radius: 6px;
+    padding: 2px 6px;
+    width: 100%;
+    outline: none;
+    background: var(--surface);
+  }
+  [data-theme="dark"] .session-rename-input { background: var(--surface); color: var(--ink); border-color: var(--sage); }
+
   .session-item-menu {
-    position: absolute;
-    top: 8px;
-    right: 8px;
     background: none;
     border: none;
     color: var(--ink-muted);
-    font-size: 14px;
+    font-size: 16px;
     cursor: pointer;
-    padding: 2px 4px;
+    padding: 2px 6px;
     border-radius: 6px;
     display: none;
     line-height: 1;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
   }
   .session-list-item:hover .session-item-menu { display: block; }
   .session-item-menu:hover { background: var(--border); color: var(--ink); }
+  /* Restore button in archived view — always visible, styled as a small pill */
+  .session-restore-btn {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    background: var(--surface);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .session-restore-btn:hover {
+    border-color: var(--sage);
+    color: var(--sage-dk);
+    background: var(--sage-pale);
+  }
+
+  .session-back-wrap {
+    padding: 4px 4px 8px;
+    list-style: none;
+  }
+  .session-back-btn {
+    display: block;
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .session-back-btn:hover {
+    border-color: var(--sage);
+    color: var(--sage-dk);
+    background: var(--sage-pale);
+  }
+  [data-theme="dark"] .session-back-btn {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--ink);
+  }
+  [data-theme="dark"] .session-back-btn:hover {
+    border-color: var(--sage);
+    color: var(--sage);
+    background: #1e2e24;
+  }
 
   .session-list-empty {
     padding: 20px 12px;
@@ -1952,7 +2382,26 @@
     padding: 12px;
     border-top: 1px solid var(--border);
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
+
+  #sidebar-archived-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink-muted);
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.15s, color 0.15s;
+    text-align: left;
+  }
+  #sidebar-archived-btn:hover { border-color: var(--sage); color: var(--sage-dk); }
 
   #sidebar-logout-btn {
     background: none;
@@ -2020,10 +2469,278 @@
   [data-theme="dark"] .session-ctx-menu { background: var(--surface); border-color: var(--border); }
   [data-theme="dark"] .session-ctx-item:hover { background: #1e2e24; }
   [data-theme="dark"] .session-ctx-item.danger:hover { background: #3a1a1a; }
+  [data-theme="dark"] .session-restore-btn { background: var(--surface); border-color: var(--border); color: var(--ink); }
+  [data-theme="dark"] .session-restore-btn:hover { border-color: var(--sage); color: var(--sage); background: #1e2e24; }
 
-  /* When sidebar is visible, push module-jump-wrap to the right of it */
-  body.sidebar-active .module-jump-wrap {
+  /* ── Session feedback panel (right side) ── */
+  #feedback-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+  #feedback-overlay.visible { display: block; }
+
+  #feedback-panel {
+    display: none;
+    position: fixed;
+    top: 110px;
+    right: 18px;
+    width: 320px;
+    height: 480px;
+    min-width: 260px;
+    min-height: 280px;
+    max-width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+    z-index: 200;
+    flex-direction: column;
+    touch-action: none;
+  }
+  body.feedback-panel-open #feedback-panel {
+    display: flex;
+  }
+
+  .feedback-panel-shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+    background: var(--surface);
+    border: 1.5px solid var(--bezel-ring);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .feedback-panel-header {
+    padding: 14px 16px 10px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    font-family: 'Nunito', sans-serif;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .feedback-panel-header.dragging {
+    cursor: grabbing;
+  }
+
+  .feedback-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overscroll-behavior: contain;
+  }
+
+  .feedback-entry {
+    background: var(--sage-pale);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .feedback-entry-text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .feedback-entry-time {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-muted);
+    letter-spacing: 0.2px;
+  }
+  .feedback-empty {
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: center;
+    padding: 24px 12px;
+    line-height: 1.5;
+  }
+  .feedback-loading {
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: center;
+    padding: 16px 12px;
+  }
+
+  .feedback-input-wrap {
+    border-top: 1px solid var(--border);
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+  #feedback-input {
+    width: 100%;
+    min-height: 72px;
+    max-height: 120px;
+    resize: none;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  #feedback-input:focus {
+    outline: none;
+    border-color: var(--sage);
+  }
+  .feedback-input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .feedback-input-actions .mic-status {
+    flex: 1;
+    min-width: 0;
+    padding-left: 0;
+    text-align: right;
+  }
+  #feedback-submit-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #feedback-submit-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  [data-theme="dark"] #feedback-submit-btn {
+    background: var(--sage-dk);
+    color: #0d1f16;
+  }
+  [data-theme="dark"] .feedback-entry {
+    background: #1e2e24;
+  }
+
+  .feedback-resize-handle {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    width: 18px;
+    height: 18px;
+    cursor: nwse-resize;
+    touch-action: none;
+    z-index: 2;
+    opacity: 0.55;
+  }
+  .feedback-resize-handle::before {
+    content: '';
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--ink-muted);
+    border-bottom: 2px solid var(--ink-muted);
+    border-bottom-right-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    #feedback-panel {
+      top: 0 !important;
+      right: 0 !important;
+      left: auto !important;
+      bottom: 0;
+      width: min(100vw, 360px) !important;
+      height: auto !important;
+      max-height: none;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+    body.feedback-panel-open #feedback-panel {
+      transform: translateX(0);
+    }
+    .feedback-resize-handle {
+      display: none;
+    }
+    .feedback-panel-header {
+      cursor: default;
+    }
+  }
+
+  /* Session pills sit next to the sidebar; no push needed — left:276px is the default */
+  body.sidebar-active:not(.sidebar-is-collapsed) .module-jump-wrap {
     left: 276px;
+  }
+
+  /* ── Mobile / responsive breakpoint ── */
+  @media (max-width: 768px) {
+    /* Body: remove extra padding so phone fills viewport */
+    body {
+      padding: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    /* Phone shell: full viewport width, no rounded shell frame */
+    .phone-outer {
+      width: 100%;
+      margin-top: 0;
+    }
+    .phone {
+      width: 100%;
+      height: 100dvh;
+      height: calc(var(--vh, 1vh) * 100);
+      border-radius: 0;
+      box-shadow: none;
+      margin-top: 0;
+    }
+    /* Sidebar: starts off-canvas on mobile — opened via overlay */
+    #session-sidebar {
+      z-index: 300;
+    }
+    /* Always show the floating breadcrumb open button on mobile */
+    #sidebar-open-btn {
+      display: flex;
+    }
+    /* On mobile, pills sit at the left edge when sidebar is open (sidebar overlays on top) */
+    body.sidebar-active:not(.sidebar-is-collapsed) .module-jump-wrap {
+      left: 16px;
+    }
+    /* On mobile, pills also collapse with sidebar */
+    .module-jump-wrap {
+      left: 16px !important;
+    }
+    /* App header: hidden on mobile (shown only on home screen via auth overlay) */
+    .app-header { display: none; }
+    /* Dark-mode toggle: smaller, move left to not overlap */
+    .dark-toggle {
+      top: 10px;
+      right: 10px;
+      font-size: 11px;
+      padding: 5px 10px;
+    }
   }
 </style>
 </head>
@@ -2045,9 +2762,8 @@
 
     <!-- Branding header -->
     <div style="text-align:center; padding-top:8px;">
-      <div style="font-size:40px; margin-bottom:14px;">🧠</div>
-      <h1 style="font-family:'Lora',serif; font-size:30px; font-weight:600; color:var(--ink); letter-spacing:-0.5px; margin-bottom:8px;">Artpark x CMHLP MH Trainer</h1>
-      <p style="font-size:14px; color:var(--ink-muted); line-height:1.6; max-width:480px; margin:0 auto;">An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.</p>
+      <h1 style="font-family:'Lora',serif; font-size:28px; font-weight:600; color:var(--ink); letter-spacing:-0.5px; margin-bottom:8px;">ARTpark x CMHLP AI Trainer for Community Mental Health</h1>
+      <p style="font-size:14px; color:var(--ink-muted); line-height:1.6; max-width:480px; margin:0 auto;">An interactive learning space where community health workers learn with an AI trainer, AI trainees, and guided beneficiary conversations.</p>
     </div>
 
     <!-- Overview cards + sign-in form side by side on wider screens, stacked on mobile -->
@@ -2055,23 +2771,23 @@
 
       <!-- Overview: how the session works -->
       <div style="flex:1; min-width:260px; max-width:400px; display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--sage-dk); margin-bottom:4px;">How the session works</div>
+        <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px; color:var(--sage-dk); margin-bottom:4px;">How the training works</div>
         <div style="background:var(--sage-pale); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
-          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">📖</div>
+          <div style="font-size:16px; flex-shrink:0; margin-top:2px; width:24px; height:24px; border-radius:6px; background:var(--sage-dk); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'Nunito',sans-serif;">1</div>
           <div>
             <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Training</div>
             <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Learn through a guided exchange between an AI trainer and trainee group.</div>
           </div>
         </div>
         <div style="background:var(--sky-light); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
-          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">🎭</div>
+          <div style="font-size:16px; flex-shrink:0; margin-top:2px; width:24px; height:24px; border-radius:6px; background:#4a90b8; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'Nunito',sans-serif;">2</div>
           <div>
             <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Roleplay</div>
-            <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Practice counselling with an AI patient by watching or participating yourself.</div>
+            <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Practice counselling with an AI Beneficiary by watching or participating yourself.</div>
           </div>
         </div>
         <div style="background:var(--honey-light); border-radius:16px; padding:18px 20px; display:flex; gap:14px; align-items:flex-start;">
-          <div style="font-size:22px; flex-shrink:0; margin-top:1px;">✏️</div>
+          <div style="font-size:16px; flex-shrink:0; margin-top:2px; width:24px; height:24px; border-radius:6px; background:#b8860b; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'Nunito',sans-serif;">3</div>
           <div>
             <div style="font-weight:800; font-size:14px; color:var(--ink); font-family:'Nunito',sans-serif; margin-bottom:3px;">Quiz</div>
             <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">Finish with a short knowledge check to reinforce the session.</div>
@@ -2088,7 +2804,7 @@
       ">
         <div style="text-align:center;">
           <h2 style="font-family:'Nunito',sans-serif; font-size:18px; font-weight:800; color:var(--ink);">Sign in to continue</h2>
-          <p style="font-size:12px; color:var(--ink-muted); margin-top:4px; font-family:'Nunito',sans-serif;">Artpark x CMHLP MH Trainer</p>
+          <p style="font-size:12px; color:var(--ink-muted); margin-top:4px; font-family:'Nunito',sans-serif;">ARTpark x CMHLP AI Trainer</p>
         </div>
         <div style="display:flex; flex-direction:column; gap:12px;">
           <input
@@ -2118,7 +2834,7 @@
             />
             <button
               type="button"
-              onclick="(function(){var i=document.getElementById('auth-password');var b=document.getElementById('pw-eye');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁':'🙈';})()"
+              onclick="(function(){var i=document.getElementById('auth-password');var b=document.getElementById('pw-eye');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'🙈':'👁';})()"
               id="pw-eye"
               style="
                 position:absolute; right:12px; top:50%; transform:translateY(-50%);
@@ -2126,7 +2842,7 @@
                 padding:4px; line-height:1; color:var(--ink-muted);
               "
               aria-label="Toggle password visibility"
-            >👁</button>
+            >🙈</button>
           </div>
           <div id="auth-error" style="
             color:#c2185b; font-size:13px; font-family:'Nunito',sans-serif;
@@ -2149,20 +2865,35 @@
   </div>
 </div>
 
+<!-- Sidebar backdrop overlay (mobile) -->
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Floating hamburger — visible when sidebar is collapsed -->
+<button id="sidebar-open-btn" class="visible" onclick="toggleSidebar()" aria-label="Open sessions menu" title="Open sessions menu">☰</button>
+
 <!-- ══════════════════════════════════════════════════
      SESSION SIDEBAR — shown after sign-in
 ══════════════════════════════════════════════════ -->
 <aside id="session-sidebar" style="display:none">
   <div id="sidebar-header">
-    <div id="sidebar-app-name">Artpark x CMHLP</div>
-    <div id="sidebar-user-email"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div>
+        <div id="sidebar-app-name">Artpark x CMHLP</div>
+        <div id="sidebar-user-email"></div>
+      </div>
+      <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Collapse sessions menu" title="Collapse sessions menu">✕</button>
+    </div>
   </div>
-  <button id="sidebar-new-btn" onclick="createNewSession()">
+  <button id="sidebar-new-btn" class="sidebar-primary-btn" onclick="createNewSession()">
     <span style="font-size:16px;line-height:1">+</span> New Session
+  </button>
+  <button id="sidebar-feedback-btn" class="sidebar-primary-btn" onclick="toggleFeedbackPanel()" style="display:none">
+    <span id="sidebar-feedback-btn-label">Feedback</span>
   </button>
   <div id="sidebar-sessions-label">Sessions</div>
   <ul id="session-list"></ul>
   <div id="sidebar-footer">
+    <button id="sidebar-archived-btn" onclick="showArchivedView()">Archived</button>
     <button id="sidebar-logout-btn" onclick="handleLogout()">Sign Out</button>
   </div>
 </aside>
@@ -2197,6 +2928,8 @@
 
   <!-- Training chrome: participant chips + session heading live inside the phone frame -->
   <div class="training-chrome" id="training-chrome">
+    <!-- Background generation progress bar: pulsing when backend pre-generates dialogue -->
+    <div id="bkg-gen-bar"></div>
     <div class="support-overlay" id="support-overlay" onclick="closeSupportPanel()"></div>
     <aside class="support-panel" id="support-panel">
       <h3 id="support-title">Support Resources</h3>
@@ -2222,7 +2955,7 @@
         </button>
       </div>
     </div>
-    <p class="scroll-hint-label chrome-scroll-hint" id="scroll-hint-text" onclick="toggleZoom()">↑ Scroll up to see history</p>
+    <p class="scroll-hint-label chrome-scroll-hint" id="scroll-hint-text" onclick="toggleZoom()">↑ Chat History</p>
   </div>
 
   <div class="screen home-screen" id="screen-home">
@@ -2231,12 +2964,12 @@
         <div class="home-kicker" id="home-kicker">AI training workspace</div>
         <h2 class="home-title" id="home-title">Artpark x CMHLP MH Trainer</h2>
         <p class="home-copy" id="home-copy">
-          An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.
+          An interactive learning space where community health workers learn with an AI trainer, AI trainees, and guided beneficiary conversations.
           Move from structured learning to simulated counselling and a short quiz in one session flow.
         </p>
       </section>
 
-      <div class="home-section-title" id="home-modes-label">How the session works</div>
+      <div class="home-section-title" id="home-modes-label">How the training works</div>
       <section class="home-mode-grid">
         <article class="home-mode-card training">
           <div class="home-mode-top">
@@ -2250,7 +2983,7 @@
             <div class="home-mode-icon">🎭</div>
             <div class="home-mode-name" id="home-roleplay-title">Roleplay</div>
           </div>
-          <div class="home-mode-desc" id="home-roleplay-desc">Practice counselling with an AI patient by watching or participating yourself.</div>
+          <div class="home-mode-desc" id="home-roleplay-desc">Practice counselling with an AI Beneficiary by watching or participating yourself.</div>
         </article>
         <article class="home-mode-card quiz">
           <div class="home-mode-top">
@@ -2280,9 +3013,9 @@
 
       <div class="hidden-bubbles" id="chat-history"></div>
 
-      <div class="flashcard speaker-trainer" id="flashcard" onclick="resolveManualFlashcardGate()">
+      <div class="flashcard speaker-trainer" id="flashcard">
         <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;position:relative;">
-          <div id="flashcard-speaker-badge" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:0.6;color:var(--ink);">⌛ Loading…</div>
+          <div id="flashcard-speaker-badge" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:0.6;color:var(--ink);">🧑‍🏫 Trainer</div>
           <p id="flashcard-text">Begin Session 1</p>
         </div>
       </div>
@@ -2317,7 +3050,7 @@
     <!-- ── Mode select (shown first) ── -->
     <div id="rp-mode-select" class="rp-mode-select">
       <div class="rp-ms-title" id="rp-ms-title">Session 9: Roleplaying</div>
-      <div class="rp-ms-subtitle" id="rp-ms-subtitle">Practice counselling with an AI patient.<br>Choose how you'd like to engage.</div>
+      <div class="rp-ms-subtitle" id="rp-ms-subtitle">Practice counselling with an AI Beneficiary.<br>Choose how you'd like to engage.</div>
 
       <div class="rp-ms-options-label" id="rp-persona-options-label">Choose your patient</div>
       <div class="rp-persona-picker" id="rp-persona-picker"></div>
@@ -2446,6 +3179,25 @@
 </div><!-- /phone -->
 </div><!-- /phone-outer -->
 
+<div id="feedback-overlay" onclick="closeFeedbackPanel()"></div>
+<aside id="feedback-panel" aria-label="Session feedback">
+  <div class="feedback-panel-shell">
+    <div class="feedback-panel-header" id="feedback-panel-header">
+      <span id="feedback-panel-title">Feedback</span>
+    </div>
+    <div class="feedback-panel-body" id="feedback-list"></div>
+    <div class="feedback-input-wrap">
+      <textarea id="feedback-input" placeholder="type your feedback ..." rows="3"></textarea>
+      <div class="feedback-input-actions">
+        <span class="mic-status" id="feedback-mic-status">Transcribing...</span>
+        <button type="button" class="mic-btn" id="feedback-mic-btn" onclick="toggleFeedbackMic()" aria-label="Record feedback" title="Record feedback">🎙️</button>
+        <button id="feedback-submit-btn" type="button" onclick="submitFeedback()">Send</button>
+      </div>
+    </div>
+    <div class="feedback-resize-handle" id="feedback-resize-handle" aria-hidden="true"></div>
+  </div>
+</aside>
+
 <script>
 /* ══════════════════════════════════════════════════
    CONFIG
@@ -2519,8 +3271,12 @@ async function handleLogin() {
     const data = await res.json();
     saveAuthData(data.token, data.email, data.user_id);
     document.getElementById('auth-overlay').style.display = 'none';
+    _archivedViewActive = false;
     _showSidebar(data.email);
     _hideAppHeaderBranding();
+    bindFeedbackInput();
+    bindFeedbackPanelInteractions();
+    applyFeedbackLocale();
     await initializeApp();
     updateDarkToggle();
   } catch (e) {
@@ -2536,6 +3292,8 @@ async function handleLogin() {
 
 function handleLogout() {
   clearAuthData();
+  _archivedViewActive = false;
+  _cachedSidebarSessions = [];
   // Navigate to root and reload — cleanest reset.
   window.location.href = '/';
 }
@@ -2546,6 +3304,46 @@ function _showSidebar(email) {
   if (emailEl) emailEl.textContent = email || getAuthEmail();
   const oldLogout = document.getElementById('logout-btn');
   if (oldLogout) oldLogout.style.display = 'none';
+}
+
+/* ── Sidebar collapse / expand ── */
+let _sidebarCollapsed = false;
+
+function toggleSidebar() {
+  _sidebarCollapsed = !_sidebarCollapsed;
+  _applySidebarState();
+}
+
+function closeSidebar() {
+  _sidebarCollapsed = true;
+  _applySidebarState();
+}
+
+function openSidebar() {
+  _sidebarCollapsed = false;
+  _applySidebarState();
+}
+
+function _applySidebarState() {
+  const sidebar  = document.getElementById('session-sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  const openBtn  = document.getElementById('sidebar-open-btn');
+  const pillsWrap = document.getElementById('module-jump-wrap');
+  if (!sidebar) return;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  if (_sidebarCollapsed) {
+    sidebar.classList.add('sidebar-collapsed');
+    document.body.classList.add('sidebar-is-collapsed');
+    if (overlay) overlay.classList.remove('visible');
+    if (openBtn) openBtn.classList.add('visible');
+    if (pillsWrap) pillsWrap.classList.add('pills-collapsed');
+  } else {
+    sidebar.classList.remove('sidebar-collapsed');
+    document.body.classList.remove('sidebar-is-collapsed');
+    if (overlay) overlay.classList.toggle('visible', isMobile);
+    if (openBtn) openBtn.classList.remove('visible');
+    if (pillsWrap) pillsWrap.classList.remove('pills-collapsed');
+  }
 }
 
 function _hideAppHeaderBranding() {
@@ -2604,8 +3402,9 @@ function _sessionProgressLabel(session) {
   const p = session.progress || {};
   const sessNum = p.active_session_id || p.active_session || null;
   const mode = session.mode || 'training';
+  const total = getTrainingSessionCount();
   if (session.status === 'completed') return `Completed · ${mode}`;
-  if (sessNum) return `Session ${sessNum}/8 · ${mode}`;
+  if (sessNum) return `Session ${sessNum}/${total} · ${mode}`;
   return `New · ${mode}`;
 }
 
@@ -2624,7 +3423,7 @@ function renderSessionList(sessions) {
   const list = document.getElementById('session-list');
   if (!list) return;
   if (!sessions.length) {
-    list.innerHTML = '<li class="session-list-empty">No sessions yet.<br>Click <strong>+ New Session</strong> to start.</li>';
+    list.innerHTML = `<li class="session-list-empty">${t('noSessionsYet')}</li>`;
     return;
   }
   const currentId = _getSessionIdFromUrl();
@@ -2633,14 +3432,20 @@ function renderSessionList(sessions) {
     const sub = _sessionProgressLabel(s);
     const isActive = s.session_id === currentId;
     const dotClass = s.status === 'completed' ? 'completed' : s.status === 'reset' ? 'reset' : '';
+    const displayTitle = (s.title && s.title.trim()) ? s.title.trim() : ts;
+    const sid = escapeHtml(s.session_id);
+    const nid = escapeHtml(s.narrative_id);
+    const loc = escapeHtml(s.locale || 'en');
     return `<li class="session-list-item${isActive ? ' active' : ''}"
-      onclick="selectSidebarSession('${escapeHtml(s.session_id)}', '${escapeHtml(s.narrative_id)}', '${escapeHtml(s.locale || 'en')}')"
-      data-session-id="${escapeHtml(s.session_id)}">
-      <div class="session-item-title">
-        <span class="status-dot ${dotClass}"></span>
-        ${escapeHtml(ts)}
+      data-session-id="${sid}">
+      <div class="session-item-row">
+        <div class="session-item-title" onclick="selectSidebarSession('${sid}', '${nid}', '${loc}')">
+          <span class="status-dot ${dotClass}"></span>
+          <span class="session-item-title-text">${escapeHtml(displayTitle)}</span>
+        </div>
+        <button class="session-item-menu" data-session-id="${sid}" data-title="${escapeHtml(displayTitle)}" aria-label="Session options" title="Session options">⋯</button>
       </div>
-      <div class="session-item-sub">${escapeHtml(sub)}</div>
+      <div class="session-item-sub" onclick="selectSidebarSession('${sid}', '${nid}', '${loc}')">${escapeHtml(sub)}</div>
     </li>`;
   }).join('');
 }
@@ -2648,6 +3453,10 @@ function renderSessionList(sessions) {
 let _cachedSidebarSessions = [];
 
 async function refreshSessionSidebar() {
+  if (_archivedViewActive) {
+    await showArchivedView();
+    return;
+  }
   const sessions = await loadUserSessions();
   _cachedSidebarSessions = sessions;
   renderSessionList(sessions);
@@ -2655,7 +3464,7 @@ async function refreshSessionSidebar() {
 
 // Re-render relative timestamps (Today → Yesterday → date) without refetching.
 setInterval(() => {
-  if (_cachedSidebarSessions.length) {
+  if (_cachedSidebarSessions.length && !_archivedViewActive) {
     renderSessionList(_cachedSidebarSessions);
   }
 }, 60000);
@@ -2692,8 +3501,231 @@ window.addEventListener('popstate', async (ev) => {
 });
 
 /* ══════════════════════════════════════════════════
-   SESSION CONTEXT MENU (reset)
+   SESSION CONTEXT MENU (rename / archive)
 ══════════════════════════════════════════════════ */
+
+let _activeSessionCtxMenu = null;
+
+function _closeSessionCtxMenu() {
+  if (_activeSessionCtxMenu) {
+    _activeSessionCtxMenu.remove();
+    _activeSessionCtxMenu = null;
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (_activeSessionCtxMenu && !_activeSessionCtxMenu.contains(e.target) && !e.target.classList.contains('session-item-menu')) {
+    _closeSessionCtxMenu();
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') _closeSessionCtxMenu();
+});
+
+// Delegated click listener for session menu buttons (⋯)
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.session-item-menu');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const sessionId = btn.dataset.sessionId;
+  const currentTitle = btn.dataset.title || '';
+  showSessionCtxMenu(btn, sessionId, currentTitle);
+});
+
+function showSessionCtxMenu(anchorEl, sessionId, currentTitle) {
+  _closeSessionCtxMenu();
+  const menu = document.createElement('div');
+  menu.className = 'session-ctx-menu';
+  const renameItem = document.createElement('div');
+  renameItem.className = 'session-ctx-item';
+  renameItem.textContent = 'Rename';
+  renameItem.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    _startRenameSession(sessionId, currentTitle);
+  });
+  const archiveItem = document.createElement('div');
+  archiveItem.className = 'session-ctx-item danger';
+  archiveItem.textContent = 'Archive';
+  archiveItem.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    _archiveSession(sessionId);
+  });
+  menu.appendChild(renameItem);
+  menu.appendChild(archiveItem);
+  document.body.appendChild(menu);
+  const rect = anchorEl.getBoundingClientRect();
+  menu.style.left = `${rect.right - menu.offsetWidth}px`;
+  menu.style.top = `${rect.bottom + 4}px`;
+  _activeSessionCtxMenu = menu;
+}
+
+async function _startRenameSession(sessionId, currentTitle) {
+  _closeSessionCtxMenu();
+  const listItem = document.querySelector(`.session-list-item[data-session-id="${sessionId}"]`);
+  if (!listItem) return;
+  const titleEl = listItem.querySelector('.session-item-title-text');
+  if (!titleEl) return;
+  const oldText = titleEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'session-rename-input';
+  input.value = oldText;
+  input.maxLength = 200;
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const submit = async () => {
+    const newTitle = input.value.trim();
+    if (!newTitle || newTitle === currentTitle) {
+      const span = document.createElement('span');
+      span.className = 'session-item-title-text';
+      span.textContent = oldText;
+      input.replaceWith(span);
+      return;
+    }
+    try {
+      const res = await apiFetch(`${API_BASE}/session/${sessionId}/rename`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const span = document.createElement('span');
+      span.className = 'session-item-title-text';
+      span.textContent = newTitle;
+      input.replaceWith(span);
+      const cached = _cachedSidebarSessions.find(s => s.session_id === sessionId);
+      if (cached) cached.title = newTitle;
+    } catch (e) {
+      console.error('Rename failed:', e);
+      const span = document.createElement('span');
+      span.className = 'session-item-title-text';
+      span.textContent = oldText;
+      input.replaceWith(span);
+      alert(t('errRename'));
+    }
+  };
+
+  const cancel = () => {
+    if (!document.body.contains(input)) return;
+    const span = document.createElement('span');
+    span.className = 'session-item-title-text';
+    span.textContent = oldText;
+    input.replaceWith(span);
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submit(); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+  input.addEventListener('blur', submit);
+}
+
+async function _archiveSession(sessionId) {
+  _closeSessionCtxMenu();
+  if (!confirm(t('confirmArchive'))) return;
+  try {
+    const res = await apiFetch(`${API_BASE}/session/${sessionId}/archive`, { method: 'PATCH' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await refreshSessionSidebar();
+  } catch (e) {
+    console.error('Archive failed:', e);
+    alert(t('errArchive'));
+  }
+}
+
+
+/* ══════════════════════════════════════════════════
+   ARCHIVED SESSIONS VIEW
+══════════════════════════════════════════════════ */
+
+let _archivedViewActive = false;
+
+async function showArchivedView() {
+  _archivedViewActive = true;
+  const label = document.getElementById('sidebar-sessions-label');
+  const list = document.getElementById('session-list');
+  const newBtn = document.getElementById('sidebar-new-btn');
+  const archivedBtn = document.getElementById('sidebar-archived-btn');
+  if (label) label.textContent = t('archivedSessionsLabel');
+  if (newBtn) newBtn.style.display = 'none';
+  if (archivedBtn) archivedBtn.style.display = 'none';
+  if (!list) return;
+  list.innerHTML = `<li class="session-list-empty">${t('loadingArchived')}</li>`;
+  try {
+    const res = await apiFetch(`${API_BASE}/session/archived`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const sessions = data.sessions || [];
+    if (!sessions.length) {
+      list.innerHTML = '<li class="session-list-empty">No archived sessions.</li>';
+    } else {
+      list.innerHTML = sessions.map(s => {
+        const ts = _formatSessionTimestamp(s.created_at);
+        const sub = _sessionProgressLabel(s);
+        const displayTitle = (s.title && s.title.trim()) ? s.title.trim() : ts;
+        const sid = escapeHtml(s.session_id);
+        return `<li class="session-list-item" data-session-id="${sid}">
+          <div class="session-item-row">
+            <div class="session-item-title">
+              <span class="status-dot reset"></span>
+              <span class="session-item-title-text">${escapeHtml(displayTitle)}</span>
+            </div>
+            <button class="session-restore-btn" data-archived-session-id="${sid}" aria-label="Unarchive" title="Unarchive">Restore</button>
+          </div>
+          <div class="session-item-sub">${escapeHtml(sub)}</div>
+        </li>`;
+      }).join('');
+    }
+    // Add a back button at the top of the list
+    const backWrap = document.createElement('li');
+    backWrap.className = 'session-back-wrap';
+    const backBtn = document.createElement('button');
+    backBtn.type = 'button';
+    backBtn.className = 'session-back-btn';
+    backBtn.textContent = t('backToSessions');
+    backBtn.addEventListener('click', hideArchivedView);
+    backWrap.appendChild(backBtn);
+    list.insertBefore(backWrap, list.firstChild);
+  } catch (e) {
+    console.error('Failed to load archived sessions:', e);
+    list.innerHTML = `<li class="session-list-empty">${t('couldNotLoadArchived')}</li>`;
+  }
+}
+
+async function hideArchivedView() {
+  _archivedViewActive = false;
+  const label = document.getElementById('sidebar-sessions-label');
+  const newBtn = document.getElementById('sidebar-new-btn');
+  const archivedBtn = document.getElementById('sidebar-archived-btn');
+  if (label) label.textContent = t('sessionsLabel');
+  if (newBtn) newBtn.style.display = '';
+  if (archivedBtn) archivedBtn.style.display = '';
+  await refreshSessionSidebar();
+}
+
+// Delegated click listener for unarchive buttons in the archived view
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.session-restore-btn');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const sessionId = btn.dataset.archivedSessionId;
+  _unarchiveSession(sessionId);
+});
+
+async function _unarchiveSession(sessionId) {
+  try {
+    const res = await apiFetch(`${API_BASE}/session/${sessionId}/unarchive`, { method: 'PATCH' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await showArchivedView();
+  } catch (e) {
+    console.error('Unarchive failed:', e);
+    alert(t('errUnarchive'));
+  }
+}
 
 
 /* ══════════════════════════════════════════════════
@@ -2717,22 +3749,65 @@ function _normalizeSessionId(value) {
   return Number.isInteger(n) && n >= 1 ? n : 1;
 }
 
+const SPEAKER_THEME_KEYS = ['trainer', 'ramesh', 'simran', 'priya', 'sejal', 'user', 'other'];
+
+function normalizeSpeakerName(name) {
+  return String(name || '').trim().toLowerCase();
+}
+
+function resolveSpeakerThemeKey(name, role, flashcardKind) {
+  if (role === 'learner' || flashcardKind === 'user') return 'user';
+  const key = normalizeSpeakerName(name);
+  if (role === 'trainer' || key === 'trainer') return 'trainer';
+  if (key === 'ramesh') return 'ramesh';
+  if (key === 'simran') return 'simran';
+  if (key === 'priya') return 'priya';
+  if (key === 'sejal') return 'sejal';
+  if (role === 'attendee' || role === 'persona') return 'ramesh';
+  return 'other';
+}
+
+function speakerThemeClass(themeKey) {
+  const key = SPEAKER_THEME_KEYS.includes(themeKey) ? themeKey : 'other';
+  return `speaker-${key}`;
+}
+
+function chipClassForSpeaker(name, role, flashcardKind) {
+  return speakerThemeClass(resolveSpeakerThemeKey(name, role, flashcardKind));
+}
+
+function normalizeBubbleClass(bubbleClass, name, role) {
+  if (bubbleClass === 'history-loaded-label') return bubbleClass;
+  if (typeof bubbleClass === 'string' && bubbleClass.startsWith('speaker-')) return bubbleClass;
+  if (bubbleClass === 'trainer') return 'speaker-trainer';
+  if (bubbleClass === 'attendee') {
+    return speakerThemeClass(resolveSpeakerThemeKey(name, role || 'attendee', ''));
+  }
+  if (bubbleClass === 'note') return 'speaker-other';
+  return bubbleClass || 'speaker-other';
+}
+
 function _dbMessageToChatItem(msg) {
   const role    = msg.role    || '';
   const speaker = msg.speaker || '';
   const content = msg.content || '';
   if (!content.trim()) return null;
+  const themeKey = resolveSpeakerThemeKey(
+    role === 'learner' ? 'user' : speaker,
+    role === 'learner' ? 'learner' : role,
+    role === 'learner' ? 'user' : '',
+  );
+  const bubbleClass = speakerThemeClass(themeKey);
   if (role === 'learner') {
-    return { name: 'USER', bubbleClass: 'attendee', text: escapeHtml(content) };
+    return { name: 'USER', bubbleClass, text: escapeHtml(content) };
   }
   if (role === 'trainer') {
-    return { name: escapeHtml(speaker) || 'Trainer', bubbleClass: 'trainer', text: escapeHtml(content) };
+    return { name: escapeHtml(speaker) || 'Trainer', bubbleClass, text: escapeHtml(content) };
   }
   if (role === 'persona' || role === 'attendee') {
-    return { name: escapeHtml(speaker), bubbleClass: 'attendee', text: escapeHtml(content) };
+    return { name: escapeHtml(speaker), bubbleClass, text: escapeHtml(content) };
   }
-  // narrator / other — show as note
-  return { name: 'Session Note', bubbleClass: 'note', text: escapeHtml(content) };
+  return { name: 'Session Note', bubbleClass: 'speaker-other', text: escapeHtml(content) };
 }
 
 function applyFlashcardSnapshot(snapshot) {
@@ -2745,12 +3820,20 @@ function applyFlashcardSnapshot(snapshot) {
   const role = snapshot.role || '';
   const flashcardKind = snapshot.flashcard_kind || '';
   const spk = isIntroFlashcardMessage(role, snapshot.speaker)
-    ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'note' }
+    ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'speaker-other' }
     : speakerForRole(role, snapshot.speaker, flashcardKind);
   card.className = 'flashcard ' + spk.cardClass;
   badge.textContent = spk.badge;
   textEl.textContent = text;
+  // Check overflow after content is set
+  requestAnimationFrame(() => checkFlashcardOverflow(card));
   return true;
+}
+
+function checkFlashcardOverflow(card) {
+  if (!card) card = document.getElementById('flashcard');
+  if (!card) return;
+  card.classList.toggle('overflows', card.scrollHeight > card.clientHeight + 4);
 }
 
 function restoreFlashcardForSession(rawMessages, state) {
@@ -2772,45 +3855,48 @@ function restoreFlashcardForSession(rawMessages, state) {
   return false;
 }
 
-function showBeginSessionPlaceholder(sessionNumber) {
+function setFlashcardIdlePlaceholder(sessionNumber) {
   const badge = document.getElementById('flashcard-speaker-badge');
   const textEl = document.getElementById('flashcard-text');
+  const card = document.getElementById('flashcard');
   const sessionId = _normalizeSessionId(sessionNumber);
-  if (badge) badge.textContent = `⌛ ${t('sessionLoading')}`;
+  const trainerLabel = trainingTrainerName || t('trainer');
+  if (badge) badge.textContent = `🧑‍🏫 ${trainerLabel}`;
   if (textEl) textEl.textContent = t('beginSessionNumber', { session: sessionId });
+  if (card) card.className = 'flashcard speaker-trainer';
+}
+
+function showBeginSessionPlaceholder(sessionNumber) {
+  setFlashcardIdlePlaceholder(sessionNumber);
 }
 
 async function _loadSessionView(sessionId) {
   if (!sessionId) return;
 
-  // Abort any live stream and flush TTS audio
-  if (trainingAdvanceAbortController) {
-    trainingAdvanceAbortController.abort();
-    trainingAdvanceAbortController = null;
-  }
-  if (typeof flushTTSPlayback === 'function') {
-    flushTTSPlayback({ resolveWaiters: true });
-  }
-
   // Full immediate reset — no stale state from previous session bleeds through.
   // isStreaming and trainingActionInFlight are reset here so the new session
   // is immediately interactive even if a prior stream is still unwinding.
+  resetTrainingInteractionState();
+  sessionStateHydrated = false;
+  setModuleChipDisabled(true);
   trainingSessionId = sessionId;
+  if (_feedbackPanelOpen) {
+    loadSessionFeedback(sessionId).catch(() => {});
+  } else {
+    clearFeedbackList();
+  }
   trainingGraphStarted = false;
-  trainingAwaitingInput = false;
-  trainingHasUserInterrupt = false;
-  trainingBackendStreamActive = false;
   trainingComplete = false;
-  isStreaming = false;
-  trainingActionInFlight = false;
+  trainingRunState = 'IDLE';
   activeTrainingSubSession = 'setup';
+  lastQuizGenerationStatus = {};
+  lastSessionCompleted = {};
   trainingAskQueue.length = 0;
   autoAdvanceAfterQueuedAsk = false;
   trainingEchoedUserTexts.length = 0;
   chatHistory.length = 0;
   renderChatHistory();
-  document.getElementById('flashcard-speaker-badge').textContent = `⌛ ${t('sessionLoading')}`;
-  document.getElementById('flashcard-text').textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
+  setFlashcardIdlePlaceholder(selectedTrainingSessionId);
   updateTrainingActionButton();
 
   // Show loading indicator
@@ -2819,8 +3905,19 @@ async function _loadSessionView(sessionId) {
     chatEl.innerHTML = '<div class="history-loading-indicator">Loading history…</div>';
   }
 
-  // Fetch chatroom history
-  const messages = await loadSessionChatHistory(sessionId);
+  let messages = [];
+  let state = null;
+  try {
+    [messages, state] = await Promise.all([
+      loadSessionChatHistory(sessionId),
+      apiFetch(`${API_BASE}/session/${sessionId}/state`)
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null),
+    ]);
+  } catch (e) {
+    console.warn('Could not load session view:', e);
+  }
+
   chatHistory.length = 0;
   trainingEchoedUserTexts.length = 0;
   for (const msg of messages) {
@@ -2841,109 +3938,122 @@ async function _loadSessionView(sessionId) {
 
   renderChatHistory();
 
-  // Fetch session state — backend is authoritative for curriculum session + resume snapshot.
-  try {
-    const stateRes = await apiFetch(`${API_BASE}/session/${sessionId}/state`);
-    if (stateRes.ok) {
-      const state = await stateRes.json();
-      const resolvedSessionId = _normalizeSessionId(state.active_session_id);
-      activeTrainingSessionId   = resolvedSessionId;
-      selectedTrainingSessionId = resolvedSessionId;
-      if (state.graph_started) {
-        trainingGraphStarted = true;
-        if (state.active_sub_session) {
-          activeTrainingSubSession = state.active_sub_session;
-        }
-        trainingComplete           = Boolean(state.training_complete);
-        trainingAwaitingInput      = Boolean(state.awaiting_input);
-        trainingHasUserInterrupt   = Boolean(state.has_user_interrupt);
-        trainingBackendStreamActive = Boolean(state.stream_active);
-      } else if (state.active_sub_session) {
-        activeTrainingSubSession = state.active_sub_session;
-      }
-      if (!restoreFlashcardForSession(messages, state)) {
-        showBeginSessionPlaceholder(selectedTrainingSessionId);
-      }
-      setActiveSessionChip(selectedTrainingSessionId);
-      updateSessionLabel();
-      updateTrainingActionButton();
-      setModuleChipDisabled(!canSwitchSessions());
+  // If the user is in chat-history (zoom) mode, jump to the bottom instantly
+  // after the new session's history renders — no smooth-scroll animation.
+  if (isZoomed) {
+    const _wrap = document.getElementById('flashcard-wrap');
+    if (_wrap) {
+      _wrap.style.scrollBehavior = 'auto';
+      void _wrap.offsetHeight;
+      _wrap.scrollTop = _wrap.scrollHeight;
+      requestAnimationFrame(() => { _wrap.style.scrollBehavior = ''; });
     }
-  } catch (e) {
-    console.warn('Could not fetch session state:', e);
-    activeTrainingSessionId   = 1;
-    selectedTrainingSessionId = 1;
-    if (!restoreFlashcardForSession(messages, null)) {
-      showBeginSessionPlaceholder(1);
-    }
-    setActiveSessionChip(1);
-    updateSessionLabel();
-    updateTrainingActionButton();
-    setModuleChipDisabled(!canSwitchSessions());
   }
+
+  if (state) {
+    applyTrainingStateSnapshot(state);
+    if (!restoreFlashcardForSession(messages, state)) {
+      showBeginSessionPlaceholder(selectedTrainingSessionId);
+    }
+  } else {
+    console.warn('Could not fetch session state — using conservative defaults');
+    if (messages.length > 0) {
+      trainingGraphStarted = true;
+      const lastMsg = [...messages].reverse().find(m => (m.role || '') !== 'learner' && String(m.content || '').trim());
+      const hintedSession = _normalizeSessionId(lastMsg?.session_num);
+      activeTrainingSessionId = hintedSession;
+      selectedTrainingSessionId = hintedSession;
+      if (lastMsg?.sub_session) activeTrainingSubSession = String(lastMsg.sub_session).trim();
+    } else {
+      activeTrainingSessionId = 1;
+      selectedTrainingSessionId = 1;
+    }
+    if (!restoreFlashcardForSession(messages, null)) {
+      showBeginSessionPlaceholder(selectedTrainingSessionId);
+    }
+  }
+
+  sessionStateHydrated = true;
+  setActiveSessionChip(selectedTrainingSessionId);
+  updateSessionLabel();
+  updateTrainingActionButton();
+  renderSessionJumpChips();
+  setModuleChipDisabled(!canSwitchSessions());
 
   // Highlight in sidebar
   navigateToSession(sessionId);
   appStarted = true;
   showScreen('training');
+  updateFeedbackChrome();
 }
+
+let _sessionLoadInFlight = false;
 
 async function selectSidebarSession(sessionId, narrativeId, locale) {
   if (!sessionId) return;
-  // Switch locale if needed
-  if (locale && locale !== appLocale) {
-    appLocale = locale;
-    applyLocaleToUI();
-  }
-  // Load the session view
-  await _loadSessionView(sessionId);
-  // Make sure we're on the training screen
-  showScreen('training');
-  // Lazily load narrative metadata for the session
+  // Drop duplicate clicks while a previous load is still in flight — this
+  // prevents the "double-click to switch" race where two parallel
+  // _loadSessionView calls clobber each other's intermediate state.
+  if (_sessionLoadInFlight) return;
+  _sessionLoadInFlight = true;
   try {
-    const narrativeMeta = await loadTrainingNarrativeMeta(narrativeId);
-    trainingNarrativeMeta = narrativeMeta;
-    applyTrainingSessionMetadata(narrativeMeta?.sessions);
-    trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
-    trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
-      ? narrativeMeta.live_personas
-      : (Array.isArray(narrativeMeta?.participants?.attendees)
-          ? narrativeMeta.participants.attendees
-          : V2_TRAINING_PERSONAS);
-    renderParticipantBar();
-    renderSessionJumpChips();
-    updateSessionLabel();
-    updateTrainingActionButton();
-  } catch (e) {
-    console.warn('Could not load narrative meta:', e);
+    // Auto-close sidebar on mobile when selecting a session
+    if (window.matchMedia('(max-width: 768px)').matches) closeSidebar();
+    // Switch locale if needed
+    if (locale && locale !== appLocale) {
+      appLocale = locale;
+      applyLocaleToUI();
+    }
+    // Immediate visual feedback — mark the clicked item active BEFORE the
+    // async fetch completes so the click feels acknowledged instantly.
+    document.querySelectorAll('.session-list-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.sessionId === sessionId);
+    });
+    // Load the session view
+    await _loadSessionView(sessionId);
+    // Make sure we're on the training screen
+    showScreen('training');
+    // Lazily load narrative metadata for the session
+    try {
+      const narrativeMeta = await loadTrainingNarrativeMeta(narrativeId);
+      trainingNarrativeMeta = narrativeMeta;
+      applyTrainingSessionMetadata(narrativeMeta?.sessions);
+      trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+      trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+        ? narrativeMeta.live_personas
+        : (Array.isArray(narrativeMeta?.participants?.attendees)
+            ? narrativeMeta.participants.attendees
+            : V2_TRAINING_PERSONAS);
+      renderParticipantBar();
+      renderSessionJumpChips();
+      updateSessionLabel();
+      updateTrainingActionButton();
+    } catch (e) {
+      console.warn('Could not load narrative meta:', e);
+    }
+  } finally {
+    _sessionLoadInFlight = false;
   }
 }
 
 async function createNewSession() {
   const btn = document.getElementById('sidebar-new-btn');
   if (btn) btn.disabled = true;
+  // Auto-close sidebar on mobile when starting a new session
+  if (window.matchMedia('(max-width: 768px)').matches) closeSidebar();
   try {
-    // Abort any live stream and flush TTS so old session content stops writing
-    if (trainingAdvanceAbortController) {
-      trainingAdvanceAbortController.abort();
-      trainingAdvanceAbortController = null;
-    }
-    if (typeof flushTTSPlayback === 'function') {
-      flushTTSPlayback({ resolveWaiters: true });
-    }
-
+    // Keep this as a local draft until Begin/Continue.
+    trainingSessionId = null;
+    resetFeedbackUI();
     const trainingNarrative = localeConfig().trainingNarrative;
-    const newId = await createSession(trainingNarrative, 'training');
-    trainingSessionId = newId;
-    // Reset to session 1 for a brand-new session
     resetTrainingViewForSession(1);
-    // appStarted = true so pills and tabs remain visible; graph hasn't started yet
-    // (trainingGraphStarted is already false after resetTrainingViewForSession)
     appStarted = true;
-    navigateToSession(newId);
+    if (_getSessionIdFromUrl()) {
+      history.pushState({}, '', '/');
+    }
+    document.querySelectorAll('.session-list-item').forEach(el => el.classList.remove('active'));
     showScreen('training');
     await refreshSessionSidebar();
-    // Load narrative meta so the UI is ready
     try {
       const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
       trainingNarrativeMeta = narrativeMeta;
@@ -2962,7 +4072,7 @@ async function createNewSession() {
     } catch(e) { /* non-fatal */ }
   } catch (e) {
     console.error('Failed to create new session:', e);
-    alert('Could not create a new session. Please try again.');
+    alert(t('errReset'));
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -3033,13 +4143,13 @@ const I18N = {
     appSubtitle: 'AI trainer, AI trainees, and guided practice for community mental health workers',
     homeKicker: 'AI training workspace',
     homeTitle: 'Artpark x CMHLP MH Trainer',
-    homeCopy: 'An interactive practice space where community health workers learn with an AI trainer, AI trainees, and guided patient conversations.<br>Move from structured learning to simulated counselling and a short quiz in one session flow.',
-    homeModesLabel: 'How the session works',
+    homeCopy: 'An interactive learning space where community health workers learn with an AI trainer, AI trainees, and guided beneficiary conversations.<br>Move from structured learning to simulated counselling and a short quiz in one session flow.',
+    homeModesLabel: 'How the training works',
     homeTrainingDesc: 'Learn through a guided exchange between an AI trainer and trainee group.',
-    homeRoleplayDesc: 'Practice counselling with an AI patient by watching or participating yourself.',
+    homeRoleplayDesc: 'Practice counselling with an AI Beneficiary by watching or participating yourself.',
     homeQuizDesc: 'Finish with a short knowledge check to reinforce the session.',
     homeSessionLabel: 'Default session',
-    homeSessionMeta: 'Sessions 1-10 · Open the trainer, select a session, then begin from the trainer card.',
+    homeSessionMeta: 'Sessions 1-{total} · Open the trainer, select a session, then begin.',
     goToTrainer: 'Go to Trainer',
     beginSessionNumber: 'Begin Session {session}',
     tabTraining: '📖 Training',
@@ -3054,17 +4164,17 @@ const I18N = {
     supportVandrevala: '<strong>Vandrevala Foundation:</strong> +1860-2662-345',
     supportTeleManas: '<strong>Tele MANAS:</strong> 1800-891-4416',
     sessionLoading: 'Loading…',
-    scrollUp: '↑ Scroll up to see history',
-    backToFocus: '↓ Back to focus',
+    scrollUp: '↑ Chat History',
+    backToFocus: '↓ Back to live',
     loadingFirstExchange: 'Loading first exchange…',
     trainingContinue: 'Continue',
     mutedNext: 'Next',
     askPlaceholder: 'send a message',
     sendMessage: 'Send message',
     transcribing: 'Transcribing...',
-    roleplayChoosePatient: 'Choose your patient',
+    roleplayChoosePatient: 'Choose your Beneficiary',
     roleplayTitle: 'Session 9: Roleplaying',
-    roleplaySubtitle: "Practice counselling with an AI patient.<br>Choose how you'd like to engage.",
+    roleplaySubtitle: "Practice counselling with an AI Beneficiary.<br>Choose how you'd like to engage.",
     roleplayPersonaName: 'Priya, 34',
     roleplayPersonaTag: 'Presenting with moderate depression · reluctant to open up · gives short, guarded answers',
     roleplayChooseMode: 'Choose your mode',
@@ -3077,7 +4187,7 @@ const I18N = {
     roleplayBack: 'Back',
     takeOver: 'Take Over',
     takeOverNote: 'You have taken over the counsellor role. Continue the conversation from here.',
-    depressedPatient: 'Depressed patient',
+    depressedPatient: 'Beneficiary',
     counsellor: 'Counsellor',
     counsellorAI: 'Counsellor (AI)',
     observing: 'Observing',
@@ -3097,6 +4207,9 @@ const I18N = {
     restartQuiz: 'Restart Quiz',
     quizChooseSession: 'Choose a session',
     quizSessionDone: 'Done ✓',
+    quizSessionReview: 'Review ✓',
+    quizScoreSummary: 'Score: {score} / {total}',
+    quizReviewDoneBody: 'Tap any session marked Review to see your answers.',
     quizSessionReady: 'Ready',
     quizSessionLocked: 'Locked',
     quizSessionGenerating: 'Generating…',
@@ -3114,6 +4227,28 @@ const I18N = {
     pauseHint: 'Audio & playback paused',
     ttsEnabled: 'Sound on',
     ttsMuted: 'Muted',
+    feedbackBtn: 'Feedback',
+    feedbackTitle: 'Feedback',
+    feedbackPlaceholder: 'type your feedback ...',
+    feedbackSend: 'Send',
+    feedbackEmpty: 'No feedback yet for this session.',
+    feedbackLoading: 'Loading feedback…',
+    feedbackLoadError: 'Could not load feedback.',
+    feedbackOpenTitle: 'Open session feedback',
+    feedbackDisabledTitle: 'Start or open a session first',
+    backToSessions: 'Back to Sessions',
+    cannotJumpSession: 'Cannot jump session',
+    cannotSwitchLanguage: 'Cannot switch language during an active session',
+    noSessionsYet: 'No sessions yet.<br>Click <strong>+ New Session</strong> to start.',
+    couldNotLoadArchived: 'Could not load archived sessions.',
+    sessionsLabel: 'Sessions',
+    archivedSessionsLabel: 'Archived Sessions',
+    loadingArchived: 'Loading archived sessions...',
+    errRename: 'Could not rename session. Please try again.',
+    confirmArchive: 'Archive this session? It will be hidden from your list but kept in the backend.',
+    errArchive: 'Could not archive session. Please try again.',
+    errUnarchive: 'Could not unarchive session. Please try again.',
+    errReset: 'Could not reset the session view. Please try again.',
   },
   gu: {
     sessionPill: 'સત્ર {session}',
@@ -3124,13 +4259,13 @@ const I18N = {
     appSubtitle: 'સમુદાય આરોગ્ય કાર્યકરો માટે AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત અભ્યાસ',
     homeKicker: 'AI તાલીમ વર્કસ્પેસ',
     homeTitle: 'Artpark x CMHLP MH ટ્રેનર',
-    homeCopy: 'આ એક ઇન્ટરેક્ટિવ અભ્યાસ જગ્યા છે જ્યાં સમુદાય આરોગ્ય કાર્યકરો AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત દર્દી સંવાદો સાથે શીખે છે.<br>એક જ સત્રમાં ગોઠવેલ તાલીમ, simulated counselling અને ટૂંકી ક્વિઝ સુધી આગળ વધો.',
-    homeModesLabel: 'સત્ર કેવી રીતે આગળ વધે છે',
+    homeCopy: 'આ એક ઇન્ટરેક્ટિવ શિક્ષણ જગ્યા છે જ્યાં સમુદાય આરોગ્ય કાર્યકરો AI ટ્રેનર, AI ભાગલેનાર અને માર્ગદર્શિત લાભાર્થી સંવાદો સાથે શીખે છે.<br>એક જ સત્રમાં ગોઠવેલ તાલીમ, simulated counselling અને ટૂંકી ક્વિઝ સુધી આગળ વધો.',
+    homeModesLabel: 'તાલીમ કેવી રીતે આગળ વધે છે',
     homeTrainingDesc: 'AI ટ્રેનર અને ભાગલેનાર જૂથ વચ્ચેના માર્ગદર્શિત સંવાદથી શીખો.',
-    homeRoleplayDesc: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો, જોઈને અથવા પોતે ભાગ લઈને.',
+    homeRoleplayDesc: 'AI લાભાર્થી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો, જોઈને અથવા પોતે ભાગ લઈને.',
     homeQuizDesc: 'સત્રને મજબૂત કરવા અંતે ટૂંકી ક્વિઝ આપો.',
     homeSessionLabel: 'ડિફૉલ્ટ સત્ર',
-    homeSessionMeta: 'સત્ર 1-10 · ટ્રેનર ખોલો, સત્ર પસંદ કરો, પછી ટ્રેનર કાર્ડથી શરૂ કરો.',
+    homeSessionMeta: 'સત્ર 1-{total} · ટ્રેનર ખોલો, સત્ર પસંદ કરો, પછી શરૂ કરો.',
     goToTrainer: 'ટ્રેનર પર જાઓ',
     beginSessionNumber: 'સત્ર {session} શરૂ કરો',
     tabTraining: '📖 તાલીમ',
@@ -3145,17 +4280,17 @@ const I18N = {
     supportVandrevala: '<strong>Vandrevala Foundation:</strong> +1860-2662-345',
     supportTeleManas: '<strong>Tele MANAS:</strong> 1800-891-4416',
     sessionLoading: 'લોડ થઈ રહ્યું છે…',
-    scrollUp: '↑ પાછલા ચેટ જુઓ',
-    backToFocus: '↓ ફરી મુખ્ય દૃશ્ય પર જાઓ',
+    scrollUp: '↑ ચેટ ઇતિહાસ',
+    backToFocus: '↓ પાછા લાઇવ',
     loadingFirstExchange: 'પ્રથમ સંવાદ લોડ થઈ રહ્યો છે…',
     trainingContinue: 'આગળ વધો',
     mutedNext: 'આગળ',
     askPlaceholder: 'સંદેશ મોકલો',
     sendMessage: 'સંદેશ મોકલો',
     transcribing: 'વાણી લખાણમાં ફેરવાઈ રહી છે...',
-    roleplayChoosePatient: 'તમારો દર્દી પસંદ કરો',
+    roleplayChoosePatient: 'તમારો લાભાર્થી પસંદ કરો',
     roleplayTitle: 'સત્ર 9: ભૂમિકાભિનય',
-    roleplaySubtitle: 'AI દર્દી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો.<br>તમે કેવી રીતે જોડાશો તે પસંદ કરો.',
+    roleplaySubtitle: 'AI લાભાર્થી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો.<br>તમે કેવી રીતે જોડાશો તે પસંદ કરો.',
     roleplayPersonaName: 'પ્રિયા, 34',
     roleplayPersonaTag: 'મધ્યમ ડિપ્રેશનના લક્ષણો · ઓછી ખુલાસાખોર · ટૂંકા જવાબ આપે છે',
     roleplayChooseMode: 'તમારો મોડ પસંદ કરો',
@@ -3168,7 +4303,7 @@ const I18N = {
     roleplayBack: 'પાછા જાઓ',
     takeOver: 'હું આગળ સંભાળું',
     takeOverNote: 'હવે તમે સલાહકારની ભૂમિકા સંભાળી છે. અહીંથી સંવાદ આગળ વધારો.',
-    depressedPatient: 'ઉદાસીનતા ધરાવતી દર્દી',
+    depressedPatient: 'લાભાર્થી',
     counsellor: 'સલાહકાર',
     counsellorAI: 'સલાહકાર (AI)',
     observing: 'નિરીક્ષણ',
@@ -3188,6 +4323,9 @@ const I18N = {
     restartQuiz: 'ક્વિઝ ફરી શરૂ કરો',
     quizChooseSession: 'સત્ર પસંદ કરો',
     quizSessionDone: 'પૂર્ણ ✓',
+    quizSessionReview: 'જુઓ ✓',
+    quizScoreSummary: 'સ્કોર: {score} / {total}',
+    quizReviewDoneBody: 'તમારા જવાબ જોવા માટે Review ચિહ્નિત સત્ર પર ટેપ કરો.',
     quizSessionReady: 'તૈયાર',
     quizSessionLocked: 'બંધ',
     quizSessionGenerating: 'બની રહ્યું છે…',
@@ -3205,6 +4343,28 @@ const I18N = {
     pauseHint: 'ઑડિઓ અને પ્લેબૅક થોભ્યો',
     ttsEnabled: 'સાઉન્ડ ચાલુ',
     ttsMuted: 'મ્યૂટ',
+    feedbackBtn: 'પ્રતિસાદ',
+    feedbackTitle: 'પ્રતિસાદ',
+    feedbackPlaceholder: 'તમારો પ્રતિસાદ લખો ...',
+    feedbackSend: 'મોકલો',
+    feedbackEmpty: 'આ સત્ર માટે હજી સુધી કોઈ પ્રતિસાદ નથી.',
+    feedbackLoading: 'પ્રતિસાદ લોડ થઈ રહ્યો છે…',
+    feedbackLoadError: 'પ્રતિસાદ લોડ કરી શકાયો નથી.',
+    feedbackOpenTitle: 'સત્ર પ્રતિસાદ ખોલો',
+    feedbackDisabledTitle: 'પહેલા સત્ર શરૂ કરો અથવા ખોલો',
+    backToSessions: 'સત્રો પર પાછા જાઓ',
+    cannotJumpSession: 'સત્ર બદલી શકાતું નથી',
+    cannotSwitchLanguage: 'સક્રિય સત્ર દરમિયાન ભાષા બદલી શકાતી નથી',
+    noSessionsYet: 'હજી કોઈ સત્ર નથી.<br>શરૂ કરવા માટે <strong>+ નવું સત્ર</strong> પર ક્લિક કરો.',
+    couldNotLoadArchived: 'આર્કાઇવ કરેલા સત્રો લોડ કરી શકાયા નથી.',
+    sessionsLabel: 'સત્રો',
+    archivedSessionsLabel: 'આર્કાઇવ કરેલા સત્રો',
+    loadingArchived: 'આર્કાઇવ કરેલા સત્રો લોડ થઈ રહ્યા છે...',
+    errRename: 'સત્રનું નામ બદલી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    confirmArchive: 'આ સત્રને આર્કાઇવ કરવું છે? તે તમારી યાદીમાંથી છુપાવી દેવામાં આવશે પરંતુ બેકએન્ડમાં રાખવામાં આવશે.',
+    errArchive: 'સત્ર આર્કાઇવ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    errUnarchive: 'સત્ર અનઆર્કાઇવ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    errReset: 'સત્ર વ્યૂ રીસેટ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
   },
 };
 let appLocale = localStorage.getItem('app_locale') === 'gu' ? 'gu' : 'en';
@@ -3342,9 +4502,12 @@ function applyLocaleToUI() {
     ].join('');
   }
   bind('scroll-hint-text', isZoomed ? t('backToFocus') : t('scrollUp'));
-  bind('flashcard-speaker-badge', `⌛ ${t('sessionLoading')}`);
-  bind('flashcard-text', t('beginSessionNumber', { session: selectedTrainingSessionId }));
-  bind('training-continue-btn', trainingComplete ? t('sessionComplete') : t('beginSessionNumber', { session: selectedTrainingSessionId }));
+  setFlashcardIdlePlaceholder(selectedTrainingSessionId);
+  bind('training-continue-btn', trainingComplete ? t('sessionComplete') : (
+    trainingGraphStarted || trainingSessionHasResumeContent()
+      ? t('trainingContinue')
+      : t('beginSessionNumber', { session: selectedTrainingSessionId })
+  ));
   const trainingInput = document.getElementById('training-input');
   if (trainingInput) trainingInput.placeholder = t('askPlaceholder');
   const trainingSendBtn = document.getElementById('training-send-btn');
@@ -3354,6 +4517,7 @@ function applyLocaleToUI() {
   }
   updatePausePlayBtn();
   updateTTSMuteBtn();
+  bind('sidebar-sessions-label', _archivedViewActive ? t('archivedSessionsLabel') : t('sessionsLabel'));
   bind('rp-persona-options-label', t('roleplayChoosePatient'));
   bind('rp-ms-title', t('roleplayTitle'));
   bind('rp-ms-subtitle', t('roleplaySubtitle'));
@@ -3379,12 +4543,20 @@ function applyLocaleToUI() {
   if (trainingMicStatus && trainingMicStatus.classList.contains('active')) trainingMicStatus.textContent = t('transcribing');
   const rpMicStatus = document.getElementById('rp-mic-status');
   if (rpMicStatus && rpMicStatus.classList.contains('active')) rpMicStatus.textContent = t('transcribing');
+  const feedbackMicStatus = document.getElementById('feedback-mic-status');
+  if (feedbackMicStatus && feedbackMicStatus.classList.contains('active')) feedbackMicStatus.textContent = t('transcribing');
   renderRoleplayPersonaPicker();
   updateRoleplayPersonaUI();
   syncRoleplayChrome();
   renderHomeSessionCard();
   updateTrainingActionButton();
   updateDarkToggle();
+  // Re-render the participant bar so the "+N more" chip text updates to the new locale.
+  if (document.getElementById('participant-bar')?.children.length) renderParticipantBar();
+  applyFeedbackLocale();
+  if (document.querySelector('.module-chip')) {
+    setModuleChipDisabled(!canSwitchSessions());
+  }
 }
 
 /* ══════════════════════════════════════════════════
@@ -3393,6 +4565,14 @@ function applyLocaleToUI() {
 let trainingSessionId = null;
 let quizSessionId     = null;
 let roleplaySessionId = null;
+let _feedbackPanelOpen = false;
+let _feedbackLoadToken = 0;
+let _feedbackSubmitInFlight = false;
+let feedbackRecorder = null;
+let _feedbackPanelDragState = null;
+let _cachedFeedbackItems = null;
+const _FEEDBACK_PANEL_GEOM_KEY = 'feedback_panel_geom';
+const _FEEDBACK_PANEL_DEFAULTS = { width: 320, height: 480, top: 110, right: 18 };
 let uiEventSeq = 0;
 let _lastClickByKey = {};
 
@@ -3533,7 +4713,7 @@ function trackTrainingActionBlocked(traceMeta, action, reason, payload = {}) {
 }
 
 let selectedRoleplayPersonaId = 'priya';
-let TRAINING_SESSION_IDS = Array.from({ length: 10 }, (_, idx) => idx + 1);
+let TRAINING_SESSION_IDS = Array.from({ length: 15 }, (_, idx) => idx + 1);
 let TRAINING_SESSION_TITLES = {
   1: 'Introduction & Understanding AI',
   2: 'Informal Care & Role of a Champion',
@@ -3544,7 +4724,12 @@ let TRAINING_SESSION_TITLES = {
   7: 'Referral to a Mental Health Professional',
   8: 'Counselling Skills, Problem Solving & BA',
   9: 'Champions Session Overview',
-  10: 'Socio-Cultural Factors & Severe Distress',
+  10: 'Social Benefits & Social Support Systems',
+  11: 'Socio-Cultural Factors & Mental Health',
+  12: 'Domestic Violence & Supporting Survivors',
+  13: 'Alcohol Addiction & Supporting Recovery',
+  14: 'Suicide, Self-Harm & Crisis Referral',
+  15: 'Becoming an Atmiyata Champion',
 };
 const GUJARATI_SESSION_TITLES = {
   1: 'પરિચય અને AI ને સમજવું',
@@ -3556,8 +4741,20 @@ const GUJARATI_SESSION_TITLES = {
   7: 'માનસિક આરોગ્ય વ્યાવસાયિક પાસે રેફરલ',
   8: 'કાઉન્સેલિંગ કૌશલ્યો, સમસ્યા નિવારણ અને BA',
   9: 'ચેમ્પિયન્સ સત્રની ઝાંખી',
-  10: 'સામાજિક-સાંસ્કૃતિક પરિબળો અને ગંભીર તણાવ',
+  10: 'સામાજિક લાભો અને સહાય વ્યવસ્થાઓ',
+  11: 'સામાજિક-સાંસ્કૃતિક પરિબળો અને માનસિક સ્વાસ્થ્ય',
+  12: 'ઘરેલું હિંસા અને બચી ગયેલા લોકોને સહાય',
+  13: 'દારૂનું વ્યસન અને પુનઃપ્રાપ્તિમાં સહાય',
+  14: 'આત્મહત્યા, સ્વ-નુકસાન અને કટોકટી રેફરલ',
+  15: 'આત્મિયતા ચેમ્પિયન બનવું',
 };
+
+function getTrainingSessionCount() {
+  if (Array.isArray(TRAINING_SESSION_IDS) && TRAINING_SESSION_IDS.length > 0) {
+    return TRAINING_SESSION_IDS.length;
+  }
+  return 15;
+}
 
 function getLocalizedSessionTitle(sessionId) {
   if (appLocale === 'gu') {
@@ -3575,10 +4772,14 @@ let trainingNarrativeMeta = null;
  let activeTrainingSubSession = 'setup';
  let latestQuizSessionNumber = null;
  let lastQuizGenerationStatus = {};   // {sessionNumber: statusString} — updated by refreshTrainingState
+ let lastSessionCompleted = {};       // {sessionNumber: bool} — from training state
  let trainingGraphStarted = false;
  let trainingAwaitingInput = false;
 let trainingHasUserInterrupt = false;
 let trainingBackendStreamActive = false;
+let trainingRunState = 'IDLE';
+/** False until backend session snapshot is applied — keeps jump chips locked on refresh. */
+let sessionStateHydrated = false;
 let appStarted = false;
 let currentScreen = 'home';
 
@@ -3634,11 +4835,12 @@ function renderParticipantBar() {
   const attendees = Array.isArray(trainingAttendees) ? trainingAttendees.filter(Boolean) : [];
   const firstAttendee = attendees[0] || t('attendee');
   const remainingCount = Math.max(attendees.length - 1, 0);
+  const firstAttendeeClass = chipClassForSpeaker(firstAttendee, 'attendee', '');
 
   const chipsHtml = [
-    `<span class="chip green" data-chip-key="trainer:${escapeHtml(trainer)}">${escapeHtml(trainer)}</span>`,
-    `<span class="chip blue" data-chip-key="attendee:${escapeHtml(firstAttendee)}">${escapeHtml(firstAttendee)}</span>`,
-    `<button type="button" class="chip yellow clickable more-chip" id="attendees-more-chip" ${remainingCount === 0 ? 'disabled' : ''}>+${remainingCount} ${t('more')}</button>`,
+    `<span class="chip speaker-trainer" data-chip-key="trainer:${escapeHtml(trainer)}" data-speaker-theme="trainer">${escapeHtml(trainer)}</span>`,
+    `<span class="chip ${firstAttendeeClass}" data-chip-key="attendee:${escapeHtml(firstAttendee)}" data-speaker-theme="${resolveSpeakerThemeKey(firstAttendee, 'attendee', '')}">${escapeHtml(firstAttendee)}</span>`,
+    `<button type="button" class="chip speaker-more clickable more-chip" id="attendees-more-chip" ${remainingCount === 0 ? 'disabled' : ''}>+${remainingCount} ${t('more')}</button>`,
   ].join('');
 
   const popoverHtml = remainingCount > 0
@@ -3646,7 +4848,10 @@ function renderParticipantBar() {
       <div class="attendees-popover" id="attendees-popover">
         <h4>${t('allAttendees')}</h4>
         <ul>
-          ${attendees.map((name) => `<li>${escapeHtml(name)}</li>`).join('')}
+          ${attendees.map((name) => {
+            const cls = chipClassForSpeaker(name, 'attendee', '');
+            return `<li><span class="chip chip-popover ${cls}">${escapeHtml(name)}</span></li>`;
+          }).join('')}
         </ul>
       </div>
     `
@@ -3674,14 +4879,15 @@ function setSpeakingChipForSpeaker(name, role) {
 
   if (!name && !role) return;
 
+  const themeKey = resolveSpeakerThemeKey(name, role, role === 'learner' ? 'user' : '');
   let selected = null;
-  if (role === 'trainer') {
-    selected = bar.querySelector(`[data-chip-key="trainer:${CSS.escape(trainingTrainerName)}"]`);
-  } else if (name && isTrainingAttendee(name)) {
+  if (themeKey === 'trainer') {
+    selected = bar.querySelector('[data-speaker-theme="trainer"]');
+  } else if (themeKey !== 'user' && themeKey !== 'other' && name) {
     selected = bar.querySelector(`[data-chip-key="attendee:${CSS.escape(name)}"]`);
   }
 
-  if (!selected && role !== 'trainer') {
+  if (!selected && themeKey !== 'trainer' && themeKey !== 'user') {
     selected = document.getElementById('attendees-more-chip');
   }
   if (selected) selected.classList.add('speaking');
@@ -3758,7 +4964,8 @@ async function createSession(narrativeId, mode) {
 }
 
 async function loadTrainingNarrativeMeta(narrativeId) {
-  const res = await apiFetch(`${API_BASE}/training/narrative/${narrativeId}`);
+  const params = new URLSearchParams({ locale: appLocale });
+  const res = await apiFetch(`${API_BASE}/training/narrative/${narrativeId}?${params.toString()}`);
   if (!res.ok) throw new Error(`Narrative meta HTTP ${res.status}`);
   return res.json();
 }
@@ -3784,20 +4991,68 @@ function applyTrainingSessionMetadata(sessions) {
   TRAINING_SESSION_SUB_SESSIONS = Object.fromEntries(
     normalized.map((session) => [session.id, session.subSessions])
   );
+  renderHomeSessionCard();
 }
 
 function setActiveSessionChip(sessionId) {
   document.querySelectorAll('.module-chip').forEach((chip) => {
-    chip.classList.toggle('active', Number(chip.dataset.sessionId) === Number(sessionId));
+    const isActive = Number(chip.dataset.sessionId) === Number(sessionId);
+    chip.classList.toggle('active', isActive);
+    if (isActive) {
+      chip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   });
 }
 
+/** True when chatroom history shows this conversation already has training content. */
+function trainingSessionHasResumeContent() {
+  return chatHistory.some(
+    (item) => item.bubbleClass !== 'history-loaded-label' && String(item.text || '').trim()
+  );
+}
+
+/** True when the user should resume (not start fresh) — graph running or history exists. */
+function trainingSessionShouldResume() {
+  return trainingGraphStarted || trainingSessionHasResumeContent();
+}
+
+function isCurrentTrainingSessionComplete() {
+  return Boolean(lastSessionCompleted[selectedTrainingSessionId]);
+}
+
 function canSwitchSessions() {
-  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  if (!sessionStateHydrated) return false;
   if (isStreaming || sessionSwitchInFlight || isPaused) return false;
-  if (trainingBackendStreamActive && !waitingAtInterrupt) return false;
-  if (trainingGraphStarted && !(waitingAtInterrupt || trainingComplete)) return false;
-  return true;
+  if (trainingBackendStreamActive) return false;
+  if (trainingComplete) return true;
+
+  const hasWork = trainingGraphStarted || trainingSessionHasResumeContent();
+  if (!hasWork) return true;
+
+  // In-progress curriculum session: only allow jumping once the active session is complete.
+  return isCurrentTrainingSessionComplete();
+}
+
+function resetTrainingInteractionState() {
+  clearTrainingBackendIdleWatch();
+  clearManualFlashcardGate();
+  if (trainingAdvanceAbortController) {
+    trainingAdvanceAbortController.abort();
+    trainingAdvanceAbortController = null;
+  }
+  interruptTrainingForAsk = false;
+  isStreaming = false;
+  trainingActionInFlight = false;
+  sessionSwitchInFlight = false;
+  isPaused = false;
+  ttsPlaying = false;
+  trainingBackendStreamActive = false;
+  trainingAwaitingInput = false;
+  trainingHasUserInterrupt = false;
+  if (typeof flushTTSPlayback === 'function') {
+    flushTTSPlayback({ resolveWaiters: true });
+  }
+  updatePausePlayBtn();
 }
 
 function renderSessionJumpChips() {
@@ -3810,19 +5065,31 @@ function renderSessionJumpChips() {
     return;
   }
     wrap.classList.add('show');
-  bar.innerHTML = TRAINING_SESSION_IDS.map((sessionId) => `
-    <button class="module-chip" data-session-id="${sessionId}" onclick="switchToTrainingSession(${sessionId})" title="${escapeHtml(`${t('sessionPill', { session: sessionId })}: ${getLocalizedSessionTitle(sessionId)}`)}">
-      ${t('sessionPill', { session: sessionId })}
-    </button>
-  `).join('');
+  bar.innerHTML = TRAINING_SESSION_IDS.map((sessionId) => {
+    const desc = getLocalizedSessionTitle(sessionId) || '';
+    const label = t('sessionPill', { session: sessionId });
+    const origTitle = escapeHtml(`${label}: ${desc}`);
+    return `<button class="module-chip" data-session-id="${sessionId}" data-orig-title="${origTitle}" onclick="switchToTrainingSession(${sessionId})" title="${origTitle}">
+      <span class="module-chip-num">${escapeHtml(label)}</span>
+      <span class="module-chip-desc">${escapeHtml(desc || '—')}</span>
+    </button>`;
+  }).join('');
   setActiveSessionChip(selectedTrainingSessionId);
   updateChromeForScreen();
   setModuleChipDisabled(!canSwitchSessions());
 }
 
 function setModuleChipDisabled(disabled) {
+  const lockTitle = t('cannotJumpSession');
   document.querySelectorAll('.module-chip').forEach((chip) => {
     chip.disabled = Boolean(disabled);
+    if (disabled) {
+      chip.title = lockTitle;
+      chip.style.cursor = 'not-allowed';
+    } else {
+      chip.title = chip.dataset.origTitle || '';
+      chip.style.cursor = '';
+    }
   });
 }
 
@@ -3830,7 +5097,24 @@ async function switchToTrainingSession(sessionId) {
   const sessionNumber = Number(sessionId);
   if (!canSwitchSessions()) return;
   if (!trainingGraphStarted) {
+    if (trainingSessionId) {
+      sessionSwitchInFlight = true;
+      setModuleChipDisabled(true);
+      try {
+        const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${sessionNumber}`, {
+          method: 'POST',
+        });
+        if (!res.ok) throw new Error(`Start session HTTP ${res.status}`);
+      } catch (e) {
+        console.error('Session switch error', e);
+        sessionSwitchInFlight = false;
+        setModuleChipDisabled(!canSwitchSessions());
+        return;
+      }
+      sessionSwitchInFlight = false;
+    }
     resetTrainingViewForSession(sessionNumber);
+    setModuleChipDisabled(!canSwitchSessions());
     return;
   }
   if (!trainingSessionId) return;
@@ -3879,6 +5163,7 @@ let ttsWaiters         = [];
 let _activeAudioEl     = null;
 let _activePlaybackControl = null;
 let _activeTTSItem     = null;
+let _drainGeneration   = 0;
 let isTTSMuted         = localStorage.getItem('tts_muted') === '1';
 
 // ── audio unlock (browser autoplay policy) ──────────────────────────────────
@@ -3996,6 +5281,9 @@ function flushTTSPlayback({ resolveWaiters = false } = {}) {
     _activeAudioEl = null;
   }
   ttsQueue = [];
+  ttsPlaying = false;
+  _drainGeneration++;   // invalidate any in-flight drain loop
+  _activeTTSItem = null;
   if (resolveWaiters) {
     ttsContextEpoch += 1;
     const maxSeq = Math.max(maxQueuedSeq, activeSeq);
@@ -4045,8 +5333,12 @@ function toggleTTSMute() {
 // ── internal drain loop ──────────────────────────────────────────────────────
 async function _drainTTSQueue() {
   if (ttsPlaying) return;
+  _drainGeneration++;
+  const myGen = _drainGeneration;
   ttsPlaying = true;
   while (ttsQueue.length > 0) {
+    // If a flush started a newer drain generation, this one is stale — bail out.
+    if (myGen !== _drainGeneration) break;
     while (_isTTSBlockedByPause(ttsQueue[0])) {
       await sleep(150);
     }
@@ -4072,9 +5364,12 @@ async function _drainTTSQueue() {
       }
     }
   }
-  ttsPlaying = false;
-  // Re-evaluate the Continue button now that audio has finished.
-  updateTrainingActionButton();
+  // Only the still-current drain clears the playing flag and updates the button.
+  if (myGen === _drainGeneration) {
+    ttsPlaying = false;
+    // Re-evaluate the Continue button now that audio has finished.
+    updateTrainingActionButton();
+  }
 }
 
 // ── context / cancel ─────────────────────────────────────────────────────────
@@ -4129,6 +5424,13 @@ async function _playTTS(item) {
       if (!blob.size) throw new Error('TTS returned empty audio');
       objectUrl = URL.createObjectURL(blob);
       audioSrc = objectUrl;
+      // Re-check epoch after the async POST fetch — it may have changed while awaiting.
+      // Without this, a stale audio blob would start playing after a flush/Next click.
+      if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) {
+        try { URL.revokeObjectURL(objectUrl); } catch (_) {}
+        objectUrl = null;
+        return;
+      }
       if (TTS_DEBUG_LOGS) {
         console.info(`[TTS] fetched blob seq=${item.seq} fetchMs=${Math.round(performance.now() - fetchStartedAt)} bytes=${blob.size}`);
       }
@@ -4311,6 +5613,397 @@ function _epochGuard(epoch, resolve) {
 }
 
 /* ══════════════════════════════════════════════════
+   SESSION FEEDBACK
+══════════════════════════════════════════════════ */
+function _feedbackDefaultGeom() {
+  return {
+    left: Math.max(12, window.innerWidth - _FEEDBACK_PANEL_DEFAULTS.right - _FEEDBACK_PANEL_DEFAULTS.width),
+    top: _FEEDBACK_PANEL_DEFAULTS.top,
+    width: _FEEDBACK_PANEL_DEFAULTS.width,
+    height: _FEEDBACK_PANEL_DEFAULTS.height,
+  };
+}
+
+function _loadFeedbackPanelGeom() {
+  try {
+    const raw = localStorage.getItem(_FEEDBACK_PANEL_GEOM_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return { ..._feedbackDefaultGeom(), ...parsed };
+      }
+    }
+  } catch (e) { /* ignore */ }
+  return _feedbackDefaultGeom();
+}
+
+function _saveFeedbackPanelGeom(geom) {
+  try {
+    localStorage.setItem(_FEEDBACK_PANEL_GEOM_KEY, JSON.stringify({
+      left: geom.left,
+      top: geom.top,
+      width: geom.width,
+      height: geom.height,
+    }));
+  } catch (e) { /* ignore */ }
+}
+
+function _clampFeedbackPanelGeom(geom) {
+  const minW = 260;
+  const minH = 280;
+  const maxW = window.innerWidth - 24;
+  const maxH = window.innerHeight - 24;
+  const g = { ...geom };
+  g.width = Math.min(maxW, Math.max(minW, g.width));
+  g.height = Math.min(maxH, Math.max(minH, g.height));
+  g.left = Math.min(window.innerWidth - g.width - 12, Math.max(12, g.left));
+  g.top = Math.min(window.innerHeight - g.height - 12, Math.max(12, g.top));
+  return g;
+}
+
+function _getFeedbackPanelGeom() {
+  const panel = document.getElementById('feedback-panel');
+  if (!panel) return _feedbackDefaultGeom();
+  const left = parseFloat(panel.style.left);
+  const top = parseFloat(panel.style.top);
+  if (!Number.isFinite(left) || !Number.isFinite(top)) {
+    return _loadFeedbackPanelGeom();
+  }
+  return {
+    left,
+    top,
+    width: panel.offsetWidth,
+    height: panel.offsetHeight,
+  };
+}
+
+function applyFeedbackPanelGeom(geom) {
+  const panel = document.getElementById('feedback-panel');
+  if (!panel || window.matchMedia('(max-width: 768px)').matches) return;
+  const g = _clampFeedbackPanelGeom(geom);
+  panel.style.left = `${g.left}px`;
+  panel.style.top = `${g.top}px`;
+  panel.style.width = `${g.width}px`;
+  panel.style.height = `${g.height}px`;
+  panel.style.right = 'auto';
+}
+
+function applyFeedbackLocale() {
+  const title = document.getElementById('feedback-panel-title');
+  if (title) title.textContent = t('feedbackTitle');
+  const panel = document.getElementById('feedback-panel');
+  if (panel) panel.setAttribute('aria-label', t('feedbackTitle'));
+  const btnLabel = document.getElementById('sidebar-feedback-btn-label');
+  if (btnLabel) btnLabel.textContent = t('feedbackBtn');
+  const input = document.getElementById('feedback-input');
+  if (input) input.placeholder = t('feedbackPlaceholder');
+  const sendBtn = document.getElementById('feedback-submit-btn');
+  if (sendBtn) sendBtn.textContent = t('feedbackSend');
+  updateFeedbackChrome();
+  const list = document.getElementById('feedback-list');
+  if (!list) return;
+  const empty = list.querySelector('.feedback-empty');
+  if (empty) empty.textContent = t('feedbackEmpty');
+  const loading = list.querySelector('.feedback-loading');
+  if (loading) loading.textContent = t('feedbackLoading');
+  const err = list.querySelector('.feedback-error');
+  if (err) err.textContent = t('feedbackLoadError');
+  if (_cachedFeedbackItems) renderFeedbackList(_cachedFeedbackItems);
+}
+
+function bindFeedbackPanelInteractions() {
+  const panel = document.getElementById('feedback-panel');
+  const header = document.getElementById('feedback-panel-header');
+  const handle = document.getElementById('feedback-resize-handle');
+  if (!panel || !header || !handle || panel._feedbackInteractionsBound) return;
+  panel._feedbackInteractionsBound = true;
+
+  applyFeedbackPanelGeom(_loadFeedbackPanelGeom());
+
+  const onMove = (clientX, clientY) => {
+    if (!_feedbackPanelDragState) return;
+    const dx = clientX - _feedbackPanelDragState.startX;
+    const dy = clientY - _feedbackPanelDragState.startY;
+    let g = {
+      left: _feedbackPanelDragState.left,
+      top: _feedbackPanelDragState.top,
+      width: _feedbackPanelDragState.width,
+      height: _feedbackPanelDragState.height,
+    };
+    if (_feedbackPanelDragState.mode === 'drag') {
+      g.left += dx;
+      g.top += dy;
+    } else {
+      g.width += dx;
+      g.height += dy;
+    }
+    applyFeedbackPanelGeom(g);
+  };
+
+  const endDrag = () => {
+    if (!_feedbackPanelDragState) return;
+    header.classList.remove('dragging');
+    _saveFeedbackPanelGeom(_getFeedbackPanelGeom());
+    _feedbackPanelDragState = null;
+  };
+
+  header.addEventListener('mousedown', (e) => {
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    if (e.button !== 0 || e.target.closest('.feedback-resize-handle')) return;
+    e.preventDefault();
+    const g = _getFeedbackPanelGeom();
+    _feedbackPanelDragState = { mode: 'drag', startX: e.clientX, startY: e.clientY, ...g };
+    header.classList.add('dragging');
+  });
+
+  handle.addEventListener('mousedown', (e) => {
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const g = _getFeedbackPanelGeom();
+    _feedbackPanelDragState = { mode: 'resize', startX: e.clientX, startY: e.clientY, ...g };
+  });
+
+  document.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+
+  window.addEventListener('resize', () => {
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    const g = _clampFeedbackPanelGeom(_getFeedbackPanelGeom());
+    applyFeedbackPanelGeom(g);
+    _saveFeedbackPanelGeom(g);
+  });
+}
+
+function clearFeedbackList() {
+  const list = document.getElementById('feedback-list');
+  if (list) list.innerHTML = '';
+  _cachedFeedbackItems = null;
+}
+
+function resetFeedbackUI() {
+  _feedbackPanelOpen = false;
+  _feedbackLoadToken += 1;
+  document.body.classList.remove('feedback-panel-open');
+  const overlay = document.getElementById('feedback-overlay');
+  if (overlay) overlay.classList.remove('visible');
+  const btn = document.getElementById('sidebar-feedback-btn');
+  if (btn) btn.classList.remove('active');
+  clearFeedbackList();
+  const input = document.getElementById('feedback-input');
+  if (input) input.value = '';
+}
+
+function updateFeedbackChrome() {
+  const btn = document.getElementById('sidebar-feedback-btn');
+  const onHome = currentScreen === 'home';
+  const authed = !!getAuthToken();
+  const showBtn = authed && !onHome && appStarted;
+
+  if (btn) {
+    btn.style.display = showBtn ? 'flex' : 'none';
+    btn.disabled = !trainingSessionId;
+    btn.title = trainingSessionId
+      ? t('feedbackOpenTitle')
+      : t('feedbackDisabledTitle');
+  }
+
+  if (!authed || onHome) {
+    closeFeedbackPanel();
+  }
+}
+
+function openFeedbackPanel() {
+  if (!trainingSessionId) return;
+  _feedbackPanelOpen = true;
+  document.body.classList.add('feedback-panel-open');
+  const btn = document.getElementById('sidebar-feedback-btn');
+  if (btn) btn.classList.add('active');
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const overlay = document.getElementById('feedback-overlay');
+  if (overlay) overlay.classList.toggle('visible', isMobile);
+  if (!isMobile) applyFeedbackPanelGeom(_getFeedbackPanelGeom());
+  loadSessionFeedback().catch(() => {});
+}
+
+function closeFeedbackPanel() {
+  _feedbackPanelOpen = false;
+  document.body.classList.remove('feedback-panel-open');
+  const overlay = document.getElementById('feedback-overlay');
+  if (overlay) overlay.classList.remove('visible');
+  const btn = document.getElementById('sidebar-feedback-btn');
+  if (btn) btn.classList.remove('active');
+}
+
+function toggleFeedbackPanel() {
+  if (!trainingSessionId) return;
+  if (_feedbackPanelOpen) {
+    closeFeedbackPanel();
+  } else {
+    openFeedbackPanel();
+  }
+}
+
+function formatFeedbackTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString(appLocale === 'gu' ? 'gu-IN' : undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+function renderFeedbackList(items) {
+  const list = document.getElementById('feedback-list');
+  if (!list) return;
+  _cachedFeedbackItems = Array.isArray(items) ? items : [];
+  if (!Array.isArray(items) || items.length === 0) {
+    list.innerHTML = `<div class="feedback-empty">${escapeHtml(t('feedbackEmpty'))}</div>`;
+    return;
+  }
+  list.innerHTML = items.map((item) => {
+    const text = escapeHtml(String(item.content || ''));
+    const time = escapeHtml(formatFeedbackTime(item.created_at));
+    return `<div class="feedback-entry"><div class="feedback-entry-text">${text}</div><div class="feedback-entry-time">${time}</div></div>`;
+  }).join('');
+}
+
+async function loadSessionFeedback(sessionId) {
+  const sid = sessionId || trainingSessionId;
+  if (!sid) return;
+  const token = ++_feedbackLoadToken;
+  const list = document.getElementById('feedback-list');
+  if (list) list.innerHTML = `<div class="feedback-loading">${escapeHtml(t('feedbackLoading'))}</div>`;
+
+  try {
+    const res = await apiFetch(`${API_BASE}/session/${sid}/feedback`);
+    if (token !== _feedbackLoadToken || sid !== trainingSessionId) return;
+    if (!res.ok) {
+      if (list) list.innerHTML = `<div class="feedback-empty feedback-error">${escapeHtml(t('feedbackLoadError'))}</div>`;
+      return;
+    }
+    const data = await res.json();
+    if (token !== _feedbackLoadToken || sid !== trainingSessionId) return;
+    renderFeedbackList(data.feedback || []);
+  } catch (e) {
+    if (token !== _feedbackLoadToken || sid !== trainingSessionId) return;
+    if (list) list.innerHTML = `<div class="feedback-empty feedback-error">${escapeHtml(t('feedbackLoadError'))}</div>`;
+  }
+}
+
+async function submitFeedback() {
+  if (!trainingSessionId || _feedbackSubmitInFlight) return;
+  const input = document.getElementById('feedback-input');
+  const submitBtn = document.getElementById('feedback-submit-btn');
+  const content = (input?.value || '').trim();
+  if (!content) return;
+
+  _feedbackSubmitInFlight = true;
+  if (submitBtn) submitBtn.disabled = true;
+  try {
+    const res = await apiFetch(`${API_BASE}/session/${trainingSessionId}/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.warn('Feedback submit failed:', data.detail || res.status);
+      return;
+    }
+    const data = await res.json();
+    if (input) input.value = '';
+    const existing = Array.from(document.querySelectorAll('#feedback-list .feedback-entry')).length;
+    if (existing === 0) clearFeedbackList();
+    const item = data.feedback;
+    if (item) {
+      const list = document.getElementById('feedback-list');
+      const empty = list?.querySelector('.feedback-empty, .feedback-loading');
+      if (empty) empty.remove();
+      if (list) {
+        const card = document.createElement('div');
+        card.className = 'feedback-entry';
+        card.innerHTML = `<div class="feedback-entry-text">${escapeHtml(item.content || '')}</div><div class="feedback-entry-time">${escapeHtml(formatFeedbackTime(item.created_at))}</div>`;
+        list.appendChild(card);
+        list.scrollTop = list.scrollHeight;
+      }
+    } else {
+      await loadSessionFeedback(trainingSessionId);
+    }
+  } catch (e) {
+    console.warn('Feedback submit failed:', e);
+  } finally {
+    _feedbackSubmitInFlight = false;
+    if (submitBtn) submitBtn.disabled = !trainingSessionId;
+  }
+}
+
+function bindFeedbackInput() {
+  const input = document.getElementById('feedback-input');
+  if (!input || input._feedbackBound) return;
+  input._feedbackBound = true;
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitFeedback();
+    }
+  });
+}
+
+async function toggleFeedbackMic() {
+  const btn = document.getElementById('feedback-mic-btn');
+  if (!btn) return;
+  if (btn.classList.contains('recording')) {
+    feedbackRecorder?.stop();
+    return;
+  }
+  if (!trainingSessionId) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const chunks = [];
+    feedbackRecorder = new MediaRecorder(stream);
+    feedbackRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    feedbackRecorder.onstart = () => btn.classList.add('recording');
+    feedbackRecorder.onstop = async () => {
+      btn.classList.remove('recording');
+      stream.getTracks().forEach(t => t.stop());
+      if (!trainingSessionId) return;
+
+      btn.disabled = true;
+      setMicStatus('feedback-mic-status', t('transcribing'));
+
+      const fd = new FormData();
+      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'feedback.webm');
+      try {
+        const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const transcript = (data.text || '').trim();
+        const input = document.getElementById('feedback-input');
+        if (transcript && input) {
+          input.value = transcript;
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+      } catch (e) {
+        console.error('Feedback audio transcription error', e);
+      } finally {
+        btn.disabled = false;
+        setMicStatus('feedback-mic-status', '');
+      }
+    };
+    feedbackRecorder.start();
+  } catch (e) {
+    alert(t('microphoneDenied'));
+  }
+}
+
+/* ══════════════════════════════════════════════════
    SCREEN SWITCHING
 ══════════════════════════════════════════════════ */
 function showScreen(name) {
@@ -4369,9 +6062,28 @@ function updateChromeForScreen() {
   // Sidebar is only visible on trainer screens (training/roleplay/quiz), not on the home screen
   const onHome = currentScreen === 'home';
   const sidebar = document.getElementById('session-sidebar');
+  const openBtn = document.getElementById('sidebar-open-btn');
   if (sidebar && getAuthToken()) {
     sidebar.style.display = onHome ? 'none' : 'flex';
     document.body.classList.toggle('sidebar-active', !onHome);
+    // On first show, auto-collapse on mobile so it doesn't block the content
+    if (!onHome && !sidebar._sidebarInitialized) {
+      sidebar._sidebarInitialized = true;
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      if (isMobile) {
+        _sidebarCollapsed = true;
+        sidebar.classList.add('sidebar-collapsed');
+        document.body.classList.add('sidebar-is-collapsed');
+      } else {
+        _sidebarCollapsed = false;
+        sidebar.classList.remove('sidebar-collapsed');
+        document.body.classList.remove('sidebar-is-collapsed');
+      }
+    }
+    if (openBtn) openBtn.style.display = onHome ? 'none' : '';
+    _applySidebarState();
+  } else {
+    if (openBtn) openBtn.style.display = 'none';
   }
 
   const tabs = document.getElementById('screen-tabs');
@@ -4390,8 +6102,11 @@ function updateChromeForScreen() {
   const chrome = document.getElementById('training-chrome');
   if (chrome) chrome.classList.toggle('show', isOnTraining);
 
-  showPauseWrap(sessionLoaded);
-  showMuteWrap(sessionLoaded);
+  // Keep training chrome controls visible even before the backend session
+  // is created (e.g. immediately after "New Session"), so the UI doesn't
+  // flicker/disappear until first Begin.
+  showPauseWrap(isOnTraining);
+  showMuteWrap(isOnTraining);
 
   // Disable language switch once a session has started or has history; only new empty sessions can switch
   const langEnBtn = document.getElementById('lang-en-btn');
@@ -4399,16 +6114,17 @@ function updateChromeForScreen() {
   const langLocked = trainingGraphStarted || chatHistory.length > 0;
   if (langEnBtn) {
     langEnBtn.disabled = langLocked;
-    langEnBtn.title = langLocked ? 'Cannot switch language during an active session' : '';
+    langEnBtn.title = langLocked ? t('cannotSwitchLanguage') : '';
     langEnBtn.style.opacity = langLocked ? '0.45' : '';
     langEnBtn.style.cursor = langLocked ? 'not-allowed' : '';
   }
   if (langGuBtn) {
     langGuBtn.disabled = langLocked;
-    langGuBtn.title = langLocked ? 'Cannot switch language during an active session' : '';
+    langGuBtn.title = langLocked ? t('cannotSwitchLanguage') : '';
     langGuBtn.style.opacity = langLocked ? '0.45' : '';
     langGuBtn.style.cursor = langLocked ? 'not-allowed' : '';
   }
+  updateFeedbackChrome();
 }
 
 function renderHomeSessionCard() {
@@ -4422,7 +6138,7 @@ function renderHomeSessionCard() {
       : t('sessionPill', { session: selectedTrainingSessionId });
   }
   if (metaEl) {
-    metaEl.innerHTML = t('homeSessionMeta');
+    metaEl.textContent = t('homeSessionMeta', { total: getTrainingSessionCount() });
   }
   if (startBtn) {
     startBtn.textContent = t('goToTrainer');
@@ -4445,10 +6161,22 @@ function updateSessionLabel() {
   }
 }
 
+function updateBkgGenBar() {
+  // Show the pulsing bar when the backend is generating in the background
+  // but nothing is actively streaming to the visible flashcard.
+  const bar = document.getElementById('bkg-gen-bar');
+  if (!bar) return;
+  const bkgActive = trainingBackendStreamActive && !isStreaming && !trainingComplete;
+  bar.classList.toggle('visible', Boolean(bkgActive));
+}
+
 function updateTrainingActionButton() {
+  updateBkgGenBar();
   const btn = document.getElementById('training-continue-btn');
   if (!btn) return;
-  const interactionBusy = trainingActionInFlight || isStreaming || isPaused || ttsPlaying;
+  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  const interactionBusy = trainingActionInFlight || isPaused
+    || (!waitingAtInterrupt && (isStreaming || ttsPlaying));
   if (manualFlashcardGate) {
     btn.textContent = t('mutedNext');
     btn.disabled = isPaused;
@@ -4460,6 +6188,15 @@ function updateTrainingActionButton() {
     return;
   }
   if (!trainingGraphStarted) {
+    if (isStreaming) {
+      btn.disabled = true;
+      return;
+    }
+    if (trainingSessionHasResumeContent()) {
+      btn.textContent = t('trainingContinue');
+      btn.disabled = interactionBusy;
+      return;
+    }
     btn.textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
     btn.disabled = interactionBusy;
     return;
@@ -4477,19 +6214,19 @@ async function ensureTrainingSessionCreated() {
   // Push URL and refresh sidebar
   navigateToSession(trainingSessionId);
   refreshSessionSidebar().catch(() => {});
+  updateChromeForScreen();
+  updateFeedbackChrome();
 }
 
 function resetTrainingViewForSession(sessionNumber) {
-  clearTrainingBackendIdleWatch();
-  clearManualFlashcardGate();
+  resetTrainingInteractionState();
   selectedTrainingSessionId = sessionNumber;
   activeTrainingSessionId = sessionNumber;
   activeTrainingSubSession = 'setup';
   trainingGraphStarted = false;
-  trainingAwaitingInput = false;
-  trainingHasUserInterrupt = false;
-  trainingBackendStreamActive = false;
   trainingComplete = false;
+  trainingRunState = 'IDLE';
+  sessionStateHydrated = true;
   latestQuizSessionNumber = null;
   quizSessionId = null;
   quizLoaded = false;
@@ -4503,9 +6240,9 @@ function resetTrainingViewForSession(sessionNumber) {
   autoAdvanceAfterQueuedAsk = false;
   chatHistory.length = 0;
   renderChatHistory();
-  document.getElementById('flashcard-speaker-badge').textContent = `⌛ ${t('sessionLoading')}`;
-  document.getElementById('flashcard-text').textContent = t('beginSessionNumber', { session: selectedTrainingSessionId });
+  setFlashcardIdlePlaceholder(selectedTrainingSessionId);
   setActiveSessionChip(selectedTrainingSessionId);
+  setModuleChipDisabled(!canSwitchSessions());
   updateSessionLabel();
   renderHomeSessionCard();
   updateTrainingActionButton();
@@ -4544,35 +6281,42 @@ function isTrainingAttendee(name) {
 
 function speakerForRole(role, name, flashcardKind) {
   const normalizedName = typeof name === 'string' ? name.trim() : '';
+  const themeKey = resolveSpeakerThemeKey(normalizedName, role, flashcardKind);
+  const themeClass = speakerThemeClass(themeKey);
+
   if (role === 'learner' || flashcardKind === 'user') {
     return {
       name: 'USER',
       badge: '💬 USER',
-      cardClass: 'speaker-attendee',
-      bubbleClass: 'attendee',
+      cardClass: themeClass,
+      bubbleClass: themeClass,
+      themeKey,
     };
   }
   if (role === 'trainer' || normalizedName === trainingTrainerName) {
     return {
       name: normalizedName || trainingTrainerName || t('trainer'),
       badge: `🧑‍🏫 ${normalizedName || trainingTrainerName || t('trainer')}`,
-      cardClass: 'speaker-trainer',
-      bubbleClass: 'trainer',
+      cardClass: themeClass,
+      bubbleClass: themeClass,
+      themeKey,
     };
   }
   if (role === 'attendee' || isTrainingAttendee(normalizedName)) {
     return {
       name: normalizedName || t('attendee'),
       badge: `🙋 ${normalizedName || t('attendee')}`,
-      cardClass: 'speaker-attendee',
-      bubbleClass: 'attendee',
+      cardClass: themeClass,
+      bubbleClass: themeClass,
+      themeKey,
     };
   }
   return {
     name: normalizedName || t('participant'),
     badge: `🙋 ${normalizedName || t('participant')}`,
-    cardClass: 'speaker-other',
-    bubbleClass: 'note',
+    cardClass: themeClass,
+    bubbleClass: themeClass,
+    themeKey,
   };
 }
 
@@ -4584,10 +6328,13 @@ function isIntroFlashcardMessage(role, name) {
 
 function roleplayMessageMeta(role, speaker) {
   if (isIntroFlashcardMessage(role, speaker)) {
-    return { bubbleClass: 'note', label: t('sessionNote'), skipTTS: true };
+    return { bubbleClass: 'speaker-other', label: t('sessionNote'), skipTTS: true };
   }
+  const themeKey = role === 'persona'
+    ? resolveSpeakerThemeKey(speaker, 'persona', '')
+    : 'user';
   return {
-    bubbleClass: role === 'persona' ? 'trainer' : 'attendee',
+    bubbleClass: speakerThemeClass(themeKey),
     label: speaker || (role === 'persona' ? getRoleplayPersonaText('name') : t('counsellor')),
     skipTTS: false,
   };
@@ -4612,6 +6359,23 @@ let manualFlashcardGate = null;
 let trainingBackendIdleWatchTimer = null;
 const TRAINING_BACKEND_IDLE_WAIT_MS = 12000;
 const TRAINING_BACKEND_IDLE_WATCH_MS = 700;
+const TRAINING_CONTINUE_QUEUE_WAIT_MS = 2500;
+
+async function waitWhileTrainingStream(timeoutMs = 4000) {
+  const startedAt = Date.now();
+  while (isStreaming && Date.now() - startedAt < timeoutMs) {
+    await sleep(30);
+  }
+}
+
+async function ensureParticipationInterruptReady(retries = 4) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    await refreshTrainingState();
+    if (trainingAwaitingInput || trainingHasUserInterrupt) return true;
+    if (attempt < retries - 1) await sleep(60);
+  }
+  return false;
+}
 
 function resolveManualFlashcardGate() {
   if (isPaused) return false;
@@ -4637,8 +6401,18 @@ function renderTrainingUserEcho(text) {
   const cleaned = String(text || '').trim();
   if (!cleaned) return;
   trainingEchoedUserTexts.push(cleaned);
-  chatHistory.push({ name: 'USER', bubbleClass: 'attendee', text: cleaned });
+  chatHistory.push({ name: 'USER', bubbleClass: 'speaker-user', text: cleaned });
   renderChatHistory();
+}
+
+/** Read and clear the training chat input when non-empty. */
+function takeTrainingInputText() {
+  const input = document.getElementById('training-input');
+  if (!input) return '';
+  const text = input.value.trim();
+  if (!text) return '';
+  input.value = '';
+  return text;
 }
 
 function consumeEchoedUserText(text) {
@@ -4664,6 +6438,9 @@ function applyTrainingStateSnapshot(data) {
   trainingAwaitingInput = Boolean(data.awaiting_input);
   trainingHasUserInterrupt = Boolean(data.has_user_interrupt);
   trainingBackendStreamActive = Boolean(data.stream_active);
+  if (typeof data.run_state === 'string' && data.run_state.trim()) {
+    trainingRunState = data.run_state.trim();
+  }
   if (!trainingBackendStreamActive && trainingBackendIdleWatchTimer) {
     clearTimeout(trainingBackendIdleWatchTimer);
     trainingBackendIdleWatchTimer = null;
@@ -4672,11 +6449,7 @@ function applyTrainingStateSnapshot(data) {
   if (data.active_session_id != null) {
     const resolvedSessionId = _normalizeSessionId(data.active_session_id);
     activeTrainingSessionId = resolvedSessionId;
-    // Only sync the user's chip selection when the backend graph is actually running.
-    // Before the session starts, the user's chip pick (selectedTrainingSessionId) takes priority.
-    if (data.graph_started) {
-      selectedTrainingSessionId = resolvedSessionId;
-    }
+    selectedTrainingSessionId = resolvedSessionId;
   }
   if (typeof data.active_sub_session === 'string' && data.active_sub_session.trim()) {
     activeTrainingSubSession = data.active_sub_session.trim();
@@ -4688,10 +6461,16 @@ function applyTrainingStateSnapshot(data) {
   const quizStatusSessions = Object.keys(data.quiz_generation_status || {})
     .map(id => Number(id))
     .filter(Number.isInteger);
-  // Update global quiz status map for the session picker
-  lastQuizGenerationStatus = {};
-  for (const [k, v] of Object.entries(data.quiz_generation_status || {})) {
-    lastQuizGenerationStatus[Number(k)] = typeof v === 'object' ? (v.status || v) : v;
+  // Merge quiz maps — do not wipe on polls that omit fields (e.g. graph_started=false).
+  if (data.session_completed != null) {
+    for (const [k, v] of Object.entries(data.session_completed)) {
+      lastSessionCompleted[Number(k)] = Boolean(v);
+    }
+  }
+  if (data.quiz_generation_status != null) {
+    for (const [k, v] of Object.entries(data.quiz_generation_status)) {
+      lastQuizGenerationStatus[Number(k)] = typeof v === 'object' ? (v.status || v) : v;
+    }
   }
   const candidates = [...completedSessions, ...quizStatusSessions];
   if (Boolean(data.training_complete) && Number.isInteger(activeTrainingSessionId)) {
@@ -4705,6 +6484,7 @@ function applyTrainingStateSnapshot(data) {
       currentQ = 0;
     }
   }
+  updateBkgGenBar();
 }
 
 async function refreshTrainingState() {
@@ -4719,6 +6499,12 @@ async function refreshTrainingState() {
     renderHomeSessionCard();
     setModuleChipDisabled(!canSwitchSessions());
     updateTrainingActionButton();
+    if (currentScreen === 'quiz' && quizPanelMode === 'picker') {
+      _kickQuizGenerationForCompleted()
+        .then(() => _syncCompletedQuizzesFromBackend())
+        .then(() => renderQuizSessionPicker())
+        .catch(() => {});
+    }
   } catch (_) {
     // noop: UI keeps current state if polling fails
   }
@@ -4777,7 +6563,7 @@ function renderChatHistory() {
     if (h.bubbleClass === 'history-loaded-label') {
       return `<div class="history-loaded-label">${h.text}</div>`;
     }
-    return `<div class="msg-bubble ${h.bubbleClass}">
+    return `<div class="msg-bubble ${normalizeBubbleClass(h.bubbleClass, h.name, '')}">
       <div class="msg-label">${h.name}</div>${h.text}
     </div>`;
   }).join('');
@@ -4840,7 +6626,7 @@ async function consumeTrainingStream(sseIter, options = {}) {
         // when muted so the user can read at their own pace.
         skipManualGateForMessage = isIntroFlashcard;
         spk   = isIntroFlashcard
-          ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'note' }
+          ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'speaker-other' }
           : speakerForRole(ev.role, ev.speaker, ev.flashcard_kind);
         voice = ev.voice || 'meera';
         text  = '';
@@ -4864,6 +6650,7 @@ async function consumeTrainingStream(sseIter, options = {}) {
       case 'token': {
         text += ev.text;
         textEl.textContent = text;
+        checkFlashcardOverflow(card);
         break;
       }
       case 'message_end': {
@@ -4892,6 +6679,23 @@ async function consumeTrainingStream(sseIter, options = {}) {
         }
         break;
       }
+      case 'phase_complete': {
+        track('sse_phase_complete', {
+          session: ev.session ?? null,
+          phase: ev.phase || null,
+          active_sub_session: ev.active_sub_session || null,
+        });
+        if (Number.isInteger(ev.session) && ev.session >= 1) {
+          activeTrainingSessionId = ev.session;
+          selectedTrainingSessionId = ev.session;
+          setActiveSessionChip(selectedTrainingSessionId);
+        }
+        if (typeof ev.active_sub_session === 'string' && ev.active_sub_session.trim()) {
+          activeTrainingSubSession = ev.active_sub_session.trim();
+        }
+        updateSessionLabel();
+        break;
+      }
       case 'exchange_end': {
         track('sse_exchange_end', {
           has_more: ev.has_more ?? null,
@@ -4903,14 +6707,18 @@ async function consumeTrainingStream(sseIter, options = {}) {
           ? Boolean(ev.has_user_interrupt)
           : Boolean(ev.awaiting_input);
         trainingBackendStreamActive = false;
+        if (typeof ev.run_state === 'string' && ev.run_state.trim()) {
+          trainingRunState = ev.run_state.trim();
+        }
         updateTrainingActionButton();
+        setModuleChipDisabled(!canSwitchSessions());
         return { event: ev, lastTTSSeq, epoch: streamEpoch };
       }
       case 'error': {
         track('sse_error', { message: ev.message || null, run_state: ev.run_state || null });
         const message = ev.message || 'Training stream error';
         textEl.textContent = message;
-        chatHistory.push({ name: t('sessionNote'), bubbleClass: 'note', text: message });
+        chatHistory.push({ name: t('sessionNote'), bubbleClass: 'speaker-other', text: message });
         renderChatHistory();
         break;
       }
@@ -4924,7 +6732,12 @@ async function consumeTrainingStream(sseIter, options = {}) {
 /* ── Training: advance scripted exchange ── */
 async function advanceTraining() {
   const traceMeta = beginTrainingActionTrace('advance_or_continue', { route_hint: 'advance' });
-  if (resolveManualFlashcardGate()) return;
+  if (resolveManualFlashcardGate()) {
+    // Gate click unblocks an in-flight SSE read — wait for exchange_end to land.
+    await waitWhileTrainingStream();
+    await refreshTrainingState();
+    return;
+  }
   if (trainingActionInFlight) {
     trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'training_action_in_flight');
     return;
@@ -4939,7 +6752,7 @@ async function advanceTraining() {
 }
 
 async function advanceTrainingImpl(traceMeta) {
-  if (isStreaming || trainingComplete || isPaused || ttsPlaying) {
+  if (trainingComplete || isPaused) {
     trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'advance_guard_blocked', {
       training_complete: Boolean(trainingComplete),
     });
@@ -4947,22 +6760,22 @@ async function advanceTrainingImpl(traceMeta) {
   }
   if (trainingSessionId) {
     await refreshTrainingState();
-    const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  }
+  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  if (!waitingAtInterrupt && (isStreaming || ttsPlaying)) {
+    trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'advance_guard_blocked', {
+      training_complete: Boolean(trainingComplete),
+    });
+    return;
+  }
+  if (trainingSessionId) {
     if (trainingBackendStreamActive && !waitingAtInterrupt) {
       trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'backend_stream_busy');
       return;
     }
   }
-  if (trainingGraphStarted && (trainingAwaitingInput || trainingHasUserInterrupt)) {
-    // Auto-chain through consecutive silent interrupts (e.g. multiple check_user_participation
-    // calls with no streamed content between them).  trainingActionInFlight stays true
-    // throughout, so updateTrainingActionButton() keeps the button disabled — no flickering.
-    let _continueLoops = 0;
-    while (_continueLoops < 8 && !trainingComplete && !isPaused) {
-      await continueTrainingNow(traceMeta);
-      _continueLoops++;
-      if (!(trainingAwaitingInput || trainingHasUserInterrupt) || isStreaming || trainingComplete) break;
-    }
+  if (trainingGraphStarted && waitingAtInterrupt) {
+    await continueTrainingNow(traceMeta);
     return;
   }
   await ensureTrainingSessionCreated();
@@ -4974,7 +6787,7 @@ async function advanceTrainingImpl(traceMeta) {
   btn.disabled = true;
   setModuleChipDisabled(true);
 
-  if (!trainingGraphStarted) {
+  if (!trainingGraphStarted && !trainingSessionHasResumeContent()) {
     try {
       const startRes = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${selectedTrainingSessionId}`, {
         method: 'POST',
@@ -5035,9 +6848,30 @@ async function advanceTrainingImpl(traceMeta) {
 }
 
 /* ── Training: free-text Q&A ── */
+function trainingAtParticipationInterrupt() {
+  return Boolean(trainingAwaitingInput || trainingHasUserInterrupt);
+}
+
+function flashcardGateIsActive() {
+  return Boolean(manualFlashcardGate);
+}
+
 async function askTrainingNow(text, traceMeta = null) {
-  if (!text || !trainingSessionId || isStreaming) return;
-  if (trainingBackendStreamActive) return;
+  if (!text || !trainingSessionId) return;
+  // Never resume/participation side-effects while the learner is on a gated flashcard.
+  if (flashcardGateIsActive()) {
+    enqueueTrainingQuestion(text, traceMeta);
+    return;
+  }
+  // Participation interrupt can be visible in /state before the advance SSE tears down;
+  // blocking on isStreaming here drops learner text after sendTrainingQuestion already echoed it.
+  let atInterrupt = trainingAtParticipationInterrupt();
+  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) {
+    await refreshTrainingState();
+    atInterrupt = trainingAtParticipationInterrupt();
+  }
+  if (isStreaming && !atInterrupt) return;
+  if (trainingBackendStreamActive && !atInterrupt) return;
   if (isZoomed) toggleZoom();
 
   clearTrainingBackendIdleWatch();
@@ -5053,36 +6887,68 @@ async function askTrainingNow(text, traceMeta = null) {
       traceMeta,
     }), { allowWhilePaused: true });
     await refreshTrainingState();
+    // Queued ack only placed text in the pending queue — resume the interrupt now.
+    if (result.event?.type === 'done' && trainingAtParticipationInterrupt()) {
+      isStreaming = false;
+      trainingBackendStreamActive = false;
+      await continueTrainingNow(traceMeta);
+      updateTrainingActionButton();
+      setModuleChipDisabled(!canSwitchSessions());
+      return;
+    }
   } catch (e) {
     console.error('Training ask error', e);
     await refreshTrainingState();
   }
 
   isStreaming = false;
-  clearManualFlashcardGate();
   updateTrainingActionButton();
   setModuleChipDisabled(!canSwitchSessions());
 }
 
 async function continueTrainingNow(traceMeta = null) {
   const localTrace = traceMeta || beginTrainingActionTrace('continue', { route_hint: 'continue' });
-  if (!trainingSessionId || isStreaming || isPaused) {
+  const pendingText = takeTrainingInputText();
+  if (!trainingSessionId || isPaused) {
+    trackTrainingActionBlocked(localTrace, 'continue', 'continue_guard_blocked', {
+      missing_session: !trainingSessionId,
+    });
+    return;
+  }
+  // Empty continue/resume must not bypass the click-to-next flashcard gate.
+  if (flashcardGateIsActive() && !pendingText) {
+    trackTrainingActionBlocked(localTrace, 'continue', 'flashcard_gate_active');
+    return;
+  }
+  let waitingAtInterrupt = trainingAtParticipationInterrupt();
+  if (isStreaming && !pendingText && !waitingAtInterrupt) {
     trackTrainingActionBlocked(localTrace, 'continue', 'continue_guard_blocked', {
       missing_session: !trainingSessionId,
     });
     return;
   }
   await refreshTrainingState();
-  const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
+  if (!waitingAtInterrupt && !pendingText) {
+    waitingAtInterrupt = await ensureParticipationInterruptReady();
+  }
   if (trainingBackendStreamActive && !waitingAtInterrupt) {
     trackTrainingActionBlocked(localTrace, 'continue', 'backend_stream_busy');
     return;
   }
-  if (!waitingAtInterrupt) {
+  if (!waitingAtInterrupt && !pendingText) {
     trackTrainingActionBlocked(localTrace, 'continue', 'no_interrupt_pending');
     return;
   }
   if (isZoomed) toggleZoom();
+
+  if (pendingText) {
+    renderTrainingUserEcho(pendingText);
+    if (localTrace) {
+      localTrace.text_len = pendingText.length;
+      localTrace.source = 'continue_with_input';
+    }
+  }
 
   clearTrainingBackendIdleWatch();
   isStreaming = true;
@@ -5092,19 +6958,17 @@ async function continueTrainingNow(traceMeta = null) {
   setModuleChipDisabled(true);
 
   try {
+    const continueBody = pendingText ? { text: pendingText } : { action: 'continue' };
     const result = await consumeTrainingStream(openSSE(`${API_BASE}/training/${trainingSessionId}/continue`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(localTrace?.traceId ? { 'X-Trace-Id': localTrace.traceId } : {}) },
-      body: JSON.stringify({ action: 'continue' }),
+      body: JSON.stringify(continueBody),
       traceMeta: localTrace,
     }), { allowWhilePaused: true });
     const ev = result.event;
     if (ev?.type === 'done') {
-      // Backend queued our continue (stream was still active). Keep isStreaming=true
-      // so the button stays locked until the backend's main stream finishes processing.
-      // This prevents the user from re-clicking Continue and flooding the ask_queue
-      // with duplicate resumes that silently skip participation checkpoints.
-      await waitForTrainingBackendIdle(15_000);
+      // Backend queued continue while stream tore down — wait briefly, then loop retries.
+      await waitForTrainingBackendIdle(TRAINING_CONTINUE_QUEUE_WAIT_MS);
     }
     if (ev?.type === 'exchange_end' && ev.has_more === false) {
       trainingComplete = true;
@@ -5115,7 +6979,6 @@ async function continueTrainingNow(traceMeta = null) {
     await refreshTrainingState();
   }
 
-  clearManualFlashcardGate();
   isStreaming = false;
   updateTrainingActionButton();
   setModuleChipDisabled(!canSwitchSessions());
@@ -5123,11 +6986,16 @@ async function continueTrainingNow(traceMeta = null) {
 }
 
 async function runTrainingAskQueue() {
-  if (trainingAskRunnerActive || !trainingSessionId || isStreaming || trainingBackendStreamActive) return;
+  if (trainingAskRunnerActive || !trainingSessionId) return;
+  if (flashcardGateIsActive()) return;
+  const atInterrupt = trainingAtParticipationInterrupt();
+  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) return;
   trainingAskRunnerActive = true;
   try {
     while (trainingAskQueue.length > 0) {
-      if (isStreaming || trainingBackendStreamActive || !trainingSessionId) break;
+      const queueAtInterrupt = trainingAtParticipationInterrupt();
+      if (!trainingSessionId) break;
+      if ((isStreaming || trainingBackendStreamActive) && !queueAtInterrupt) break;
       const queuedItem = trainingAskQueue.shift();
       if (!queuedItem) continue;
       if (typeof queuedItem === 'string') {
@@ -5151,7 +7019,7 @@ async function runTrainingAskQueue() {
       } else if (ttsQueue.length > 0 && !ttsPlaying) {
         _drainTTSQueue();
       }
-      setModuleChipDisabled(false);
+      setModuleChipDisabled(!canSwitchSessions());
       updatePausePlayBtn();
     }
     await advanceTraining();
@@ -5172,7 +7040,12 @@ async function sendTrainingQuestion() {
   input.value = '';
   renderTrainingUserEcho(text);
 
-  if (isStreaming || trainingBackendStreamActive) {
+  let atInterrupt = trainingAtParticipationInterrupt();
+  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) {
+    await refreshTrainingState();
+    atInterrupt = trainingAtParticipationInterrupt();
+  }
+  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) {
     // SSE stream is active: the trainer is currently generating.
     // Fire-and-forget POST to /input — the backend queues the message in
     // UserInputQueue so it gets injected at the next tool-call boundary
@@ -5262,7 +7135,14 @@ function toggleZoom() {
   isZoomed = !isZoomed;
   wrap.classList.toggle('zoomed', isZoomed);
   hint.textContent = isZoomed ? t('backToFocus') : t('scrollUp');
-  if (isZoomed) setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+  if (isZoomed) {
+    // Jump to the bottom instantly — bypass smooth-scroll so history appears
+    // already at the latest message rather than animating from the top.
+    wrap.style.scrollBehavior = 'auto';
+    void wrap.offsetHeight; // flush layout so scrollHeight is accurate
+    wrap.scrollTop = wrap.scrollHeight;
+    requestAnimationFrame(() => { wrap.style.scrollBehavior = ''; });
+  }
 }
 
 /* ── Pause / Play (outside phone) ── */
@@ -5378,7 +7258,7 @@ function appendRoleplayNote(text) {
   const chat = document.getElementById('rp-chat');
   if (!chat) return;
   const bubble = document.createElement('div');
-  bubble.className = 'msg-bubble note';
+  bubble.className = 'msg-bubble speaker-other';
   bubble.innerHTML = `<div class="msg-label">${t('sessionNote')}</div>${escapeHtml(text)}`;
   chat.appendChild(bubble);
   scrollToBottom(chat);
@@ -5555,7 +7435,7 @@ async function sendRoleplayMessage() {
   const controller = beginRoleplayRequest();
 
   const ub = document.createElement('div');
-  ub.className = 'msg-bubble attendee';
+  ub.className = 'msg-bubble speaker-user';
   ub.innerHTML = `<div class="msg-label">${t('you')}</div>${text}`;
   chat.appendChild(ub);
   scrollToBottom(chat);
@@ -5661,6 +7541,8 @@ let quizLoadInFlight = false;
 let quizAnswerState  = [];          // {selectedIndex, correct, correctIndex, explanation} per question index
 let selectedQuizSessionNumber = null; // session number currently being quizzed
 let quizPanelMode    = 'picker';    // 'picker' | 'active'
+let quizReviewMode   = false;       // true when re-viewing a completed quiz (read-only)
+let quizResultsSnapshot = null;     // cached /results payload for review summary
 
 // Completed quiz sessions — keyed as "{trainingSessionId}:{sessionNumber}", persisted in localStorage
 let completedQuizSessions = new Set(
@@ -5671,6 +7553,58 @@ function _persistCompletedQuizSessions() {
 }
 function _quizCompletionKey(sessionNumber) {
   return `${trainingSessionId || ''}:${sessionNumber}`;
+}
+
+function _quizResultsFullyAnswered(results, questionCount) {
+  if (!results || !questionCount) return false;
+  const answerCount = Object.keys(results.answers || {}).length;
+  const total = Number.isFinite(results.total) ? results.total : questionCount;
+  return Boolean(results.completed) && answerCount >= total && total > 0;
+}
+
+async function _kickQuizGenerationForCompleted() {
+  if (!trainingSessionId) return;
+  let changed = false;
+  const sessionNums = Object.keys(TRAINING_SESSION_TITLES).map(Number).filter(n => n > 0);
+  await Promise.all(sessionNums.map(async num => {
+    if (!lastSessionCompleted[num]) return;
+    const qStatus = lastQuizGenerationStatus[num];
+    if (qStatus === 'succeeded' || qStatus === 'queued' || qStatus === 'running') return;
+    try {
+      const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${num}/status`);
+      if (!res.ok) return;
+      const status = await res.json();
+      const next = status?.status;
+      if (next && lastQuizGenerationStatus[num] !== next) {
+        lastQuizGenerationStatus[num] = next;
+        changed = true;
+      }
+    } catch (e) { /* non-fatal */ }
+  }));
+  return changed;
+}
+
+async function _syncCompletedQuizzesFromBackend() {
+  if (!trainingSessionId) return;
+  const sessionNums = Object.keys(TRAINING_SESSION_TITLES).map(Number).filter(n => n > 0);
+  let changed = false;
+  await Promise.all(sessionNums.map(async num => {
+    const qStatus = lastQuizGenerationStatus[num];
+    if (qStatus !== 'succeeded' && !completedQuizSessions.has(_quizCompletionKey(num))) return;
+    try {
+      const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${num}/results`);
+      if (!res.ok) return;
+      const results = await res.json();
+      if (_quizResultsFullyAnswered(results, results.total)) {
+        const key = _quizCompletionKey(num);
+        if (!completedQuizSessions.has(key)) {
+          completedQuizSessions.add(key);
+          changed = true;
+        }
+      }
+    } catch (e) { /* non-fatal */ }
+  }));
+  if (changed) _persistCompletedQuizSessions();
 }
 
 /* ── Session Picker ─────────────────────────────── */
@@ -5690,15 +7624,19 @@ function renderQuizSessionPicker() {
   const cards = sessionNums.map(num => {
     const title   = getLocalizedSessionTitle(num);
     const qStatus = lastQuizGenerationStatus[num];
+    const sessionDone = Boolean(lastSessionCompleted[num]);
     const isDone  = completedQuizSessions.has(_quizCompletionKey(num));
     const isReady = isDone || qStatus === 'succeeded';
-    const isGenning = !isDone && ['queued', 'running'].includes(qStatus);
+    const isGenning = !isDone && !isReady && (
+      ['queued', 'running', 'failed', 'skipped', 'not_found'].includes(qStatus)
+      || (sessionDone && qStatus !== 'succeeded')
+    );
     const isLocked = !isReady && !isGenning;
 
     let badgeClass, badgeText, cardClass, onclickAttr;
     if (isDone) {
-      badgeClass = 'done';       badgeText = t('quizSessionDone');
-      cardClass  = 'done';       onclickAttr = '';
+      badgeClass = 'done';       badgeText = t('quizSessionReview');
+      cardClass  = 'done';       onclickAttr = `onclick="startSessionQuiz(${num})"`;
     } else if (isReady) {
       badgeClass = 'ready';      badgeText = t('quizSessionReady');
       cardClass  = 'ready';      onclickAttr = `onclick="startSessionQuiz(${num})"`;
@@ -5710,7 +7648,7 @@ function renderQuizSessionPicker() {
       cardClass  = 'locked';     onclickAttr = '';
     }
 
-    return `<div class="quiz-session-card ${cardClass}" ${onclickAttr} role="${isReady ? 'button' : ''}" tabindex="${isReady ? '0' : '-1'}">
+    return `<div class="quiz-session-card ${cardClass}" ${onclickAttr} role="${(isReady || isDone) ? 'button' : ''}" tabindex="${(isReady || isDone) ? '0' : '-1'}">
       <div class="quiz-card-num">${t('sessionPill', { session: num })}</div>
       <div class="quiz-card-title">${escapeHtml(title)}</div>
       <span class="quiz-card-badge ${badgeClass}">${badgeText}</span>
@@ -5720,14 +7658,21 @@ function renderQuizSessionPicker() {
   grid.innerHTML = cards.join('');
 }
 
-function showQuizPicker() {
+async function showQuizPicker() {
   quizPanelMode = 'picker';
+  quizReviewMode = false;
   const picker = document.getElementById('quiz-session-picker');
   const active = document.getElementById('quiz-active');
   if (picker) picker.style.display = 'flex';
   if (active) active.style.display = 'none';
   renderQuizSessionPicker();
-  _startQuizPickerPolling();   // begin background refresh while picker is visible
+  if (trainingSessionId) {
+    try { await refreshTrainingState(); } catch (e) { /* non-fatal */ }
+  }
+  await _kickQuizGenerationForCompleted();
+  await _syncCompletedQuizzesFromBackend();
+  renderQuizSessionPicker();
+  _startQuizPickerPolling();
 }
 
 /* ── Background poller — keeps picker cards fresh while generating ──────── */
@@ -5740,11 +7685,14 @@ function _startQuizPickerPolling() {
   _quizPickerPollTimer = setInterval(async () => {
     if (quizPanelMode !== 'picker') { _stopQuizPickerPolling(); return; }
     if (trainingSessionId) {
-      try { await refreshTrainingState(); } catch(e) { /* non-fatal */ }
+      try {
+        await refreshTrainingState();
+        await _kickQuizGenerationForCompleted();
+      } catch(e) { /* non-fatal */ }
     }
     renderQuizSessionPicker();
     if (!_hasGeneratingSessions()) _stopQuizPickerPolling();
-  }, 8000);  // re-check every 8 s
+  }, 3000);
 }
 
 function _stopQuizPickerPolling() {
@@ -5752,12 +7700,17 @@ function _stopQuizPickerPolling() {
 }
 
 function _hasGeneratingSessions() {
-  return Object.values(lastQuizGenerationStatus).some(v => v === 'queued' || v === 'running');
+  return Object.entries(lastQuizGenerationStatus).some(([num, v]) => {
+    if (v === 'queued' || v === 'running') return true;
+    return Boolean(lastSessionCompleted[Number(num)]) && v !== 'succeeded' && !completedQuizSessions.has(_quizCompletionKey(Number(num)));
+  });
 }
 
 async function startSessionQuiz(sessionNumber) {
   selectedQuizSessionNumber = sessionNumber;
   quizPanelMode  = 'active';
+  quizReviewMode = completedQuizSessions.has(_quizCompletionKey(sessionNumber));
+  quizResultsSnapshot = null;
   quizLoaded     = false;
   currentQ       = 0;
   answered       = false;
@@ -5774,7 +7727,21 @@ async function startSessionQuiz(sessionNumber) {
 
 /* ── Message helper ─────────────────────────────── */
 
+function _ensureQuizBodyStructure() {
+  const body = document.querySelector('#quiz-active .quiz-body');
+  if (!body || document.getElementById('q-text')) return;
+  body.innerHTML = `
+    <div class="question-text" id="q-text"></div>
+    <div class="options-list" id="q-options"></div>
+    <div class="feedback-msg" id="q-feedback"></div>`;
+  const qNext = document.getElementById('q-next');
+  const qPrev = document.getElementById('q-prev');
+  if (qNext) qNext.style.display = '';
+  if (qPrev) qPrev.style.display = '';
+}
+
 function renderQuizMessage(message) {
+  _ensureQuizBodyStructure();
   const qText     = document.getElementById('q-text');
   const qOptions  = document.getElementById('q-options');
   const qFeedback = document.getElementById('q-feedback');
@@ -5840,11 +7807,12 @@ async function loadQuizQuestions() {
     questions       = data.questions;  // [{ id, text, options }]
     quizAnswerState = questions.map(() => ({ selectedIndex: null, correct: null, correctIndex: null, explanation: null }));
 
-    // Try to restore saved answers from backend
+    // Try to restore saved answers from backend (persists across refresh)
     try {
       const resultsRes = await apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/results`);
       if (resultsRes.ok) {
         const results = await resultsRes.json();
+        quizResultsSnapshot = results;
         for (const [qid, ans] of Object.entries(results.answers || {})) {
           const idx = questions.findIndex(q => q.id === qid);
           if (idx >= 0) {
@@ -5856,7 +7824,8 @@ async function loadQuizQuestions() {
             };
           }
         }
-        if (results.completed) {
+        if (_quizResultsFullyAnswered(results, questions.length)) {
+          quizReviewMode = true;
           completedQuizSessions.add(_quizCompletionKey(sessionNumber));
           _persistCompletedQuizSessions();
         }
@@ -5878,6 +7847,7 @@ async function loadQuizQuestions() {
 
 function renderQuestion() {
   if (!questions.length) return;
+  _ensureQuizBodyStructure();
   const q     = questions[currentQ];
   const saved = quizAnswerState[currentQ] || {};
 
@@ -5932,7 +7902,7 @@ function renderQuestion() {
 }
 
 async function selectOption(idx, btn) {
-  if (answered) return;
+  if (answered || quizReviewMode) return;
   answered = true;
 
   const allBtns = document.querySelectorAll('.option-btn');
@@ -5981,6 +7951,8 @@ function nextQuestion() {
   if (currentQ < questions.length - 1) {
     currentQ++;
     renderQuestion();
+  } else if (quizReviewMode) {
+    _showQuizReviewSummary();
   } else {
     _showQuizCompletion();
   }
@@ -5993,13 +7965,45 @@ function prevQuestion() {
   }
 }
 
+function _showQuizReviewSummary() {
+  const results = quizResultsSnapshot || {};
+  const score = Number.isFinite(results.score)
+    ? results.score
+    : quizAnswerState.filter(a => a.correct).length;
+  const total = Number.isFinite(results.total) ? results.total : questions.length;
+  const body = document.querySelector('#quiz-active .quiz-body');
+  if (body) {
+    body.innerHTML = `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;">
+        <div style="font-size:56px">📋</div>
+        <div style="font-family:'Lora',serif;font-size:22px;font-weight:600;color:var(--ink)">${escapeHtml(t('quizComplete'))}</div>
+        <div style="font-size:16px;font-weight:800;color:var(--sage)">${escapeHtml(t('quizScoreSummary', { score, total }))}</div>
+        <div style="font-size:14px;color:var(--ink-muted);line-height:1.6">${escapeHtml(t('quizReviewDoneBody'))}</div>
+        <button onclick="showQuizPicker()" style="margin-top:8px;background:var(--sage-light);border:none;border-radius:50px;padding:12px 28px;font-family:'Noto Sans Gujarati','Nunito',sans-serif;font-size:14px;font-weight:800;color:#1e5c40;cursor:pointer;">${escapeHtml(t('quizBackToSessions'))}</button>
+      </div>`;
+  }
+  const qNext = document.getElementById('q-next');
+  const qPrev = document.getElementById('q-prev');
+  if (qNext) qNext.style.display = 'none';
+  if (qPrev) qPrev.style.display = 'none';
+}
+
 function _showQuizCompletion() {
   const sessionNumber = selectedQuizSessionNumber;
   if (sessionNumber) {
     completedQuizSessions.add(_quizCompletionKey(sessionNumber));
     _persistCompletedQuizSessions();
+    const score = quizAnswerState.filter(a => a.correct).length;
+    quizResultsSnapshot = {
+      score,
+      total: questions.length,
+      completed: true,
+      answers: {},
+    };
     // Notify backend of completion (fire-and-forget)
     apiFetch(`${API_BASE}/training/${trainingSessionId}/quiz/${sessionNumber}/complete`, { method: 'POST' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) quizResultsSnapshot = data; })
       .catch(() => {});
   }
   const body = document.querySelector('#quiz-active .quiz-body');
@@ -6021,9 +8025,12 @@ function _showQuizCompletion() {
 async function restartQuiz() {
   currentQ        = 0;
   answered        = false;
+  quizReviewMode  = false;
+  quizResultsSnapshot = null;
   quizAnswerState = questions.map(() => ({ selectedIndex: null, correct: null, correctIndex: null, explanation: null }));
+  _ensureQuizBodyStructure();
   const body = document.querySelector('#quiz-active .quiz-body');
-  if (body) {
+  if (body && !document.getElementById('q-text')) {
     body.innerHTML = `
       <div class="question-text" id="q-text"></div>
       <div class="options-list"  id="q-options"></div>
@@ -6042,6 +8049,16 @@ async function restartQuiz() {
 ══════════════════════════════════════════════════ */
 async function initializeApp() {
   const trainingNarrative = localeConfig().trainingNarrative;
+
+  // Reset sidebar UI state (in case of re-init after login)
+  _archivedViewActive = false;
+  resetFeedbackUI();
+  const _label = document.getElementById('sidebar-sessions-label');
+  if (_label) _label.textContent = t('sessionsLabel');
+  const _newBtn = document.getElementById('sidebar-new-btn');
+  if (_newBtn) _newBtn.style.display = '';
+  const _archBtn = document.getElementById('sidebar-archived-btn');
+  if (_archBtn) _archBtn.style.display = '';
 
   applyDemoFeatures();
   applyLocaleToUI();
@@ -6065,8 +8082,8 @@ async function initializeApp() {
 
   updateChromeForScreen();
 
-  // ── Load session sidebar ──────────────────────────────────
-  refreshSessionSidebar().catch(() => {});
+  // ── Load session sidebar (await so UI is consistent after login) ──
+  await refreshSessionSidebar().catch(() => {});
 
   try {
     const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
@@ -6079,11 +8096,17 @@ async function initializeApp() {
         ? narrativeMeta.participants.attendees
         : V2_TRAINING_PERSONAS);
     renderParticipantBar();
-    renderSessionJumpChips();
-    if (!urlSessionId) renderHomeSessionCard();
-    updateSessionLabel();
-    updateTrainingActionButton();
-    setModuleChipDisabled(!canSwitchSessions());
+    // Resume path: _loadSessionView owns hydration + chip lock until state arrives.
+    if (!urlSessionId) {
+      sessionStateHydrated = true;
+      renderSessionJumpChips();
+      renderHomeSessionCard();
+      updateSessionLabel();
+      updateTrainingActionButton();
+      setModuleChipDisabled(!canSwitchSessions());
+    } else {
+      renderSessionJumpChips();
+    }
   } catch (e) {
     console.warn('Backend unavailable — live features disabled:', e.message);
     const homeStartBtn = document.getElementById('home-start-btn');
@@ -6098,9 +8121,11 @@ function toggleDarkMode() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
+  html.classList.add('theme-transitioning');
   html.setAttribute('data-theme', next);
   try { localStorage.setItem('theme', next); } catch(e) {}
   updateDarkToggle();
+  window.setTimeout(() => html.classList.remove('theme-transitioning'), 450);
 }
 
 function updateDarkToggle() {
@@ -6112,6 +8137,9 @@ function updateDarkToggle() {
 // Only boot the app if the user is already authenticated.
 // If not, the login overlay stays visible until handleLogin() succeeds.
 if (checkAuth()) {
+  bindFeedbackInput();
+  bindFeedbackPanelInteractions();
+  applyFeedbackLocale();
   initializeApp();
   updateDarkToggle();
 }
