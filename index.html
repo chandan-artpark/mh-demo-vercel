@@ -3918,6 +3918,12 @@ async function _loadSessionView(sessionId) {
     console.warn('Could not load session view:', e);
   }
 
+  const cachedSession = _sessionRecordFromCache(sessionId);
+  await applySessionLocaleAndNarrative({
+    locale: state?.locale || cachedSession?.locale,
+    narrativeId: state?.narrative_id || cachedSession?.narrative_id,
+  });
+
   chatHistory.length = 0;
   trainingEchoedUserTexts.length = 0;
   for (const msg of messages) {
@@ -3999,38 +4005,15 @@ async function selectSidebarSession(sessionId, narrativeId, locale) {
   try {
     // Auto-close sidebar on mobile when selecting a session
     if (window.matchMedia('(max-width: 768px)').matches) closeSidebar();
-    // Switch locale if needed
-    if (locale && locale !== appLocale) {
-      appLocale = locale;
-      applyLocaleToUI();
-    }
     // Immediate visual feedback — mark the clicked item active BEFORE the
     // async fetch completes so the click feels acknowledged instantly.
     document.querySelectorAll('.session-list-item').forEach(el => {
       el.classList.toggle('active', el.dataset.sessionId === sessionId);
     });
-    // Load the session view
+    // Load the session view (syncs locale + narrative from session record)
     await _loadSessionView(sessionId);
     // Make sure we're on the training screen
     showScreen('training');
-    // Lazily load narrative metadata for the session
-    try {
-      const narrativeMeta = await loadTrainingNarrativeMeta(narrativeId);
-      trainingNarrativeMeta = narrativeMeta;
-      applyTrainingSessionMetadata(narrativeMeta?.sessions);
-      trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
-      trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
-        ? narrativeMeta.live_personas
-        : (Array.isArray(narrativeMeta?.participants?.attendees)
-            ? narrativeMeta.participants.attendees
-            : V2_TRAINING_PERSONAS);
-      renderParticipantBar();
-      renderSessionJumpChips();
-      updateSessionLabel();
-      updateTrainingActionButton();
-    } catch (e) {
-      console.warn('Could not load narrative meta:', e);
-    }
   } finally {
     _sessionLoadInFlight = false;
   }
@@ -4450,24 +4433,50 @@ function selectRoleplayPersona(personaId) {
   updateRoleplayPersonaUI();
 }
 
+function _normalizeAppLocale(locale) {
+  return ['en', 'gu'].includes(locale) ? locale : 'en';
+}
+
+function _sessionRecordFromCache(sessionId) {
+  return _cachedSidebarSessions.find((s) => s.session_id === sessionId) || null;
+}
+
+async function applySessionLocaleAndNarrative({ locale, narrativeId } = {}) {
+  const nextLocale = _normalizeAppLocale(locale || appLocale);
+  if (nextLocale !== appLocale) {
+    appLocale = nextLocale;
+    localStorage.setItem('app_locale', nextLocale);
+    applyLocaleToUI();
+  }
+  const narrative = narrativeId || localeConfig().trainingNarrative;
+  if (!narrative) return;
+  try {
+    const narrativeMeta = await loadTrainingNarrativeMeta(narrative);
+    trainingNarrativeMeta = narrativeMeta;
+    applyTrainingSessionMetadata(narrativeMeta?.sessions);
+    trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+    trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+      ? narrativeMeta.live_personas
+      : (Array.isArray(narrativeMeta?.participants?.attendees)
+          ? narrativeMeta.participants.attendees
+          : V2_TRAINING_PERSONAS);
+    renderParticipantBar();
+    renderSessionJumpChips();
+    updateSessionLabel();
+    updateTrainingActionButton();
+  } catch (e) {
+    console.warn('Could not load narrative meta:', e);
+  }
+}
+
 async function switchLocale(nextLocale) {
   if (!['en', 'gu'].includes(nextLocale) || nextLocale === appLocale) return;
   // Block if a session has been started or has any history — only new unstarted sessions can switch
   const sessionHasContent = trainingGraphStarted || chatHistory.length > 0;
   if (sessionHasContent) return;
   track('locale_switch', { from: appLocale, to: nextLocale });
-  appLocale = nextLocale;
-  localStorage.setItem('app_locale', nextLocale);
-  applyLocaleToUI();
-  // Re-fetch narrative metadata for the new locale so session titles update.
-  const trainingNarrative = localeConfig().trainingNarrative;
-  try {
-    const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
-    applyTrainingSessionMetadata(narrativeMeta?.sessions);
-    renderSessionJumpChips();
-    renderHomeSessionCard();
-    updateSessionLabel();
-  } catch(e) { /* non-fatal — UI labels already updated via applyLocaleToUI */ }
+  await applySessionLocaleAndNarrative({ locale: nextLocale });
+  renderHomeSessionCard();
 }
 
 function applyLocaleToUI() {
@@ -7053,37 +7062,23 @@ async function sendTrainingQuestion() {
   input.value = '';
   renderTrainingUserEcho(text);
 
-  let atInterrupt = trainingAtParticipationInterrupt();
-  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) {
-    await refreshTrainingState();
-    atInterrupt = trainingAtParticipationInterrupt();
-  }
-  if ((isStreaming || trainingBackendStreamActive) && !atInterrupt) {
-    // SSE stream is active: the trainer is currently generating.
-    // Fire-and-forget POST to /input — the backend queues the message in
-    // UserInputQueue so it gets injected at the next tool-call boundary
-    // (after the current dialog finishes) without aborting the stream.
-    apiFetch(`${API_BASE}/training/${trainingSessionId}/input`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Trace-Id': traceMeta.traceId },
-      body:    JSON.stringify({ text }),
-    }).then((res) => {
-      trackRequestResponse(traceMeta, `${API_BASE}/training/${trainingSessionId}/input`, 'POST', res.ok, res.status, { source: 'midstream' });
-    }).catch(e => {
-      track('ui.request_response', { route: `${API_BASE}/training/${trainingSessionId}/input`, method: 'POST', source: 'midstream', error: String(e || '') }, { traceId: traceMeta.traceId, status: 'error', reasonCode: 'network_error' });
-      console.error('[training] mid-stream ask error', e);
-    });
-    return;
-  }
-
-  if (isPaused) {
-    autoAdvanceAfterQueuedAsk = true;
-    enqueueTrainingQuestion(text, traceMeta);
-    return;
-  }
-
-  await askTrainingNow(text, traceMeta);
-  runTrainingAskQueue();
+  // Enqueue server-side only. /input never resumes the interrupt — the
+  // trainer stays parked at the armed participation interrupt until the
+  // learner clicks Continue, which drains the whole queue in one batch
+  // (input_node). This keeps the queue refresh-safe (survives a page
+  // reload, keyed by session_id) and prevents later messages from being
+  // mis-attached to a subsequent interrupt when the trainer loops ahead of
+  // the UI. Multiple Enter presses accumulate; Continue seals the batch.
+  apiFetch(`${API_BASE}/training/${trainingSessionId}/input`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Trace-Id': traceMeta.traceId },
+    body:    JSON.stringify({ text }),
+  }).then((res) => {
+    trackRequestResponse(traceMeta, `${API_BASE}/training/${trainingSessionId}/input`, 'POST', res.ok, res.status, { source: 'enqueue' });
+  }).catch(e => {
+    track('ui.request_response', { route: `${API_BASE}/training/${trainingSessionId}/input`, method: 'POST', source: 'enqueue', error: String(e || '') }, { traceId: traceMeta.traceId, status: 'error', reasonCode: 'network_error' });
+    console.error('[training] input enqueue error', e);
+  });
 }
 
 /* ── Training mic: MediaRecorder → POST /training/{id}/audio ── */
@@ -8092,8 +8087,6 @@ async function restartQuiz() {
    INIT
 ══════════════════════════════════════════════════ */
 async function initializeApp() {
-  const trainingNarrative = localeConfig().trainingNarrative;
-
   // Reset sidebar UI state (in case of re-init after login)
   _archivedViewActive = false;
   resetFeedbackUI();
@@ -8109,52 +8102,47 @@ async function initializeApp() {
   renderParticipantBar();
   renderChatHistory();
 
-  // ── Check for session in URL (e.g. /c/{id} on page refresh) ──
+  // Sidebar first so URL resume can fall back to cached session locale.
+  await refreshSessionSidebar().catch(() => {});
+
   const urlSessionId = _getSessionIdFromUrl();
   if (urlSessionId) {
-    // Attempt to resume — loads chatroom + state; stays on training screen
-    _loadSessionView(urlSessionId).then(() => {
-      refreshSessionSidebar().catch(() => {});
-    }).catch(e => {
+    try {
+      await _loadSessionView(urlSessionId);
+    } catch (e) {
       console.warn('Session resume from URL failed:', e);
       showScreen('training');
-    });
+    }
   } else {
-    // No session in URL — show the home screen
     showScreen('home');
   }
 
   updateChromeForScreen();
 
-  // ── Load session sidebar (await so UI is consistent after login) ──
-  await refreshSessionSidebar().catch(() => {});
-
-  try {
-    const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
-    trainingNarrativeMeta = narrativeMeta;
-    applyTrainingSessionMetadata(narrativeMeta?.sessions);
-    trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
-    trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
-      ? narrativeMeta.live_personas
-      : (Array.isArray(narrativeMeta?.participants?.attendees)
-        ? narrativeMeta.participants.attendees
-        : V2_TRAINING_PERSONAS);
-    renderParticipantBar();
-    // Resume path: _loadSessionView owns hydration + chip lock until state arrives.
-    if (!urlSessionId) {
+  if (!urlSessionId) {
+    const trainingNarrative = localeConfig().trainingNarrative;
+    try {
+      const narrativeMeta = await loadTrainingNarrativeMeta(trainingNarrative);
+      trainingNarrativeMeta = narrativeMeta;
+      applyTrainingSessionMetadata(narrativeMeta?.sessions);
+      trainingTrainerName = narrativeMeta?.participants?.trainer || t('trainer');
+      trainingAttendees = Array.isArray(narrativeMeta?.live_personas)
+        ? narrativeMeta.live_personas
+        : (Array.isArray(narrativeMeta?.participants?.attendees)
+          ? narrativeMeta.participants.attendees
+          : V2_TRAINING_PERSONAS);
+      renderParticipantBar();
       sessionStateHydrated = true;
       renderSessionJumpChips();
       renderHomeSessionCard();
       updateSessionLabel();
       updateTrainingActionButton();
       setModuleChipDisabled(!canSwitchSessions());
-    } else {
-      renderSessionJumpChips();
+    } catch (e) {
+      console.warn('Backend unavailable — live features disabled:', e.message);
+      const homeStartBtn = document.getElementById('home-start-btn');
+      if (homeStartBtn) homeStartBtn.disabled = true;
     }
-  } catch (e) {
-    console.warn('Backend unavailable — live features disabled:', e.message);
-    const homeStartBtn = document.getElementById('home-start-btn');
-    if (homeStartBtn) homeStartBtn.disabled = true;
   }
 }
 
