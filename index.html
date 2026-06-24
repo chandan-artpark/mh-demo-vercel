@@ -4172,6 +4172,8 @@ const I18N = {
     askPlaceholder: 'send a message',
     sendMessage: 'Send message',
     transcribing: 'Transcribing...',
+    micTranscribeFailed: 'Could not transcribe audio. Try again.',
+    micRecordingTooShort: 'Recording too short — try again.',
     roleplayChoosePatient: 'Choose your Beneficiary',
     roleplayTitle: 'Session 9: Roleplaying',
     roleplaySubtitle: "Practice counselling with an AI Beneficiary.<br>Choose how you'd like to engage.",
@@ -4288,6 +4290,8 @@ const I18N = {
     askPlaceholder: 'સંદેશ મોકલો',
     sendMessage: 'સંદેશ મોકલો',
     transcribing: 'વાણી લખાણમાં ફેરવાઈ રહી છે...',
+    micTranscribeFailed: 'ઑડિયો લખાણમાં ફેરવી શકાયું નથી. ફરી પ્રયાસ કરો.',
+    micRecordingTooShort: 'રેકોર્ડિંગ ખૂબ ટૂંકું — ફરી પ્રયાસ કરો.',
     roleplayChoosePatient: 'તમારો લાભાર્થી પસંદ કરો',
     roleplayTitle: 'સત્ર 9: ભૂમિકાભિનય',
     roleplaySubtitle: 'AI લાભાર્થી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો.<br>તમે કેવી રીતે જોડાશો તે પસંદ કરો.',
@@ -5966,7 +5970,7 @@ async function toggleFeedbackMic() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const chunks = [];
-    feedbackRecorder = new MediaRecorder(stream);
+    feedbackRecorder = createAudioRecorder(stream);
     feedbackRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
     feedbackRecorder.onstart = () => btn.classList.add('recording');
     feedbackRecorder.onstop = async () => {
@@ -5974,11 +5978,18 @@ async function toggleFeedbackMic() {
       stream.getTracks().forEach(t => t.stop());
       if (!trainingSessionId) return;
 
+      const blob = new Blob(chunks, { type: feedbackRecorder.mimeType || 'audio/webm' });
+      if (!blob.size) {
+        setMicStatus('feedback-mic-status', t('micRecordingTooShort'), { temporaryMs: 3000 });
+        return;
+      }
+
       btn.disabled = true;
       setMicStatus('feedback-mic-status', t('transcribing'));
 
       const fd = new FormData();
-      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'feedback.webm');
+      fd.append('audio', blob, 'feedback.webm');
+      let transcribeFailed = false;
       try {
         const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -5991,13 +6002,15 @@ async function toggleFeedbackMic() {
           input.setSelectionRange(input.value.length, input.value.length);
         }
       } catch (e) {
+        transcribeFailed = true;
         console.error('Feedback audio transcription error', e);
+        setMicStatus('feedback-mic-status', t('micTranscribeFailed'), { temporaryMs: 4000 });
       } finally {
         btn.disabled = false;
-        setMicStatus('feedback-mic-status', '');
+        if (!transcribeFailed) setMicStatus('feedback-mic-status', '');
       }
     };
-    feedbackRecorder.start();
+    feedbackRecorder.start(250);
   } catch (e) {
     alert(t('microphoneDenied'));
   }
@@ -7076,11 +7089,22 @@ async function sendTrainingQuestion() {
 /* ── Training mic: MediaRecorder → POST /training/{id}/audio ── */
 let trainingRecorder = null;
 
-function setMicStatus(id, text = '') {
+function setMicStatus(id, text = '', options = {}) {
   const el = document.getElementById(id);
   if (!el) return;
   el.textContent = text;
   el.classList.toggle('active', Boolean(text));
+  if (options.temporaryMs && text) {
+    setTimeout(() => {
+      if (el.textContent === text) setMicStatus(id, '');
+    }, options.temporaryMs);
+  }
+}
+
+function createAudioRecorder(stream) {
+  const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
+    .find(m => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(m)) || '';
+  return mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
 }
 
 async function toggleTrainingMic() {
@@ -7095,19 +7119,26 @@ async function toggleTrainingMic() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const chunks = [];
-    trainingRecorder = new MediaRecorder(stream);
+    trainingRecorder = createAudioRecorder(stream);
     trainingRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
     trainingRecorder.onstart = () => btn.classList.add('recording');
     trainingRecorder.onstop  = async () => {
       btn.classList.remove('recording');
       stream.getTracks().forEach(t => t.stop());
-      if (!trainingSessionId || (isStreaming && !isPaused)) return;
+      if (!trainingSessionId) return;
+
+      const blob = new Blob(chunks, { type: trainingRecorder.mimeType || 'audio/webm' });
+      if (!blob.size) {
+        setMicStatus('training-mic-status', t('micRecordingTooShort'), { temporaryMs: 3000 });
+        return;
+      }
 
       btn.disabled = true;
       setMicStatus('training-mic-status', t('transcribing'));
 
       const fd = new FormData();
-      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'q.webm');
+      fd.append('audio', blob, 'q.webm');
+      let transcribeFailed = false;
       try {
         const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/audio/transcribe`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -7119,13 +7150,16 @@ async function toggleTrainingMic() {
           input.focus();
           input.setSelectionRange(input.value.length, input.value.length);
         }
-      } catch (e) { console.error('Training audio transcription error', e); }
-      finally {
+      } catch (e) {
+        transcribeFailed = true;
+        console.error('Training audio transcription error', e);
+        setMicStatus('training-mic-status', t('micTranscribeFailed'), { temporaryMs: 4000 });
+      } finally {
         btn.disabled = false;
-        setMicStatus('training-mic-status', '');
+        if (!transcribeFailed) setMicStatus('training-mic-status', '');
       }
     };
-    trainingRecorder.start();
+    trainingRecorder.start(250);
   } catch (e) { alert(t('microphoneDenied')); }
 }
 
@@ -7496,19 +7530,26 @@ async function toggleRoleplayMic() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const chunks = [];
-    rpRecorder = new MediaRecorder(stream);
+    rpRecorder = createAudioRecorder(stream);
     rpRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
     rpRecorder.onstart = () => btn.classList.add('recording');
     rpRecorder.onstop  = async () => {
       btn.classList.remove('recording');
       stream.getTracks().forEach(t => t.stop());
-      if (!roleplaySessionId || (rpStreaming && !isPaused)) return;
+      if (!roleplaySessionId) return;
+
+      const blob = new Blob(chunks, { type: rpRecorder.mimeType || 'audio/webm' });
+      if (!blob.size) {
+        setMicStatus('rp-mic-status', t('micRecordingTooShort'), { temporaryMs: 3000 });
+        return;
+      }
 
       btn.disabled = true;
       setMicStatus('rp-mic-status', t('transcribing'));
 
       const fd = new FormData();
-      fd.append('audio', new Blob(chunks, { type: 'audio/webm' }), 'rp.webm');
+      fd.append('audio', blob, 'rp.webm');
+      let transcribeFailed = false;
       try {
         const res = await apiFetch(`${API_BASE}/roleplay/${roleplaySessionId}/audio/transcribe`, { method: 'POST', body: fd });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -7520,13 +7561,16 @@ async function toggleRoleplayMic() {
           input.focus();
           input.setSelectionRange(input.value.length, input.value.length);
         }
-      } catch (e) { console.error('Roleplay audio transcription error', e); }
-      finally {
+      } catch (e) {
+        transcribeFailed = true;
+        console.error('Roleplay audio transcription error', e);
+        setMicStatus('rp-mic-status', t('micTranscribeFailed'), { temporaryMs: 4000 });
+      } finally {
         btn.disabled = false;
-        setMicStatus('rp-mic-status', '');
+        if (!transcribeFailed) setMicStatus('rp-mic-status', '');
       }
     };
-    rpRecorder.start();
+    rpRecorder.start(250);
   } catch (e) { alert(t('microphoneDenied')); }
 }
 
