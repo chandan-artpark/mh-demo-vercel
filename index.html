@@ -902,6 +902,24 @@
   .flashcard.speaker-sejal   { background: var(--speaker-sejal-bg); }
   .flashcard.speaker-user    { background: var(--speaker-user-bg); }
   .flashcard.speaker-other   { background: var(--speaker-other-bg); }
+  .flashcard.flashcard-error {
+    background: #f8dcd4;
+    box-shadow: inset 0 0 0 2px rgba(178, 58, 34, 0.35);
+  }
+  .flashcard.flashcard-error p,
+  .flashcard.flashcard-error #flashcard-text { color: #7a2a14; }
+  [data-theme="dark"] .flashcard.flashcard-error {
+    background: #3a1a12;
+    box-shadow: inset 0 0 0 2px rgba(224, 122, 92, 0.4);
+  }
+  [data-theme="dark"] .flashcard.flashcard-error p,
+  [data-theme="dark"] .flashcard.flashcard-error #flashcard-text { color: #f0b8a4; }
+  .flashcard-error-retry-hint {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.82em;
+    opacity: 0.85;
+  }
   .flashcard.manual-next {
     box-shadow: inset 0 0 0 2px rgba(30, 92, 64, 0.12);
   }
@@ -1040,6 +1058,14 @@
   .msg-bubble.trainer  { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); align-self: flex-start; max-width: 85%; }
   .msg-bubble.attendee { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg);  align-self: flex-end;   max-width: 80%; }
   .msg-bubble.note     { background: var(--speaker-other-bg);   color: var(--speaker-other-fg);   align-self: flex-start; max-width: 90%; }
+  .msg-bubble.speaker-error {
+    background: #f8dcd4; color: #7a2a14; align-self: flex-start; max-width: 90%;
+    box-shadow: inset 0 0 0 1px rgba(178, 58, 34, 0.3);
+  }
+  [data-theme="dark"] .msg-bubble.speaker-error {
+    background: #3a1a12; color: #f0b8a4;
+    box-shadow: inset 0 0 0 1px rgba(224, 122, 92, 0.35);
+  }
 
   /* Roleplay chat: patient (persona) on left, counsellor (user) on right */
   #rp-chat-view .msg-bubble.speaker-ramesh,
@@ -5125,6 +5151,16 @@ function _dbMessageToChatItem(msg) {
   return { name: 'Session Note', bubbleClass: 'speaker-other', text: escapeHtml(content) };
 }
 
+function renderTrainingErrorBanner(card, badge, textEl, rawMessage) {
+  // Distinct error state: friendly copy in the card, raw provider/exception text
+  // kept only for console/telemetry so learners never see a stack-trace-like string.
+  if (card) card.className = 'flashcard flashcard-error';
+  if (badge) badge.textContent = t('trainerErrorBadge');
+  if (textEl) textEl.textContent = t('trainerErrorMessage');
+  if (rawMessage) console.warn('[training] trainer error:', rawMessage);
+  return t('trainerErrorMessage');
+}
+
 function applyFlashcardSnapshot(snapshot) {
   const text = String(snapshot?.text || '').trim();
   if (!text) return false;
@@ -5529,6 +5565,8 @@ const I18N = {
     participant: 'Participant',
     trainer: 'Trainer',
     sessionNote: 'Session Note',
+    trainerErrorBadge: '⚠️ Connection hiccup',
+    trainerErrorMessage: "We hit a temporary connection issue. Tap Continue to try again.",
     microphoneDenied: 'Microphone access denied.',
     modeDefaultHint: 'Select a mode to begin.',
     pause: 'Pause',
@@ -5716,6 +5754,8 @@ evalBackToForm: '← Back to form',
     participant: 'ભાગીદાર',
     trainer: 'ટ્રેનર',
     sessionNote: 'સત્ર નોંધ',
+    trainerErrorBadge: '⚠️ કનેક્શન સમસ્યા',
+    trainerErrorMessage: 'અમને અસ્થાયી કનેક્શન સમસ્યા આવી. ફરી પ્રયાસ કરવા માટે Continue દબાવો.',
     microphoneDenied: 'માઇક્રોફોનની પરવાનગી મળી નથી.',
     modeDefaultHint: 'શરૂ કરવા માટે મોડ પસંદ કરો.',
     pause: 'થોભો',
@@ -8717,9 +8757,9 @@ async function consumeTrainingStream(sseIter, options = {}) {
       }
       case 'error': {
         track('sse_error', { message: ev.message || null, run_state: ev.run_state || null });
-        const message = ev.message || 'Training stream error';
-        textEl.textContent = message;
-        chatHistory.push({ name: t('sessionNote'), bubbleClass: 'speaker-other', text: message });
+        const rawMessage = ev.message || 'Training stream error';
+        const friendlyMessage = renderTrainingErrorBanner(card, badge, textEl, rawMessage);
+        chatHistory.push({ name: t('sessionNote'), bubbleClass: 'speaker-error', text: friendlyMessage });
         renderChatHistory();
         break;
       }
