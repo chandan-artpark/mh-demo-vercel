@@ -5143,12 +5143,12 @@ function _dbMessageToChatItem(msg) {
     return { name: 'USER', bubbleClass, text: escapeHtml(content) };
   }
   if (role === 'trainer') {
-    return { name: escapeHtml(speaker) || 'Trainer', bubbleClass, text: escapeHtml(content) };
+    return { name: escapeHtml(localizeTrainingName(speaker)) || t('trainer'), bubbleClass, text: escapeHtml(content) };
   }
   if (role === 'persona' || role === 'attendee') {
-    return { name: escapeHtml(speaker), bubbleClass, text: escapeHtml(content) };
+    return { name: escapeHtml(localizeTrainingName(speaker)), bubbleClass, text: escapeHtml(content) };
   }
-  return { name: 'Session Note', bubbleClass: 'speaker-other', text: escapeHtml(content) };
+  return { name: t('sessionNote'), bubbleClass: 'speaker-other', text: escapeHtml(content) };
 }
 
 function renderTrainingErrorBanner(card, badge, textEl, rawMessage) {
@@ -5211,7 +5211,7 @@ function setFlashcardIdlePlaceholder(sessionNumber) {
   const textEl = document.getElementById('flashcard-text');
   const card = document.getElementById('flashcard');
   const sessionId = _normalizeSessionId(sessionNumber);
-  const trainerLabel = trainingTrainerName || t('trainer');
+  const trainerLabel = localizeTrainingName(trainingTrainerName) || t('trainer');
   if (badge) badge.textContent = `🧑‍🏫 ${trainerLabel}`;
   if (textEl) textEl.textContent = t('beginSessionNumber', { session: sessionId });
   if (card) card.className = 'flashcard speaker-trainer';
@@ -5425,6 +5425,23 @@ async function createNewSession() {
 const DEMO_FEATURES = { training: true, roleplay: true, quiz: true };
 // v2 LangGraph trainees (3 female + 1 male) — must match backend voice_config.V2_TRAINING_PERSONAS
 const V2_TRAINING_PERSONAS = ['Ramesh', 'Priya', 'Simran', 'Sejal'];
+// Backend speaker identifiers are always the canonical English names (used for
+// voice mapping + persona resolution across locales). The UI must localize
+// them for display — this map is display-only and never changes identity.
+const TRAINING_NAME_LOCALE = {
+  trainer: { en: 'Trainer', gu: 'ટ્રેનર' },
+  ramesh:  { en: 'Ramesh',  gu: 'રમેશ' },
+  priya:   { en: 'Priya',   gu: 'પ્રિયા' },
+  simran:  { en: 'Simran',  gu: 'સિમરણ' },
+  sejal:   { en: 'Sejal',   gu: 'સેજલ' },
+};
+function localizeTrainingName(name) {
+  const n = typeof name === 'string' ? name.trim() : '';
+  if (!n) return n;
+  const entry = TRAINING_NAME_LOCALE[n.toLowerCase()];
+  if (!entry) return n;
+  return entry[appLocale] || entry.en || n;
+}
 const ROLEPLAY_PERSONAS = {
   priya: {
     id: 'priya',
@@ -6358,8 +6375,8 @@ function renderParticipantBar() {
   const firstAttendeeClass = chipClassForSpeaker(firstAttendee, 'attendee', '');
 
   const chipsHtml = [
-    `<span class="chip speaker-trainer" data-chip-key="trainer:${escapeHtml(trainer)}" data-speaker-theme="trainer">${escapeHtml(trainer)}</span>`,
-    `<span class="chip ${firstAttendeeClass}" data-chip-key="attendee:${escapeHtml(firstAttendee)}" data-speaker-theme="${resolveSpeakerThemeKey(firstAttendee, 'attendee', '')}">${escapeHtml(firstAttendee)}</span>`,
+    `<span class="chip speaker-trainer" data-chip-key="trainer:${escapeHtml(trainer)}" data-speaker-theme="trainer">${escapeHtml(localizeTrainingName(trainer))}</span>`,
+    `<span class="chip ${firstAttendeeClass}" data-chip-key="attendee:${escapeHtml(firstAttendee)}" data-speaker-theme="${resolveSpeakerThemeKey(firstAttendee, 'attendee', '')}">${escapeHtml(localizeTrainingName(firstAttendee))}</span>`,
     `<button type="button" class="chip speaker-more clickable more-chip" id="attendees-more-chip" ${remainingCount === 0 ? 'disabled' : ''}>+${remainingCount} ${t('more')}</button>`,
   ].join('');
 
@@ -6370,7 +6387,7 @@ function renderParticipantBar() {
         <ul>
           ${attendees.map((name) => {
             const cls = chipClassForSpeaker(name, 'attendee', '');
-            return `<li><span class="chip chip-popover ${cls}">${escapeHtml(name)}</span></li>`;
+            return `<li><span class="chip chip-popover ${cls}">${escapeHtml(localizeTrainingName(name))}</span></li>`;
           }).join('')}
         </ul>
       </div>
@@ -8087,6 +8104,7 @@ function speakerForRole(role, name, flashcardKind) {
   if (role === 'learner' || flashcardKind === 'user') {
     return {
       name: 'USER',
+      rawName: 'USER',
       badge: '💬 USER',
       cardClass: themeClass,
       bubbleClass: themeClass,
@@ -8094,26 +8112,32 @@ function speakerForRole(role, name, flashcardKind) {
     };
   }
   if (role === 'trainer' || normalizedName === trainingTrainerName) {
+    const displayName = localizeTrainingName(normalizedName || trainingTrainerName) || t('trainer');
     return {
-      name: normalizedName || trainingTrainerName || t('trainer'),
-      badge: `🧑‍🏫 ${normalizedName || trainingTrainerName || t('trainer')}`,
+      name: displayName,
+      rawName: normalizedName || trainingTrainerName,
+      badge: `🧑‍🏫 ${displayName}`,
       cardClass: themeClass,
       bubbleClass: themeClass,
       themeKey,
     };
   }
   if (role === 'attendee' || isTrainingAttendee(normalizedName)) {
+    const displayName = localizeTrainingName(normalizedName) || t('attendee');
     return {
-      name: normalizedName || t('attendee'),
-      badge: `🙋 ${normalizedName || t('attendee')}`,
+      name: displayName,
+      rawName: normalizedName,
+      badge: `🙋 ${displayName}`,
       cardClass: themeClass,
       bubbleClass: themeClass,
       themeKey,
     };
   }
+  const displayName = localizeTrainingName(normalizedName) || t('participant');
   return {
-    name: normalizedName || t('participant'),
-    badge: `🙋 ${normalizedName || t('participant')}`,
+    name: displayName,
+    rawName: normalizedName,
+    badge: `🙋 ${displayName}`,
     cardClass: themeClass,
     bubbleClass: themeClass,
     themeKey,
@@ -8376,8 +8400,9 @@ function renderChatHistory() {
     if (h.bubbleClass === 'history-loaded-label') {
       return `<div class="history-loaded-label">${h.text}</div>`;
     }
+    const displayName = h.name === 'USER' ? t('you') : h.name;
     return `<div class="msg-bubble ${normalizeBubbleClass(h.bubbleClass, h.name, '')}">
-      <div class="msg-label">${h.name}</div>${h.text}
+      <div class="msg-label">${displayName}</div>${h.text}
     </div>`;
   }).join('');
 }
@@ -8631,7 +8656,7 @@ async function _presentBufferedFlashcard(flashcard, ctx) {
   badge.textContent     = flashcard.spk.badge;
   textEl.textContent    = '';
   if (flashcard.isIntroFlashcard) setSpeakingChipForSpeaker('', '');
-  else setSpeakingChipForSpeaker(ev.speaker || flashcard.spk.name, ev.role || '');
+  else setSpeakingChipForSpeaker(ev.speaker || flashcard.spk.rawName || flashcard.spk.name, ev.role || '');
   card.style.opacity    = '1';
   card.style.transform  = 'scale(1)';
   // Expose current card for unmute re-enqueue (only for TTS-eligible cards).
