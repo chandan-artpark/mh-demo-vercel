@@ -236,6 +236,19 @@
     background: var(--ink);
     color: #fff;
   }
+  .lang-btn:disabled {
+    cursor: not-allowed;
+  }
+  .lang-switch.session-locked {
+    opacity: 0.55;
+    filter: grayscale(0.35);
+  }
+  .lang-switch.session-locked .lang-btn {
+    cursor: not-allowed;
+  }
+  .lang-switch.session-locked .lang-btn:not(.active) {
+    color: var(--ink-muted);
+  }
 
   /* ── Screen tabs ── */
   .screen-tabs {
@@ -369,16 +382,48 @@
   .module-chip.active .module-chip-num { color: rgba(255,255,255,0.7); }
   .module-chip.active .module-chip-desc { color: #fff; }
   .module-chip:disabled {
-    opacity: 0.45;
     cursor: not-allowed;
   }
-  .module-chip:disabled:hover {
+  .module-chip.is-locked:not(.active) {
+    opacity: 0.45;
+    filter: grayscale(0.4);
+    background: var(--bg);
     border-color: var(--border);
-    background: #fff;
+    color: var(--ink-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    position: relative;
   }
-  .module-chip.active:disabled:hover {
+  .module-chip.is-locked:not(.active) .module-chip-num,
+  .module-chip.is-locked:not(.active) .module-chip-desc {
+    color: var(--ink-muted);
+  }
+  .module-chip.is-locked:not(.active):hover {
+    opacity: 0.65;
+    border-color: var(--border);
+    background: var(--bg);
+  }
+  .module-chip.is-locked:not(.active):hover::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 11px;
+    pointer-events: none;
+  }
+  .module-chip.active:disabled,
+  .module-chip.active.is-locked {
+    opacity: 0.72;
+    cursor: default;
+  }
+  .module-chip.active:disabled:hover,
+  .module-chip.active.is-locked:hover {
     background: var(--ink);
     border-color: var(--ink);
+  }
+  .module-jump-wrap.session-locked .module-jump-label {
+    color: var(--ink-muted);
   }
 
   /* ── Pause / Mute controls ── */
@@ -935,6 +980,29 @@
   .flashcard.speaker-user    p { color: var(--speaker-user-fg); }
   .flashcard.speaker-other   p { color: var(--speaker-other-fg); }
 
+  /* Word-chunk streaming reveal (training flashcards) */
+  #flashcard-text.flashcard-streaming {
+    white-space: pre-wrap;
+  }
+  #flashcard-text .stream-chunk {
+    display: inline;
+    opacity: 0;
+    transform: translateY(3px);
+    filter: blur(0.4px);
+    transition:
+      opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #flashcard-text.flashcard-streaming--muted .stream-chunk {
+    transition-duration: 0.32s;
+  }
+  #flashcard-text .stream-chunk.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
   /* Zoomed out state */
   .flashcard-wrap.zoomed .flashcard {
     min-height: unset;
@@ -972,6 +1040,13 @@
   .msg-bubble.trainer  { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); align-self: flex-start; max-width: 85%; }
   .msg-bubble.attendee { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg);  align-self: flex-end;   max-width: 80%; }
   .msg-bubble.note     { background: var(--speaker-other-bg);   color: var(--speaker-other-fg);   align-self: flex-start; max-width: 90%; }
+
+  /* Roleplay chat: patient (persona) on left, counsellor (user) on right */
+  #rp-chat-view .msg-bubble.speaker-ramesh,
+  #rp-chat-view .msg-bubble.speaker-simran,
+  #rp-chat-view .msg-bubble.speaker-priya,
+  #rp-chat-view .msg-bubble.speaker-sejal  { align-self: flex-start; }
+  #rp-chat-view .msg-bubble.speaker-user   { align-self: flex-end; }
 
   .msg-label {
     font-size: 10px;
@@ -1732,10 +1807,18 @@
   .phone-outer .phone {
     margin-top: 0;
   }
-  .dark-toggle {
+  .top-actions {
     position: fixed;
     top: 18px;
     right: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+  }
+  .dark-toggle,
+  .about-toggle {
+    position: static;
     border: 1.5px solid var(--border);
     background: var(--surface);
     border-radius: 999px;
@@ -1750,14 +1833,25 @@
     gap: 5px;
     white-space: nowrap;
     box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
     user-select: none;
-    z-index: 100;
     letter-spacing: 0.3px;
   }
-  .dark-toggle:hover {
+  .dark-toggle:hover,
+  .about-toggle:hover {
     border-color: var(--sage);
     background: var(--sage-pale);
+  }
+  .about-toggle.active {
+    border-color: var(--sage);
+    background: var(--sage-light);
+    color: var(--sage-dk);
+    box-shadow: 0 2px 12px rgba(30, 92, 64, 0.18);
+  }
+  [data-theme="dark"] .about-toggle.active {
+    background: #234a38;
+    color: #c8eed8;
+    border-color: #3d6b52;
   }
 
   .logout-btn {
@@ -1859,7 +1953,31 @@
   [data-theme="dark"] .module-chip           { background: var(--surface); border-color: var(--border); color: var(--ink); }
   [data-theme="dark"] .module-chip.active    { background: #9bc8b4; color: #0f1e17; border-color: #9bc8b4; }
   [data-theme="dark"] .module-chip.active .module-chip-num { color: rgba(15,30,23,0.7); }
-  [data-theme="dark"] .module-chip.active .module-chip-desc { color: #0f1e17; }
+  [data-theme="dark"] .module-chip:disabled:not(.active),
+  [data-theme="dark"] .module-chip.is-locked:not(.active) {
+    background: #1c1a17;
+    border-color: var(--border);
+    color: var(--ink-muted);
+    opacity: 0.45;
+    filter: grayscale(0.4);
+  }
+  [data-theme="dark"] .module-chip.is-locked:not(.active):hover {
+    opacity: 0.65;
+    background: #1c1a17;
+  }
+  [data-theme="dark"] .module-chip:disabled:not(.active) .module-chip-num,
+  [data-theme="dark"] .module-chip:disabled:not(.active) .module-chip-desc,
+  [data-theme="dark"] .module-chip.is-locked:not(.active) .module-chip-num,
+  [data-theme="dark"] .module-chip.is-locked:not(.active) .module-chip-desc {
+    color: var(--ink-muted);
+  }
+  [data-theme="dark"] .module-chip.active:disabled,
+  [data-theme="dark"] .module-chip.active.is-locked {
+    opacity: 0.68;
+  }
+  [data-theme="dark"] .lang-switch.session-locked {
+    opacity: 0.62;
+  }
   [data-theme="dark"] .module-jump-label     { color: var(--ink-muted); }
 
   /* Home screen */
@@ -2643,6 +2761,27 @@
   [data-theme="dark"] .feedback-entry {
     background: #1e2e24;
   }
+  [data-theme="dark"] .about-persona-body {
+    background: #1c1a17;
+    border-top-color: var(--border);
+  }
+  [data-theme="dark"] .about-interact-item {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+  [data-theme="dark"] .about-interact-item.support .about-interact-icon {
+    background: #4a2030;
+    color: #f5a8c3;
+  }
+  [data-theme="dark"] .about-interact-copy strong {
+    color: var(--ink);
+  }
+  [data-theme="dark"] .about-interact-copy span {
+    color: var(--ink-soft);
+  }
+  [data-theme="dark"] .about-persona-card.open {
+    border-color: #3d6b52;
+  }
 
   .feedback-resize-handle {
     position: absolute;
@@ -2665,6 +2804,299 @@
     border-right: 2px solid var(--ink-muted);
     border-bottom: 2px solid var(--ink-muted);
     border-bottom-right-radius: 2px;
+  }
+
+  /* ── About this Trainer panel ── */
+  #about-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 198;
+    background: rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+  body.about-panel-open #about-overlay { display: block; }
+
+  #about-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(380px, 44vw);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 202;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  body.about-panel-open #about-panel {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .about-panel-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    background: var(--surface);
+    border-left: 1.5px solid var(--bezel-ring);
+    box-shadow: -8px 0 34px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  .about-panel-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--sage-pale) 0%, var(--surface) 55%);
+  }
+  [data-theme="dark"] .about-panel-header {
+    background: linear-gradient(135deg, #1e2e24 0%, var(--surface) 55%);
+  }
+
+  .about-panel-header h2 {
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .about-panel-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .about-panel-close:hover {
+    border-color: var(--sage);
+    color: var(--ink);
+    background: var(--sage-pale);
+  }
+
+  .about-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: 18px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .about-section-title {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 10px;
+    line-height: 1.35;
+  }
+
+  .about-section p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+  .about-section p:last-child { margin-bottom: 0; }
+
+  .about-trainer-para {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    background: var(--speaker-trainer-bg);
+    color: var(--speaker-trainer-fg);
+    border: 1px solid rgba(30, 92, 64, 0.12);
+    margin: 0 0 14px;
+  }
+  [data-theme="dark"] .about-trainer-para {
+    border-color: rgba(200, 238, 216, 0.15);
+  }
+
+  .about-participants-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 10px;
+  }
+
+  .about-persona-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .about-persona-card {
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .about-persona-card.open {
+    border-color: var(--sage);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .about-persona-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 13px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    transition: filter 0.15s;
+  }
+  .about-persona-head:hover { filter: brightness(0.98); }
+
+  .about-persona-card.speaker-trainer .about-persona-head { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); }
+  .about-persona-card.speaker-ramesh  .about-persona-head { background: var(--speaker-ramesh-bg);  color: var(--speaker-ramesh-fg); }
+  .about-persona-card.speaker-priya   .about-persona-head { background: var(--speaker-priya-bg);   color: var(--speaker-priya-fg); }
+  .about-persona-card.speaker-simran  .about-persona-head { background: var(--speaker-simran-bg);  color: var(--speaker-simran-fg); }
+  .about-persona-card.speaker-sejal   .about-persona-head { background: var(--speaker-sejal-bg);   color: var(--speaker-sejal-fg); }
+
+  .about-persona-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .about-persona-name {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .about-persona-role {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.82;
+    line-height: 1.35;
+  }
+
+  .about-persona-chevron {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 800;
+    opacity: 0.65;
+    transition: transform 0.22s ease;
+  }
+  .about-persona-card.open .about-persona-chevron { transform: rotate(180deg); }
+
+  .about-persona-body {
+    display: none;
+    padding: 12px 14px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .about-persona-card.open .about-persona-body { display: block; }
+
+  .about-interact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .about-interact-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 13px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+  }
+
+  .about-interact-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    background: var(--sage-pale);
+    color: var(--sage-dk);
+  }
+  .about-interact-item.training .about-interact-icon { background: var(--speaker-trainer-bg); color: var(--speaker-trainer-fg); }
+  .about-interact-item.roleplay .about-interact-icon { background: var(--speaker-priya-bg); color: var(--speaker-priya-fg); }
+  .about-interact-item.quiz .about-interact-icon { background: var(--speaker-sejal-bg); color: var(--speaker-sejal-fg); }
+  .about-interact-item.sidebar .about-interact-icon { background: var(--speaker-ramesh-bg); color: var(--speaker-ramesh-fg); }
+  .about-interact-item.support .about-interact-icon { background: #fde8f0; color: #c2185b; }
+  .about-interact-item.history .about-interact-icon { background: var(--speaker-user-bg); color: var(--speaker-user-fg); }
+
+  .about-interact-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .about-interact-copy strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .about-interact-copy span {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 768px) {
+    .top-actions {
+      top: 10px;
+      right: 10px;
+      gap: 6px;
+    }
+    .dark-toggle,
+    .about-toggle {
+      font-size: 11px;
+      padding: 5px 10px;
+    }
+    #about-panel {
+      width: min(100vw, 360px);
+    }
   }
 
   @media (max-width: 768px) {
@@ -2734,14 +3166,820 @@
     }
     /* App header: hidden on mobile (shown only on home screen via auth overlay) */
     .app-header { display: none; }
-    /* Dark-mode toggle: smaller, move left to not overlap */
-    .dark-toggle {
-      top: 10px;
-      right: 10px;
-      font-size: 11px;
-      padding: 5px 10px;
-    }
   }
+
+/* ══════════════════════════════════════════════════
+   EXPERT EVALUATION SCREEN — full-page, per-user
+   Four per-section palettes: plum / teal / indigo / terracotta
+   ══════════════════════════════════════════════════ */
+#screen-eval {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: var(--bg, #f7f5f0);
+  display: none;
+  flex-direction: row;
+  overflow: hidden;
+}
+#screen-eval.active { display: flex; }
+body.eval-screen-open #session-sidebar,
+body.eval-screen-open #sidebar-open-btn,
+body.eval-screen-open .app-header,
+body.eval-screen-open #screen-tabs,
+body.eval-screen-open .module-jump-wrap,
+body.eval-screen-open .phone-outer,
+body.eval-screen-open #feedback-panel,
+body.eval-screen-open #feedback-overlay,
+body.eval-screen-open #about-panel,
+body.eval-screen-open #about-overlay,
+body.eval-screen-open .top-actions,
+body.eval-screen-open .logout-btn { display: none !important; }
+
+/* Eval sidebar — mirrors trainer sidebar pattern */
+#eval-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  height: 100%;
+  background: var(--surface, #ffffff);
+  border-right: 1px solid var(--border, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+}
+.eval-sidebar-header {
+  padding: 14px 12px 8px;
+  flex-shrink: 0;
+}
+.eval-sidebar-back-btn {
+  width: 100%;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  background: var(--ink, #2d2d2d);
+  color: var(--surface, #ffffff);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s;
+  text-align: left;
+}
+.eval-sidebar-back-btn:hover { opacity: 0.85; }
+[data-theme="dark"] .eval-sidebar-back-btn { background: var(--sage-dk, #9bc8b4); color: #0d1f16; }
+
+.eval-sidebar-primary-btn {
+  margin: 0 12px 8px;
+  flex-shrink: 0;
+  background: var(--ink, #2d2d2d);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.15s;
+  text-align: left;
+}
+.eval-sidebar-primary-btn:hover { opacity: 0.85; }
+[data-theme="dark"] .eval-sidebar-primary-btn { background: var(--sage-dk, #9bc8b4); color: #0d1f16; }
+
+.eval-sidebar-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--ink-muted, #888);
+  padding: 8px 14px 4px;
+}
+
+/* Section jump chips (color-coded) */
+.eval-section-jumps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px 8px;
+  flex-shrink: 0;
+}
+.eval-section-chip {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink, #2d2d2d);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e0e0e0);
+  border-left: 4px solid;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: left;
+  width: 100%;
+}
+.eval-section-chip .chip-title {
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+}
+.eval-section-chip:hover { background: var(--neutral, #f7f5f0); }
+.eval-section-chip.active { background: var(--neutral, #f7f5f0); }
+.eval-section-chip[data-color="plum"] { border-left-color: #7a3d6e; }
+.eval-section-chip[data-color="teal"] { border-left-color: #4a9b8f; }
+.eval-section-chip[data-color="indigo"] { border-left-color: #5b5faa; }
+.eval-section-chip[data-color="terracotta"] { border-left-color: #c97a4a; }
+.eval-section-chip .chip-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.eval-section-chip[data-color="plum"] .chip-dot { background: #7a3d6e; }
+.eval-section-chip[data-color="teal"] .chip-dot { background: #4a9b8f; }
+.eval-section-chip[data-color="indigo"] .chip-dot { background: #5b5faa; }
+.eval-section-chip[data-color="terracotta"] .chip-dot { background: #c97a4a; }
+.eval-section-chip .chip-progress {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ink-muted, #888);
+}
+[data-theme="dark"] .eval-section-chip {
+  background: var(--surface, #252320);
+  border-color: var(--border);
+  color: var(--ink, #e0dbd5);
+}
+[data-theme="dark"] .eval-section-chip:hover,
+[data-theme="dark"] .eval-section-chip.active {
+  background: #1e2e24;
+}
+[data-theme="dark"] .eval-section-chip .chip-progress {
+  color: var(--ink-muted, #aea9a3);
+}
+[data-theme="dark"] .eval-hist-item-num {
+  color: var(--ink, #e0dbd5);
+}
+[data-theme="dark"] .eval-hist-item-time {
+  color: var(--ink-muted, #aea9a3);
+}
+
+/* Sidebar history list */
+#eval-sidebar-history {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0 8px 8px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.eval-hist-item {
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.eval-hist-item:hover { background: var(--sage-pale, #eef8f3); }
+.eval-hist-item.active { background: var(--sage-light, #d4f0e3); }
+[data-theme="dark"] .eval-hist-item:hover { background: #1e2e24; }
+[data-theme="dark"] .eval-hist-item.active { background: #234a38; }
+.eval-hist-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eval-hist-item-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink, #2d2d2d);
+}
+.eval-hist-item-status {
+  font-family: 'Nunito', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  margin-left: auto;
+}
+.eval-hist-item-status.draft { background: var(--honey-light, #fef3c2); color: var(--honey-dark, #7a5c00); }
+.eval-hist-item-status.submitted { background: var(--sage-pale, #eef8f3); color: var(--sage-dark, #1e5c40); }
+.eval-hist-item-time {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  color: var(--ink-muted, #888);
+}
+.eval-hist-empty {
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  color: var(--ink-muted, #888);
+  padding: 16px 8px;
+}
+
+/* Main eval area */
+.eval-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.eval-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border, #e0e0e0);
+  padding: 16px 28px 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.eval-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.eval-header-title {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink, #2d2d2d);
+  margin: 0;
+}
+.eval-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eval-save-status {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted, #888);
+  min-width: 56px;
+  text-align: right;
+}
+.eval-save-status.saving { color: var(--honey-dark, #7a5c00); }
+.eval-save-status.saved { color: var(--sage-dark, #1e5c40); }
+
+.eval-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.eval-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bezel, #e8e5df);
+  overflow: hidden;
+  display: flex;
+}
+.eval-progress-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.eval-progress-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted, #888);
+  white-space: nowrap;
+}
+.eval-progress-label.has-missing { color: var(--blush, #f5a8a8); }
+
+.eval-submit-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: var(--ink, #2d2d2d);
+  color: var(--surface, #ffffff);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: transform 0.12s, opacity 0.12s;
+}
+.eval-submit-btn:hover { transform: scale(1.02); }
+.eval-submit-btn:disabled { opacity: 0.45; cursor: default; }
+[data-theme="dark"] .eval-submit-btn {
+  background: var(--sage, #9bc8b4);
+  color: #0f1e17;
+}
+
+.eval-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px 60px;
+}
+
+/* Section bands */
+.eval-section { margin-bottom: 28px; }
+.eval-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  border-left: 4px solid;
+}
+.eval-section-title {
+  font-family: 'Lora', serif;
+  font-size: var(--ef-section, 20px);
+  font-weight: 600;
+}
+.eval-subsection-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--ink-soft, #555);
+  margin: 16px 0 8px;
+  padding-left: 4px;
+}
+
+/* Per-section color tokens (light) */
+.eval-section[data-color="plum"] .eval-section-header { background: #f3e8f0; border-color: #7a3d6e; }
+.eval-section[data-color="plum"] .eval-section-title { color: #6b2d5c; }
+.eval-section[data-color="plum"] .eval-option-chip.selected { background: #f3e8f0; color: #6b2d5c; border-color: #7a3d6e; }
+.eval-section[data-color="plum"] .eval-explanation:focus { border-color: #7a3d6e; box-shadow: 0 0 0 3px rgba(122,61,110,0.15); }
+
+.eval-section[data-color="teal"] .eval-section-header { background: #e0f0ee; border-color: #4a9b8f; }
+.eval-section[data-color="teal"] .eval-section-title { color: #1f5c56; }
+.eval-section[data-color="teal"] .eval-option-chip.selected { background: #e0f0ee; color: #1f5c56; border-color: #4a9b8f; }
+.eval-section[data-color="teal"] .eval-explanation:focus { border-color: #4a9b8f; box-shadow: 0 0 0 3px rgba(74,155,143,0.15); }
+
+.eval-section[data-color="indigo"] .eval-section-header { background: #e4e5f4; border-color: #5b5faa; }
+.eval-section[data-color="indigo"] .eval-section-title { color: #3d4082; }
+.eval-section[data-color="indigo"] .eval-option-chip.selected { background: #e4e5f4; color: #3d4082; border-color: #5b5faa; }
+.eval-section[data-color="indigo"] .eval-explanation:focus { border-color: #5b5faa; box-shadow: 0 0 0 3px rgba(91,95,170,0.15); }
+
+.eval-section[data-color="terracotta"] .eval-section-header { background: #f6e6db; border-color: #c97a4a; }
+.eval-section[data-color="terracotta"] .eval-section-title { color: #7a3a1a; }
+.eval-section[data-color="terracotta"] .eval-option-chip.selected { background: #f6e6db; color: #7a3a1a; border-color: #c97a4a; }
+.eval-section[data-color="terracotta"] .eval-explanation:focus { border-color: #c97a4a; box-shadow: 0 0 0 3px rgba(201,122,74,0.15); }
+
+/* Dark mode section tokens */
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-section-header { background: #3a2335; border-color: #c08ab0; }
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-section-title { color: #e0c8d8; }
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-option-chip.selected { background: #3a2335; color: #e0c8d8; border-color: #c08ab0; }
+
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-section-header { background: #1d2a28; border-color: #6fc4b8; }
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-section-title { color: #c8e0db; }
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-option-chip.selected { background: #1d2a28; color: #c8e0db; border-color: #6fc4b8; }
+
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-section-header { background: #1f2230; border-color: #8a8fc8; }
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-section-title { color: #c8cae8; }
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-option-chip.selected { background: #1f2230; color: #c8cae8; border-color: #8a8fc8; }
+
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-section-header { background: #2e1f17; border-color: #d89060; }
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-section-title { color: #e8c8b0; }
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-option-chip.selected { background: #2e1f17; color: #e8c8b0; border-color: #d89060; }
+
+/* Color-tagged dimension cards — full tinted background + darker accent left border */
+.eval-section[data-color="plum"] .eval-dimension {
+  background: #f3e8f0;
+  border: 1px solid #c49ab8;
+  border-left: 5px solid #6b2d5c;
+}
+.eval-section[data-color="plum"] .eval-dim-title { color: #5a1f4c; }
+.eval-section[data-color="plum"] .eval-option-chip { background: #fff; }
+.eval-section[data-color="plum"] .eval-explanation { background: #faf3f8; }
+
+.eval-section[data-color="teal"] .eval-dimension {
+  background: #e0f0ee;
+  border: 1px solid #7ec0b8;
+  border-left: 5px solid #1f5c56;
+}
+.eval-section[data-color="teal"] .eval-dim-title { color: #164842; }
+.eval-section[data-color="teal"] .eval-option-chip { background: #fff; }
+.eval-section[data-color="teal"] .eval-explanation { background: #f0f8f7; }
+
+.eval-section[data-color="indigo"] .eval-dimension {
+  background: #e4e5f4;
+  border: 1px solid #9a9dd0;
+  border-left: 5px solid #3d4082;
+}
+.eval-section[data-color="indigo"] .eval-dim-title { color: #2c2f6b; }
+.eval-section[data-color="indigo"] .eval-option-chip { background: #fff; }
+.eval-section[data-color="indigo"] .eval-explanation { background: #f2f2fa; }
+
+.eval-section[data-color="terracotta"] .eval-dimension {
+  background: #f6e6db;
+  border: 1px solid #d4a080;
+  border-left: 5px solid #7a3a1a;
+}
+.eval-section[data-color="terracotta"] .eval-dim-title { color: #652e12; }
+.eval-section[data-color="terracotta"] .eval-option-chip { background: #fff; }
+.eval-section[data-color="terracotta"] .eval-explanation { background: #faf2ec; }
+
+/* Dark mode — tinted card backgrounds */
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-dimension {
+  background: #2e1a29;
+  border: 1px solid #8a4a7a;
+  border-left: 5px solid #c08ab0;
+}
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-dim-title { color: #e8d0e0; }
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-option-chip { background: var(--surface, #252320); }
+[data-theme="dark"] .eval-section[data-color="plum"] .eval-explanation { background: #251623; }
+
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-dimension {
+  background: #162220;
+  border: 1px solid #3a8078;
+  border-left: 5px solid #6fc4b8;
+}
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-dim-title { color: #d0e8e4; }
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-option-chip { background: var(--surface, #252320); }
+[data-theme="dark"] .eval-section[data-color="teal"] .eval-explanation { background: #121e1d; }
+
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-dimension {
+  background: #181a28;
+  border: 1px solid #5054a0;
+  border-left: 5px solid #8a8fc8;
+}
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-dim-title { color: #d0d2e8; }
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-option-chip { background: var(--surface, #252320); }
+[data-theme="dark"] .eval-section[data-color="indigo"] .eval-explanation { background: #141620; }
+
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-dimension {
+  background: #241510;
+  border: 1px solid #8a5030;
+  border-left: 5px solid #d89060;
+}
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-dim-title { color: #eacead; }
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-option-chip { background: var(--surface, #252320); }
+[data-theme="dark"] .eval-section[data-color="terracotta"] .eval-explanation { background: #1e100c; }
+
+/* Dimension card */
+.eval-dimension {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 12px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.eval-dimension.missing {
+  border-color: #e06060 !important;
+  border-left-color: #e06060 !important;
+  box-shadow: 0 0 0 2px rgba(224,96,96,0.25);
+}
+[data-theme="dark"] .eval-dimension.missing { border-color: #ff7a7a !important; border-left-color: #ff7a7a !important; box-shadow: 0 0 0 2px rgba(255,122,122,0.3); }
+.eval-dim-title {
+  font-family: 'Lora', serif;
+  font-size: var(--ef-title, 17px);
+  font-weight: 600;
+  color: var(--ink, #2d2d2d);
+  margin: 0 0 6px;
+}
+.eval-dim-definition {
+  font-family: 'Nunito', sans-serif;
+  font-size: var(--ef-body, 14px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--ink-soft, #555);
+  margin: 0 0 12px;
+}
+.eval-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+@media (max-width: 560px) {
+  .eval-options { grid-template-columns: 1fr; }
+}
+.eval-option-chip {
+  font-family: 'Nunito', sans-serif;
+  font-size: var(--ef-option, 13px);
+  font-weight: 600;
+  line-height: 1.45;
+  background: var(--surface, #ffffff);
+  color: var(--ink, #2d2d2d);
+  border: 2px solid var(--border, #e0e0e0);
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.eval-option-chip:hover { border-color: var(--ink-muted, #888); transform: translateX(2px); }
+.eval-option-chip .opt-label {
+  font-weight: 800;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bezel, #e8e5df);
+  color: var(--ink, #2d2d2d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.eval-option-chip.selected .opt-label {
+  background: currentColor;
+  color: var(--surface, #ffffff);
+}
+.eval-option-chip.selected .opt-label span { color: var(--surface, #ffffff); }
+.eval-option-chip .opt-label span { color: var(--ink, #2d2d2d); pointer-events: none; }
+
+.eval-explanation {
+  width: 100%;
+  font-family: 'Nunito', sans-serif;
+  font-size: var(--ef-option, 13px);
+  line-height: 1.55;
+  color: var(--ink, #2d2d2d);
+  background: var(--neutral, #f7f5f0);
+  border: 2px solid var(--border, #e0e0e0);
+  border-radius: 12px;
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 68px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.eval-explanation::placeholder { color: var(--ink-muted, #888); }
+.eval-explanation:disabled { opacity: 0.6; cursor: default; }
+
+/* Font size scaling levels — set on #screen-eval via data-font-level */
+.eval-body {
+  --ef-title: 17px;
+  --ef-body: 14px;
+  --ef-option: 13px;
+  --ef-section: 20px;
+}
+#screen-eval[data-font-level="-1"] .eval-body { --ef-title: 15px; --ef-body: 13px; --ef-option: 12px; --ef-section: 18px; }
+#screen-eval[data-font-level="1"]  .eval-body { --ef-title: 20px; --ef-body: 16px; --ef-option: 14px; --ef-section: 23px; }
+#screen-eval[data-font-level="2"]  .eval-body { --ef-title: 23px; --ef-body: 18px; --ef-option: 16px; --ef-section: 26px; }
+#screen-eval[data-font-level="3"]  .eval-body { --ef-title: 27px; --ef-body: 21px; --ef-option: 18px; --ef-section: 30px; }
+#screen-eval[data-font-level="4"]  .eval-body { --ef-title: 31px; --ef-body: 24px; --ef-option: 21px; --ef-section: 34px; }
+#screen-eval[data-font-level="5"]  .eval-body { --ef-title: 36px; --ef-body: 27px; --ef-option: 24px; --ef-section: 38px; }
+
+/* Font size controls (+/−) and eval-page dark toggle */
+.eval-font-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--neutral, #f7f5f0);
+  border-radius: 999px;
+  padding: 2px 4px;
+  border: 1px solid var(--border, #e0e0e0);
+}
+.eval-font-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ink, #2d2d2d);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.eval-font-btn:hover:not(:disabled) { background: var(--bezel, #e8e5df); }
+.eval-font-btn:disabled { opacity: 0.35; cursor: default; }
+.eval-font-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted, #888);
+  padding: 0 2px;
+}
+.eval-dark-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--neutral, #f7f5f0);
+  color: var(--ink, #2d2d2d);
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.eval-dark-btn:hover { background: var(--bezel, #e8e5df); }
+[data-theme="dark"] .eval-font-controls {
+  background: var(--surface, #252320);
+  border-color: var(--border);
+}
+[data-theme="dark"] .eval-font-btn {
+  color: var(--ink, #e0dbd5);
+}
+[data-theme="dark"] .eval-font-btn:hover:not(:disabled) {
+  background: #3b3835;
+}
+[data-theme="dark"] .eval-font-label {
+  color: var(--ink-muted, #aea9a3);
+}
+[data-theme="dark"] .eval-dark-btn {
+  background: var(--surface, #252320);
+  border-color: var(--border);
+  color: var(--ink, #e0dbd5);
+}
+[data-theme="dark"] .eval-dark-btn:hover {
+  background: #3b3835;
+}
+
+/* Start view — shown in main area when no draft exists */
+.eval-start-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 22px;
+  text-align: center;
+  gap: 18px;
+}
+.eval-start-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+.eval-start-title {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink, #2d2d2d);
+  margin: 0 0 8px;
+}
+.eval-start-desc {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft, #555);
+  margin: 0 0 20px;
+}
+.eval-start-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: var(--ink, #2d2d2d);
+  color: var(--surface, #ffffff);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.eval-start-btn:hover { transform: scale(1.02); }
+[data-theme="dark"] .eval-start-btn { background: var(--sage, #9bc8b4); color: #0f1e17; }
+
+/* Explanation optional label */
+.eval-expl-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted, #888);
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Mobile — eval sidebar collapses to an overlay */
+@media (max-width: 768px) {
+  #screen-eval { flex-direction: column; }
+  #eval-sidebar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 280px;
+    z-index: 10;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  }
+  #eval-sidebar.eval-sidebar-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.2); }
+  .eval-sidebar-toggle {
+    display: flex !important;
+  }
+}
+.eval-sidebar-toggle {
+  display: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--neutral, #f7f5f0);
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+}
+
+/* Partial-submit modal */
+.eval-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+.eval-modal-overlay.active { display: flex; }
+.eval-modal {
+  background: var(--surface, #ffffff);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.eval-modal-title {
+  font-family: 'Lora', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink, #2d2d2d);
+  margin: 0 0 8px;
+}
+.eval-modal-body {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft, #555);
+  margin: 0 0 16px;
+}
+.eval-modal-body .missing-count {
+  font-weight: 800;
+  color: #c04040;
+}
+.eval-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.eval-modal-btn {
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 9px 18px;
+  cursor: pointer;
+  border: 2px solid;
+}
+.eval-modal-btn.secondary {
+  background: transparent;
+  border-color: var(--border, #e0e0e0);
+  color: var(--ink, #2d2d2d);
+}
+.eval-modal-btn.secondary:hover { border-color: var(--ink-muted, #888); }
+.eval-modal-btn.danger {
+  background: #c04040;
+  border-color: #c04040;
+  color: #ffffff;
+}
+.eval-modal-btn.danger:hover { background: #a03030; border-color: #a03030; }
+.eval-modal-btn.jumptonext {
+  background: transparent;
+  border-color: var(--ink, #2d2d2d);
+  color: var(--ink, #2d2d2d);
+}
 </style>
 </head>
 <body>
@@ -2869,7 +4107,7 @@
 <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- Floating hamburger — visible when sidebar is collapsed -->
-<button id="sidebar-open-btn" class="visible" onclick="toggleSidebar()" aria-label="Open sessions menu" title="Open sessions menu">☰</button>
+<button id="sidebar-open-btn" class="visible" onclick="toggleSidebar()" aria-label="Open chats menu" title="Open chats menu">☰</button>
 
 <!-- ══════════════════════════════════════════════════
      SESSION SIDEBAR — shown after sign-in
@@ -2881,16 +4119,19 @@
         <div id="sidebar-app-name">Artpark x CMHLP</div>
         <div id="sidebar-user-email"></div>
       </div>
-      <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Collapse sessions menu" title="Collapse sessions menu">✕</button>
+      <button id="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Collapse chats menu" title="Collapse chats menu">✕</button>
     </div>
   </div>
   <button id="sidebar-new-btn" class="sidebar-primary-btn" onclick="createNewSession()">
-    <span style="font-size:16px;line-height:1">+</span> New Session
+    <span style="font-size:16px;line-height:1">+</span> New Chat
   </button>
   <button id="sidebar-feedback-btn" class="sidebar-primary-btn" onclick="toggleFeedbackPanel()" style="display:none">
     <span id="sidebar-feedback-btn-label">Feedback</span>
   </button>
-  <div id="sidebar-sessions-label">Sessions</div>
+  <button id="sidebar-eval-btn" class="sidebar-primary-btn" onclick="openEvaluationScreen()" style="display:none">
+    <span id="sidebar-eval-btn-label">Evaluation</span>
+  </button>
+  <div id="sidebar-sessions-label">Chats</div>
   <ul id="session-list"></ul>
   <div id="sidebar-footer">
     <button id="sidebar-archived-btn" onclick="showArchivedView()">Archived</button>
@@ -2920,8 +4161,12 @@
   </div>
 </div>
 
+<div class="top-actions" id="top-actions">
+  <button class="about-toggle" id="about-toggle" type="button" onclick="toggleAboutPanel()" aria-expanded="false" aria-controls="about-panel">About this Trainer</button>
+  <button class="dark-toggle" id="dark-toggle" type="button" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+</div>
+
 <div class="phone-outer" id="phone-outer">
-<button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙 Dark Mode</button>
 <button class="logout-btn" id="logout-btn" onclick="handleLogout()" aria-label="Sign out" style="display:none">Sign Out</button>
 
 <div class="phone">
@@ -3179,6 +4424,17 @@
 </div><!-- /phone -->
 </div><!-- /phone-outer -->
 
+<div id="about-overlay" onclick="closeAboutPanel()"></div>
+<aside id="about-panel" aria-label="About this Trainer">
+  <div class="about-panel-shell">
+    <header class="about-panel-header">
+      <h2 id="about-panel-title">About this Trainer</h2>
+      <button type="button" class="about-panel-close" id="about-panel-close" onclick="closeAboutPanel()" aria-label="Close">×</button>
+    </header>
+    <div class="about-panel-body" id="about-panel-body"></div>
+  </div>
+</aside>
+
 <div id="feedback-overlay" onclick="closeFeedbackPanel()"></div>
 <aside id="feedback-panel" aria-label="Session feedback">
   <div class="feedback-panel-shell">
@@ -3197,6 +4453,64 @@
     <div class="feedback-resize-handle" id="feedback-resize-handle" aria-hidden="true"></div>
   </div>
 </aside>
+
+<!-- ══════════════════════════════════════════════════
+     EXPERT EVALUATION — full-page screen (per-user)
+     ══════════════════════════════════════════════════ -->
+<div id="screen-eval" aria-label="Expert evaluation">
+  <!-- Eval sidebar — mirrors trainer sidebar pattern -->
+  <aside id="eval-sidebar">
+    <div class="eval-sidebar-header">
+      <button class="eval-sidebar-back-btn" onclick="closeEvaluationScreen()">
+        <span style="font-size:14px">←</span> Back to Trainer
+      </button>
+    </div>
+    <button id="eval-new-btn" class="eval-sidebar-primary-btn" onclick="evalStartNew()">
+      <span style="font-size:16px;line-height:1">+</span> <span id="eval-new-btn-label">New Evaluation</span>
+    </button>
+    <div class="eval-sidebar-label" id="eval-sections-label">Sections</div>
+    <div class="eval-section-jumps" id="eval-section-jumps"></div>
+    <div class="eval-sidebar-label" id="eval-history-label">History</div>
+    <ul class="eval-history-list" id="eval-sidebar-history"></ul>
+  </aside>
+
+  <!-- Main eval area -->
+  <div class="eval-main">
+    <div class="eval-header">
+      <div class="eval-header-top">
+        <h2 class="eval-header-title" id="eval-header-title">Expert Evaluation</h2>
+        <div class="eval-header-actions">
+          <span class="eval-save-status" id="eval-save-status"></span>
+          <div class="eval-font-controls" aria-label="Adjust text size">
+            <button class="eval-font-btn" id="eval-font-decrease" onclick="evalFontDecrease()" title="Decrease text size" aria-label="Decrease text size">−</button>
+            <span class="eval-font-label">TEXT</span>
+            <button class="eval-font-btn" id="eval-font-increase" onclick="evalFontIncrease()" title="Increase text size" aria-label="Increase text size">+</button>
+          </div>
+          <button class="eval-dark-btn" id="eval-dark-btn" onclick="toggleDarkMode()">Dark Mode</button>
+          <button class="eval-submit-btn" id="eval-submit-btn" onclick="onEvalSubmitClick()" style="display:none">Submit</button>
+        </div>
+      </div>
+      <div class="eval-progress-row">
+        <div class="eval-progress-bar" id="eval-progress-bar"></div>
+        <span class="eval-progress-label" id="eval-progress-label">0 / 0 filled</span>
+      </div>
+    </div>
+    <div class="eval-body" id="eval-body"><!-- rendered by JS --></div>
+  </div>
+</div>
+
+<!-- Partial-submit confirmation modal -->
+<div class="eval-modal-overlay" id="eval-modal-overlay" onclick="if(event.target===this) closeEvalModal()">
+  <div class="eval-modal">
+    <h3 class="eval-modal-title" id="eval-modal-title"></h3>
+    <p class="eval-modal-body" id="eval-modal-body"></p>
+    <div class="eval-modal-actions">
+      <button class="eval-modal-btn jumptonext" id="eval-modal-jump" onclick="closeEvalModal(); evalJumpToNextMissing()">Jump to next unfilled</button>
+      <button class="eval-modal-btn secondary" onclick="closeEvalModal()">Cancel</button>
+      <button class="eval-modal-btn danger" id="eval-modal-confirm" onclick="confirmEvalSubmit()">Submit anyway</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ══════════════════════════════════════════════════
@@ -3277,6 +4591,7 @@ async function handleLogin() {
     bindFeedbackInput();
     bindFeedbackPanelInteractions();
     applyFeedbackLocale();
+    applyEvalLocale();
     await initializeApp();
     updateDarkToggle();
   } catch (e) {
@@ -3443,7 +4758,7 @@ function renderSessionList(sessions) {
           <span class="status-dot ${dotClass}"></span>
           <span class="session-item-title-text">${escapeHtml(displayTitle)}</span>
         </div>
-        <button class="session-item-menu" data-session-id="${sid}" data-title="${escapeHtml(displayTitle)}" aria-label="Session options" title="Session options">⋯</button>
+        <button class="session-item-menu" data-session-id="${sid}" data-title="${escapeHtml(displayTitle)}" aria-label="Chat options" title="Chat options">⋯</button>
       </div>
       <div class="session-item-sub" onclick="selectSidebarSession('${sid}', '${nid}', '${loc}')">${escapeHtml(sub)}</div>
     </li>`;
@@ -3878,7 +5193,8 @@ async function _loadSessionView(sessionId) {
   // is immediately interactive even if a prior stream is still unwinding.
   resetTrainingInteractionState();
   sessionStateHydrated = false;
-  setModuleChipDisabled(true);
+  sessionResumeArtifacts = false;
+  updateSessionLockChrome();
   trainingSessionId = sessionId;
   if (_feedbackPanelOpen) {
     loadSessionFeedback(sessionId).catch(() => {});
@@ -3891,6 +5207,7 @@ async function _loadSessionView(sessionId) {
   activeTrainingSubSession = 'setup';
   lastQuizGenerationStatus = {};
   lastSessionCompleted = {};
+  lastQuizEligibleSessions = {};
   trainingAskQueue.length = 0;
   autoAdvanceAfterQueuedAsk = false;
   trainingEchoedUserTexts.length = 0;
@@ -3957,6 +5274,11 @@ async function _loadSessionView(sessionId) {
   }
 
   if (state) {
+    sessionResumeArtifacts = Boolean(
+      state.graph_started
+      || state.last_flashcard
+      || chatHistory.some((item) => item.bubbleClass !== 'history-loaded-label' && String(item.text || '').trim())
+    );
     applyTrainingStateSnapshot(state);
     if (!restoreFlashcardForSession(messages, state)) {
       showBeginSessionPlaceholder(selectedTrainingSessionId);
@@ -3964,6 +5286,7 @@ async function _loadSessionView(sessionId) {
   } else {
     console.warn('Could not fetch session state — using conservative defaults');
     if (messages.length > 0) {
+      sessionResumeArtifacts = true;
       trainingGraphStarted = true;
       const lastMsg = [...messages].reverse().find(m => (m.role || '') !== 'learner' && String(m.content || '').trim());
       const hintedSession = _normalizeSessionId(lastMsg?.session_num);
@@ -3984,7 +5307,7 @@ async function _loadSessionView(sessionId) {
   updateSessionLabel();
   updateTrainingActionButton();
   renderSessionJumpChips();
-  setModuleChipDisabled(!canSwitchSessions());
+  updateSessionLockChrome();
 
   // Highlight in sidebar
   navigateToSession(sessionId);
@@ -4049,6 +5372,7 @@ async function createNewSession() {
             : V2_TRAINING_PERSONAS);
       renderParticipantBar();
       renderSessionJumpChips();
+      updateSessionLockChrome();
       renderHomeSessionCard();
       updateSessionLabel();
       updateTrainingActionButton();
@@ -4217,23 +5541,92 @@ const I18N = {
     feedbackPlaceholder: 'type your feedback ...',
     feedbackSend: 'Send',
     feedbackEmpty: 'No feedback yet for this session.',
+    aboutBtn: 'About this Trainer',
+    aboutTitle: 'About this Trainer',
+    aboutSec1Title: 'What this is',
+    aboutSec1P1: 'The Atmiyata Champion sessions you already know — the topics, the flow, the skills — are now delivered through an <strong>AI training room</strong>.',
+    aboutSec1P2: 'Instead of waiting for a facilitator and a full group in one physical room, you get a computer-generated <strong>Trainer</strong> who runs each session, plus <strong>four AI participants</strong> who speak like people from your community.',
+    aboutSec1P3: 'The lesson content is the same programme. What is new is that the conversation is <strong>generated live</strong> — the Trainer decides what to say, when to bring someone in, and how to respond if you ask a question.',
+    aboutSec1P4: 'These are <strong>not real people</strong>. They are characters built to make the training feel like a group discussion on your phone.',
+    aboutSec2Title: 'How it works',
+    aboutTrainerPara: 'The Trainer is an AI facilitator. It follows a prepared session plan and guides the room through Setup → Deepening → Validation — the same arc as in-person training. It asks questions, listens to answers, brings in participants when their perspective helps, and moves on when the topic is understood.',
+    aboutParticipantsLabel: 'Participants — tap to read more',
+    aboutPersonaTrainerName: 'Trainer',
+    aboutPersonaTrainerRole: 'AI Facilitator',
+    aboutPersonaTrainerDesc: 'Guides the session through questions and reflection — not one-way teaching. Uses active listening, summarises what the group said, and checks understanding before moving on. Warm, non-judgmental, plain language.',
+    aboutPersonaRameshName: 'Ramesh',
+    aboutPersonaRameshRole: 'Farmer · 39 · Rural Gujarat',
+    aboutPersonaRameshDesc: 'Soft-spoken and practical. Represents the rural male view — debt, weather, family duty. Often carries tension quietly. Speaks in grounded village language; sometimes hesitant or incomplete, like a real participant.',
+    aboutPersonaPriyaName: 'Priya',
+    aboutPersonaPriyaRole: 'Urban worker · 29 · Urban Gujarat',
+    aboutPersonaPriyaDesc: 'Composed but under pressure. Balances job, in-laws, and village roots. Brings up stigma, appearances, and the hidden stress of looking fine. May stay quiet or cautious when something feels too personal.',
+    aboutPersonaSimranName: 'Simran',
+    aboutPersonaSimranRole: 'ASHA worker · 23 · Field-based Gujarat',
+    aboutPersonaSimranDesc: 'Young, observant, often tired from field work and home duties. Notices family dynamics and community health patterns. Brings frontline-worker reality — what you can and cannot see from outside a home.',
+    aboutPersonaSejalName: 'Sejal',
+    aboutPersonaSejalRole: 'BC Sakhi & SHG coordinator · 35 · Semi-urban Gujarat',
+    aboutPersonaSejalDesc: 'Trusted in the community. Sees how money worries and shame hide emotional pain. Calm and practical. Often shows why good advice is hard to follow — family pressure, resources, dignity.',
+    aboutSec3Title: 'How to interact',
+    aboutInteractTrainingTitle: 'Training tab',
+    aboutInteractTrainingBody: 'Read along as the Trainer and participants speak. Tap Continue when ready. Type a question or use the mic — the Trainer responds before moving on. Pause stops audio; Sound on/off controls voice.',
+    aboutInteractRoleplayTitle: 'Roleplay tab',
+    aboutInteractRoleplayBody: 'Practice counselling with an AI beneficiary. Watch first, or Take Over and respond yourself.',
+    aboutInteractQuizTitle: 'Quiz tab',
+    aboutInteractQuizBody: 'Short knowledge check at the end of a session.',
+    aboutInteractSidebarTitle: 'Sidebar',
+    aboutInteractSidebarBody: 'Jump to Session picks modules 1–15. New Chat starts fresh. Feedback and Evaluation are for your responses about the tool.',
+    aboutInteractSupportTitle: 'Support',
+    aboutInteractSupportBody: 'Crisis and helpline numbers — not part of the lesson.',
+    aboutInteractHistoryTitle: 'Chat History',
+    aboutInteractHistoryBody: 'Scroll up inside the phone frame, or tap Chat History, to re-read earlier messages.',
     feedbackLoading: 'Loading feedback…',
     feedbackLoadError: 'Could not load feedback.',
     feedbackOpenTitle: 'Open session feedback',
     feedbackDisabledTitle: 'Start or open a session first',
-    backToSessions: 'Back to Sessions',
+evalBtn: 'Evaluation',
+     evalTitle: 'Expert Evaluation',
+     evalBackToTrainer: 'Back to Trainer',
+     evalStart: 'Start Evaluation',
+     evalSectionsLabel: 'Sections',
+     evalExplanationOptional: 'Explanation (optional)',
+     evalStartDesc: 'Begin a new expert evaluation of the trainer. Your progress is saved automatically as a draft — you can leave and return anytime.',
+evalResumeDraft: 'Resume Draft',
+     evalResumeDesc: 'You have an unfinished evaluation in progress.',
+     evalHistory: 'History',
+     evalEditSubmission: 'Edit',
+     evalProgress: '{filled} / {total} filled',
+    evalSubmit: 'Submit Evaluation',
+    evalSave: 'Saved',
+    evalSaving: 'Saving…',
+    evalSubmitPartialTitle: 'Submit partially filled evaluation?',
+    evalSubmitPartialBody: '{count} field(s) are still unfilled. You can submit now and the missing fields will stay empty, or cancel to go back and fill them.',
+    evalSubmitConfirm: 'Submit anyway',
+    evalCancel: 'Cancel',
+    evalSubmitMissingHighlight: 'Jump to next unfilled field',
+    evalSubmitted: 'Evaluation submitted.',
+    evalViewSubmission: 'View',
+    evalStatusDraft: 'Draft',
+    evalStatusSubmitted: 'Submitted',
+    evalHistoryTitle: 'Past Evaluations',
+    evalNoHistory: 'No evaluations yet.',
+evalBackToForm: '← Back to form',
+     evalDraftConflict: 'You already have a draft in progress. Submit or discard it before editing another evaluation.',
+     evalExplanationPlaceholder: 'Explanation + suggested routes of improvement',
+    evalMissingCount: '{count} unfilled',
+    evalLockedReadonly: 'Read-only — this evaluation has been submitted.',
+    backToSessions: 'Back to Chats',
     cannotJumpSession: 'Cannot jump session',
     cannotSwitchLanguage: 'Cannot switch language during an active session',
-    noSessionsYet: 'No sessions yet.<br>Click <strong>+ New Session</strong> to start.',
-    couldNotLoadArchived: 'Could not load archived sessions.',
-    sessionsLabel: 'Sessions',
-    archivedSessionsLabel: 'Archived Sessions',
-    loadingArchived: 'Loading archived sessions...',
-    errRename: 'Could not rename session. Please try again.',
-    confirmArchive: 'Archive this session? It will be hidden from your list but kept in the backend.',
-    errArchive: 'Could not archive session. Please try again.',
-    errUnarchive: 'Could not unarchive session. Please try again.',
-    errReset: 'Could not reset the session view. Please try again.',
+    noSessionsYet: 'No chats yet.<br>Click <strong>+ New Chat</strong> to start.',
+    couldNotLoadArchived: 'Could not load archived chats.',
+    sessionsLabel: 'Chats',
+    archivedSessionsLabel: 'Archived Chats',
+    loadingArchived: 'Loading archived chats...',
+    errRename: 'Could not rename chat. Please try again.',
+    confirmArchive: 'Archive this chat? It will be hidden from your list but kept in the backend.',
+    errArchive: 'Could not archive chat. Please try again.',
+    errUnarchive: 'Could not unarchive chat. Please try again.',
+    errReset: 'Could not reset the chat view. Please try again.',
   },
   gu: {
     sessionPill: 'સત્ર {session}',
@@ -4335,23 +5728,92 @@ const I18N = {
     feedbackPlaceholder: 'તમારો પ્રતિસાદ લખો ...',
     feedbackSend: 'મોકલો',
     feedbackEmpty: 'આ સત્ર માટે હજી સુધી કોઈ પ્રતિસાદ નથી.',
+    aboutBtn: 'આ ટ્રેનર વિશે',
+    aboutTitle: 'આ ટ્રેનર વિશે',
+    aboutSec1Title: 'આ શું છે',
+    aboutSec1P1: 'તમે જે Atmiyata Champion સત્રો ઓળખો છો — વિષયો, પ્રવાહ, કૌશલ્યો — તે હવે <strong>AI તાલીમ કક્ષ</strong> દ્વારા આપવામાં આવે છે.',
+    aboutSec1P2: 'એક ભૌતિક કક્ષમાં ફેસિલિટેટર અને પૂરા જૂથની રાહ જોવાને બદલે, તમને કમ્પ્યુટર-જનિત <strong>ટ્રેનર</strong> મળે છે જે દરેક સત્ર ચલાવે છે, અને <strong>ચાર AI ભાગીદારો</strong> જે તમારા સમુદાયના લોકો જેવી વાત કરે છે.',
+    aboutSec1P3: 'પાઠની સામગ્રી એ જ કાર્યક્રમ છે. નવું એ છે કે સંવાદ <strong>લાઇવ બને છે</strong> — ટ્રેનર નક્કી કરે છે શું કહેવું, ક્યારે કોઈને બોલાવવું, અને તમે પ્રશ્ન પૂછો તો કેવી રીતે જવાબ આપવો.',
+    aboutSec1P4: 'આ <strong>વાસ્તવિક લોકો નથી</strong>. તમારા ફોન પર જૂથ ચર્ચા જેવું લાગે તે માટે બનાવેલા પાત્રો છે.',
+    aboutSec2Title: 'કેવી રીતે કામ કરે છે',
+    aboutTrainerPara: 'ટ્રેનર એ AI ફેસિલિટેટર છે. તે તૈયાર સત્ર યોજના અનુસાર Setup → Deepening → Validation દ્વારા કક્ષને માર્ગદર્શન આપે છે — શારીરિક તાલીમ જેવો જ પ્રવાહ. પ્રશ્નો પૂછે છે, જવાબો સાંભળે છે, જરૂર પડે ત્યારે ભાગીદારોને બોલાવે છે, અને વિષય સમજાઈ જાય ત્યારે આગળ વધે છે.',
+    aboutParticipantsLabel: 'ભાગીદારો — વધુ વાંચવા ટૅપ કરો',
+    aboutPersonaTrainerName: 'ટ્રેનર',
+    aboutPersonaTrainerRole: 'AI ફેસિલિટેટર',
+    aboutPersonaTrainerDesc: 'સત્રને પ્રશ્નો અને પ્રતિબિંબ દ્વારા માર્ગદર્શન આપે છે — એક તરફી શિક્ષણ નહીં. સક્રિય સાંભળણ, જૂથે શું કહ્યું તેનો સાર, અને આગળ વધતા પહેલા સમજણ ચકાસે છે. ગરમાગરમ, બિન-નિર્ણાયક, સરળ ભાષા.',
+    aboutPersonaRameshName: 'રમેશ',
+    aboutPersonaRameshRole: 'ખેડૂત · 39 · ગ્રામીણ ગુજરાત',
+    aboutPersonaRameshDesc: 'નરમ સ્વભાવનો અને વ્યવહારુ. ગ્રામીણ પુરુષનો દૃષ્ટિકોણ — કર્જ, હવામાન, પરિવારની ફરજ. ઘણી વાર તણાવ શાંતિથી સહન કરે છે. ગામની ભાષામાં બોલે છે; ક્યારેક અધૂરા અથવા હચકચાટવાળા જવાબ, જેમ વાસ્તવિક ભાગીદાર.',
+    aboutPersonaPriyaName: 'પ્રિયા',
+    aboutPersonaPriyaRole: 'શહેરી કામદાર · 29 · શહેરી ગુજરાત',
+    aboutPersonaPriyaDesc: 'શાંત પણ દબાણ હેઠળ. નોકરી, સાસરા અને ગામની જડો સંભાળે છે. કલંક, દેખાવ અને "બધું ઠીક છે" દેખાવાનો છુપો તણાવ લાવે છે. વ્યક્તિગત વિષય લાગે ત્યારે શાંત અથવા સાવચેત રહી શકે છે.',
+    aboutPersonaSimranName: 'સિમરણ',
+    aboutPersonaSimranRole: 'ASHA કાર્યકર · 23 · ફીલ્ડ-આધારિત ગુજરાત',
+    aboutPersonaSimranDesc: 'યુવાન, નિરીક્ષક, ઘણી વાર ફીલ્ડ કામ અને ઘરની ફરજથી થાકેલી. પરિવારના સંબંધો અને સમુદાય આરોગ્યના પેટર્ન જુએ છે. ફ્રન્ટલાઇન કાર્યકરની વાસ્તવિકતા લાવે છે — ઘરની બહારથી શું જોઈ અને શું ન જોઈ શકાય.',
+    aboutPersonaSejalName: 'સેજલ',
+    aboutPersonaSejalRole: 'BC Sakhi અને SHG સંકલન · 35 · અર્ધ-શહેરી ગુજરાત',
+    aboutPersonaSejalDesc: 'સમુદાયમાં વિશ્વસનીય. પૈસાની ચિંતા અને શરમ કેવી રીતે ભાવનાત્મક પીડા છુપાવે છે તે જુએ છે. શાંત અને વ્યવહારુ. ઘણી વાર બતાવે છે કે સારી સલાહ પાળવી મુશ્કેલ કેમ — પરિવારનો દબાણ, સંસાધનો, ગૌરવ.',
+    aboutSec3Title: 'કેવી રીતે વાપરવું',
+    aboutInteractTrainingTitle: 'તાલીમ ટૅબ',
+    aboutInteractTrainingBody: 'ટ્રેનર અને ભાગીદારો બોલે ત્યારે વાંચો. તૈયાર હોવ ત્યારે Continue દબાવો. પ્રશ્ન લખો અથવા માઇક વાપરો — ટ્રેનર જવાબ આપે પછી આગળ વધે. Pause ઑડિયો રોકે; Sound on/off અવાજ નિયંત્રિત કરે.',
+    aboutInteractRoleplayTitle: 'ભૂમિકાભિનય ટૅબ',
+    aboutInteractRoleplayBody: 'AI લાભાર્થી સાથે કાઉન્સેલિંગનો અભ્યાસ કરો. પહેલા જુઓ, અથવા Take Over કરીને પોતે જવાબ આપો.',
+    aboutInteractQuizTitle: 'ક્વિઝ ટૅબ',
+    aboutInteractQuizBody: 'સત્રના અંતે ટૂંકી જ્ઞાન ચકાસણી.',
+    aboutInteractSidebarTitle: 'સાઇડબાર',
+    aboutInteractSidebarBody: 'Jump to Session થી સત્ર 1–15 પસંદ કરો. New Chat નવી શરૂ કરે. Feedback અને Evaluation ટૂલ વિશે તમારા પ્રતિસાદ માટે.',
+    aboutInteractSupportTitle: 'સહાય',
+    aboutInteractSupportBody: 'આપાતકાલીન અને હેલ્પલાઇન નંબરો — પાઠનો ભાગ નથી.',
+    aboutInteractHistoryTitle: 'ચેટ ઇતિહાસ',
+    aboutInteractHistoryBody: 'ફોન ફ્રેમની અંદર ઉપર સ્ક્રોલ કરો, અથવા Chat History ટૅપ કરીને પહેલાના સંદેશો ફરી વાંચો.',
     feedbackLoading: 'પ્રતિસાદ લોડ થઈ રહ્યો છે…',
     feedbackLoadError: 'પ્રતિસાદ લોડ કરી શકાયો નથી.',
     feedbackOpenTitle: 'સત્ર પ્રતિસાદ ખોલો',
     feedbackDisabledTitle: 'પહેલા સત્ર શરૂ કરો અથવા ખોલો',
-    backToSessions: 'સત્રો પર પાછા જાઓ',
+    evalBtn: 'મૂલ્યાંકન',
+    evalTitle: 'નિષ્ણાત મૂલ્યાંકન',
+    evalBackToTrainer: '← ટ્રેનર પર પાછા જાઓ',
+    evalStart: 'મૂલ્યાંકન શરૂ કરો',
+    evalSectionsLabel: 'પિઠલાઓ',
+    evalExplanationOptional: 'પૂર્વકથન (વૈકલ્પિક)',
+    evalStartDesc: 'ટ્રેનરનું નવું નિષ્ણાત મૂલ્યાંકન શરૂ કરો. તમારી પ્રગતિ ડ્રાફ્ટ તરીકે આપમેળે સાચવાય છે — તમે જઈ શકો છો અને ગમે ત્યારે પાછા આવી શકો છો.',
+    evalResumeDraft: 'ડ્રાફ્ટ ચાલુ રાખો',
+    evalResumeDesc: 'તમારું એક મૂલ્યાંકન અધૂરું છે.',
+    evalHistory: 'ઇતિહાસ',
+    evalEditSubmission: 'સંપાદન',
+    evalProgress: '{filled} / {total} ભરેલા',
+    evalSubmit: 'મૂલ્યાંકન સબમિટ કરો',
+    evalSave: 'સાચવાયું',
+    evalSaving: 'સાચવી રહ્યા છીએ…',
+    evalSubmitPartialTitle: 'અધૂરું મૂલ્યાંકન સબમિટ કરવું?',
+    evalSubmitPartialBody: '{count} ક્ષેત્ર હજી ખાલી છે. તમે હવે સબમિટ કરી શકો છો અને ખાલી ક્ષેત્ર ખાલી રહેશે, અથવા રદ કરીને ભરવા પાછા જાઓ.',
+    evalSubmitConfirm: 'છતાં સબમિટ કરો',
+    evalCancel: 'રદ કરો',
+    evalSubmitMissingHighlight: 'આગળના ખાલી ક્ષેત્ર પર જાઓ',
+    evalSubmitted: 'મૂલ્યાંકન સબમિટ થયું.',
+    evalViewSubmission: 'જુઓ',
+    evalStatusDraft: 'ડ્રાફ્ટ',
+    evalStatusSubmitted: 'સબમિટ થયું',
+    evalHistoryTitle: 'પાછલા મૂલ્યાંકન',
+    evalNoHistory: 'હજુ સુધી કોઈ મૂલ્યાંકન નથી.',
+evalBackToForm: '← ફોર્મ પર પાછા',
+     evalDraftConflict: 'તમારી પાસે પહેલાથી જ એક ડ્રાફ્ટ ચાલુ છે. બીજા મૂલ્યાંકનને સંપાદિત કરતા પહેલા તેને સબમિટ કરો અથવા કાઢી નાખો.',
+     evalExplanationPlaceholder: 'સમજૂતી + સુધારણાના માર્ગો',
+    evalMissingCount: '{count} ખાલી',
+    evalLockedReadonly: 'ફક્ત વાચવા માટે — આ મૂલ્યાંકન સબમિટ થઈ ગયું છે.',
+    backToSessions: 'ચેટ પર પાછા જાઓ',
     cannotJumpSession: 'સત્ર બદલી શકાતું નથી',
     cannotSwitchLanguage: 'સક્રિય સત્ર દરમિયાન ભાષા બદલી શકાતી નથી',
-    noSessionsYet: 'હજી કોઈ સત્ર નથી.<br>શરૂ કરવા માટે <strong>+ નવું સત્ર</strong> પર ક્લિક કરો.',
-    couldNotLoadArchived: 'આર્કાઇવ કરેલા સત્રો લોડ કરી શકાયા નથી.',
-    sessionsLabel: 'સત્રો',
-    archivedSessionsLabel: 'આર્કાઇવ કરેલા સત્રો',
-    loadingArchived: 'આર્કાઇવ કરેલા સત્રો લોડ થઈ રહ્યા છે...',
-    errRename: 'સત્રનું નામ બદલી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
-    confirmArchive: 'આ સત્રને આર્કાઇવ કરવું છે? તે તમારી યાદીમાંથી છુપાવી દેવામાં આવશે પરંતુ બેકએન્ડમાં રાખવામાં આવશે.',
-    errArchive: 'સત્ર આર્કાઇવ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
-    errUnarchive: 'સત્ર અનઆર્કાઇવ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
-    errReset: 'સત્ર વ્યૂ રીસેટ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    noSessionsYet: 'હજી કોઈ ચેટ નથી.<br>શરૂ કરવા માટે <strong>+ નવી ચેટ</strong> પર ક્લિક કરો.',
+    couldNotLoadArchived: 'આર્કાઇવ કરેલી ચેટ લોડ કરી શકાયા નથી.',
+    sessionsLabel: 'ચેટ',
+    archivedSessionsLabel: 'આર્કાઇવ કરેલી ચેટ',
+    loadingArchived: 'આર્કાઇવ કરેલી ચેટ લોડ થઈ રહી છે...',
+    errRename: 'ચેટનું નામ બદલી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    confirmArchive: 'આ ચેટને આર્કાઇવ કરવી છે? તે તમારી યાદીમાંથી છુપાવી દેવામાં આવશે પરંતુ બેકએન્ડમાં રાખવામાં આવશે.',
+    errArchive: 'ચેટ આર્કાઇવ કરી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    errUnarchive: 'ચેટ અનઆર્કાઇવ કરી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
+    errReset: 'ચેટ વ્યૂ રીસેટ કરી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.',
   },
 };
 let appLocale = localStorage.getItem('app_locale') === 'gu' ? 'gu' : 'en';
@@ -4462,6 +5924,7 @@ async function applySessionLocaleAndNarrative({ locale, narrativeId } = {}) {
           : V2_TRAINING_PERSONAS);
     renderParticipantBar();
     renderSessionJumpChips();
+    updateSessionLockChrome();
     updateSessionLabel();
     updateTrainingActionButton();
   } catch (e) {
@@ -4471,9 +5934,7 @@ async function applySessionLocaleAndNarrative({ locale, narrativeId } = {}) {
 
 async function switchLocale(nextLocale) {
   if (!['en', 'gu'].includes(nextLocale) || nextLocale === appLocale) return;
-  // Block if a session has been started or has any history — only new unstarted sessions can switch
-  const sessionHasContent = trainingGraphStarted || chatHistory.length > 0;
-  if (sessionHasContent) return;
+  if (isLocaleLocked()) return;
   track('locale_switch', { from: appLocale, to: nextLocale });
   await applySessionLocaleAndNarrative({ locale: nextLocale });
   renderHomeSessionCard();
@@ -4567,8 +6028,10 @@ function applyLocaleToUI() {
   // Re-render the participant bar so the "+N more" chip text updates to the new locale.
   if (document.getElementById('participant-bar')?.children.length) renderParticipantBar();
   applyFeedbackLocale();
+  applyAboutLocale();
+  applyEvalLocale();
   if (document.querySelector('.module-chip')) {
-    setModuleChipDisabled(!canSwitchSessions());
+    updateSessionLockChrome();
   }
 }
 
@@ -4785,20 +6248,24 @@ let trainingNarrativeMeta = null;
  let activeTrainingSubSession = 'setup';
  let latestQuizSessionNumber = null;
  let lastQuizGenerationStatus = {};   // {sessionNumber: statusString} — updated by refreshTrainingState
- let lastSessionCompleted = {};       // {sessionNumber: bool} — from training state
+ let lastSessionCompleted = {};       // {sessionNumber: bool} — from training state (includes skipped pre-start sessions)
+ let lastQuizEligibleSessions = {};   // {sessionNumber: bool} — sessions actually played and quiz-ready
  let trainingGraphStarted = false;
  let trainingAwaitingInput = false;
 let trainingHasUserInterrupt = false;
 let trainingBackendStreamActive = false;
 let trainingRunState = 'IDLE';
-/** False until backend session snapshot is applied — keeps jump chips locked on refresh. */
+/** Set when /session/{id}/state + chatroom have been applied for the current view. */
 let sessionStateHydrated = false;
+let sessionResumeArtifacts = false;
 let appStarted = false;
 let currentScreen = 'home';
 
 /* ══════════════════════════════════════════════════
    SHARED HELPERS
 ══════════════════════════════════════════════════ */
+const TRAINING_UI_BUILD = '2026-06-30-preroll-resume-muted-v5';
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const TRAINING_MESSAGE_GAP_MS = 200;
 const DIRECT_TTS_MAX_URL_TEXT_CHARS = 0;  // Always use authenticated POST fetch; direct Audio.src GET lacks auth headers
@@ -5024,6 +6491,44 @@ function trainingSessionHasResumeContent() {
   );
 }
 
+/** True when EN/GU must stay fixed for the current workspace session. */
+function isLocaleLocked() {
+  return trainingGraphStarted || trainingSessionHasResumeContent();
+}
+
+/** True when curriculum module chips must look and behave disabled. */
+function isModuleJumpLocked() {
+  if (!sessionStateHydrated) return true;
+  return !canSwitchSessions();
+}
+
+function updateSessionLockChrome() {
+  const langLocked = isLocaleLocked();
+  const chipsLocked = isModuleJumpLocked();
+
+  const langSwitch = document.querySelector('.lang-switch');
+  if (langSwitch) langSwitch.classList.toggle('session-locked', langLocked);
+
+  const langTitle = langLocked ? t('cannotSwitchLanguage') : '';
+  const langEnBtn = document.getElementById('lang-en-btn');
+  const langGuBtn = document.getElementById('lang-gu-btn');
+  if (langEnBtn) {
+    langEnBtn.disabled = langLocked;
+    langEnBtn.title = langTitle;
+    langEnBtn.setAttribute('aria-disabled', langLocked ? 'true' : 'false');
+  }
+  if (langGuBtn) {
+    langGuBtn.disabled = langLocked;
+    langGuBtn.title = langTitle;
+    langGuBtn.setAttribute('aria-disabled', langLocked ? 'true' : 'false');
+  }
+
+  const jumpWrap = document.getElementById('module-jump-wrap');
+  if (jumpWrap) jumpWrap.classList.toggle('session-locked', chipsLocked);
+
+  setModuleChipDisabled(chipsLocked);
+}
+
 /** True when the user should resume (not start fresh) — graph running or history exists. */
 function trainingSessionShouldResume() {
   return trainingGraphStarted || trainingSessionHasResumeContent();
@@ -5063,7 +6568,10 @@ function resetTrainingInteractionState() {
   trainingAwaitingInput = false;
   trainingHasUserInterrupt = false;
   if (typeof flushTTSPlayback === 'function') {
-    flushTTSPlayback({ resolveWaiters: true });
+    flushTTSPlayback({ resolveWaiters: true, bumpEpoch: true });
+  }
+  if (typeof _clearTTSPrefetchCache === 'function') {
+    _clearTTSPrefetchCache();
   }
   updatePausePlayBtn();
 }
@@ -5089,19 +6597,18 @@ function renderSessionJumpChips() {
   }).join('');
   setActiveSessionChip(selectedTrainingSessionId);
   updateChromeForScreen();
-  setModuleChipDisabled(!canSwitchSessions());
 }
 
 function setModuleChipDisabled(disabled) {
   const lockTitle = t('cannotJumpSession');
   document.querySelectorAll('.module-chip').forEach((chip) => {
-    chip.disabled = Boolean(disabled);
-    if (disabled) {
+    const locked = Boolean(disabled);
+    chip.disabled = locked;
+    chip.classList.toggle('is-locked', locked);
+    if (locked) {
       chip.title = lockTitle;
-      chip.style.cursor = 'not-allowed';
     } else {
       chip.title = chip.dataset.origTitle || '';
-      chip.style.cursor = '';
     }
   });
 }
@@ -5112,7 +6619,7 @@ async function switchToTrainingSession(sessionId) {
   if (!trainingGraphStarted) {
     if (trainingSessionId) {
       sessionSwitchInFlight = true;
-      setModuleChipDisabled(true);
+      updateSessionLockChrome();
       try {
         const res = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${sessionNumber}`, {
           method: 'POST',
@@ -5121,18 +6628,18 @@ async function switchToTrainingSession(sessionId) {
       } catch (e) {
         console.error('Session switch error', e);
         sessionSwitchInFlight = false;
-        setModuleChipDisabled(!canSwitchSessions());
+        updateSessionLockChrome();
         return;
       }
       sessionSwitchInFlight = false;
     }
     resetTrainingViewForSession(sessionNumber);
-    setModuleChipDisabled(!canSwitchSessions());
+    updateSessionLockChrome();
     return;
   }
   if (!trainingSessionId) return;
   sessionSwitchInFlight = true;
-  setModuleChipDisabled(true);
+  updateSessionLockChrome();
   const continueBtn = document.getElementById('training-continue-btn');
   continueBtn.disabled = true;
   try {
@@ -5146,25 +6653,30 @@ async function switchToTrainingSession(sessionId) {
     continueBtn.disabled = false;
   } finally {
     sessionSwitchInFlight = false;
-    setModuleChipDisabled(!canSwitchSessions());
+    updateSessionLockChrome();
   }
 }
 
 /* ══════════════════════════════════════════════════
-   TTS AUDIO QUEUE
+   TTS AUDIO QUEUE + PREFETCH
    ─────────────────────────────────────────────────
    Design:
-   • One TTS request is enqueued per flashcard on message_end.
-   • Playback uses streaming endpoint `/tts/stream` per flashcard.
-   • Exactly one active request/playback at a time (no request flood).
-   • Playback remains strictly sequential for clean turn control.
-   • Context switches cancel in-flight audio and flush stale queue.
+   • SSE ingest buffers flashcards ahead of display (no backpressure on Next).
+   • TTS blobs prefetch in parallel while earlier cards are visible.
+   • Playback queue stays strictly sequential; skip stops current audio only.
+   • Context switches / mute clear prefetch cache and bump epoch.
  ══════════════════════════════════════════════════ */
 
 const TTS_TIMEOUT_MS   = 90000;   // max ms overall for playback to start+finish
 const TTS_STALL_MS     = 60000;   // safety net stall timer
 const TTS_WAIT_CAP_MS  = 120000;  // cap waitForTTSPlayback so SSE cannot hang forever
 const TTS_DEBUG_LOGS   = true;
+const TTS_PREFETCH_CONCURRENCY = 3;
+const TTS_PREFETCH_MAX_CACHE   = 36;
+// Pre-roll delay before audio plays on each flashcard, so the visual card-flip
+// registers before the first words. Prefetch makes audio available ~instantly,
+// which was clipping the opening words while the learner's eyes still settled.
+const TTS_PREROLL_MS   = 1500;
 
 let ttsQueue           = [];
 let ttsPlaying         = false;
@@ -5177,7 +6689,17 @@ let _activeAudioEl     = null;
 let _activePlaybackControl = null;
 let _activeTTSItem     = null;
 let _drainGeneration   = 0;
+let ttsFlushGeneration = 0;
 let isTTSMuted         = localStorage.getItem('tts_muted') === '1';
+// Tracks the text/voice of the card currently visible so we can start audio
+// immediately when the user unmutes while viewing a card that had no TTS queued.
+let _currentCardForUnmute = null;
+
+// In-memory prefetch: seq → { status, objectUrl, blob, abortController, item, ownsUrl }
+let ttsPrefetchCache   = new Map();
+let ttsPrefetchQueue   = [];
+let ttsPrefetchInflight = 0;
+let ttsPrefetchGeneration = 0;
 
 // ── audio unlock (browser autoplay policy) ──────────────────────────────────
 let _audioUnlocked = false;
@@ -5208,33 +6730,185 @@ function waitForAudioUnlock() {
   return new Promise(resolve => _audioUnlockWaiters.push(resolve));
 }
 
-// ── public enqueue API ───────────────────────────────────────────────────────
-function enqueueTTS(text, voice = 'roopa') {
-  return enqueueTTSForContext(text, voice, currentTTSContext);
+function _normalizeTTSText(text) {
+  const normalized = String(text || '').trim().replace(/\*\*/g, '').replace(/\s+/g, ' ');
+  if (!normalized) return '';
+  if (!/[A-Za-z0-9\u0900-\u097F\u0A80-\u0AFF]/.test(normalized)) return '';
+  return normalized;
 }
 
-function enqueueTTSForContext(text, voice = 'roopa', context = 'training', options = {}) {
-  if (!text || !text.trim()) return;
-  if (context !== currentTTSContext) return;
-  if (isTTSMuted) return;
-  const normalized = text.trim().replace(/\*\*/g, '').replace(/\s+/g, ' ');
-  // Skip punctuation/noise-only snippets that frequently fail upstream.
-  if (!/[A-Za-z0-9\u0900-\u097F\u0A80-\u0AFF]/.test(normalized)) return;
-  const item = {
+function _revokePrefetchEntry(entry) {
+  if (!entry) return;
+  try { entry.abortController?.abort(); } catch (_) {}
+  if (entry.ownsUrl && entry.objectUrl) {
+    try { URL.revokeObjectURL(entry.objectUrl); } catch (_) {}
+  }
+}
+
+function _clearTTSPrefetchCache() {
+  ttsPrefetchGeneration += 1;
+  for (const entry of ttsPrefetchCache.values()) {
+    _revokePrefetchEntry(entry);
+  }
+  ttsPrefetchCache.clear();
+  ttsPrefetchQueue = [];
+}
+
+function _trimTTSPrefetchCache() {
+  while (ttsPrefetchCache.size > TTS_PREFETCH_MAX_CACHE) {
+    const oldestSeq = ttsPrefetchCache.keys().next().value;
+    if (oldestSeq == null) break;
+    _revokePrefetchEntry(ttsPrefetchCache.get(oldestSeq));
+    ttsPrefetchCache.delete(oldestSeq);
+  }
+}
+
+async function _fetchTTSBlob(item, signal) {
+  const res = await apiFetch(`${API_BASE}/tts/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text: item.text,
+      voice: item.voice || null,
+      locale: localeConfig().ttsLocale,
+    }),
+    signal,
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`TTS HTTP ${res.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
+  }
+  const blob = await res.blob();
+  if (!blob.size) throw new Error('TTS returned empty audio');
+  return blob;
+}
+
+function _scheduleTTSPrefetch(item) {
+  if (!item || isTTSMuted) return;
+  if (item.context !== currentTTSContext) return;
+  if (ttsPrefetchCache.has(item.seq)) return;
+  if (ttsPrefetchQueue.some((queued) => queued.seq === item.seq)) return;
+  ttsPrefetchQueue.push(item);
+  _drainTTSPrefetchQueue();
+}
+
+async function _drainTTSPrefetchQueue() {
+  while (ttsPrefetchInflight < TTS_PREFETCH_CONCURRENCY && ttsPrefetchQueue.length > 0) {
+    const item = ttsPrefetchQueue.shift();
+    if (!item) continue;
+    if (item.context !== currentTTSContext || item.epoch !== ttsContextEpoch) continue;
+    if (ttsPrefetchCache.has(item.seq)) continue;
+
+    const prefetchGen = ttsPrefetchGeneration;
+    const abortController = new AbortController();
+    ttsPrefetchCache.set(item.seq, {
+      status: 'pending',
+      abortController,
+      item,
+      ownsUrl: false,
+    });
+    ttsPrefetchInflight += 1;
+
+    _fetchTTSBlob(item, abortController.signal)
+      .then((blob) => {
+        if (
+          prefetchGen !== ttsPrefetchGeneration
+          || item.epoch !== ttsContextEpoch
+          || item.context !== currentTTSContext
+        ) {
+          return;
+        }
+        const objectUrl = URL.createObjectURL(blob);
+        ttsPrefetchCache.set(item.seq, {
+          status: 'ready',
+          blob,
+          objectUrl,
+          item,
+          ownsUrl: true,
+        });
+        _trimTTSPrefetchCache();
+        if (TTS_DEBUG_LOGS) {
+          console.info(`[TTS] prefetch ready seq=${item.seq} bytes=${blob.size}`);
+        }
+      })
+      .catch((err) => {
+        if (err?.name === 'AbortError') return;
+        if (prefetchGen !== ttsPrefetchGeneration) return;
+        ttsPrefetchCache.set(item.seq, { status: 'error', item, ownsUrl: false });
+        if (TTS_DEBUG_LOGS) console.warn(`[TTS] prefetch failed seq=${item.seq}:`, err?.message || err);
+      })
+      .finally(() => {
+        ttsPrefetchInflight = Math.max(0, ttsPrefetchInflight - 1);
+        _drainTTSPrefetchQueue();
+      });
+  }
+}
+
+function _waitForPrefetchEntry(item, timeoutMs = 90000) {
+  const startedAt = performance.now();
+  return new Promise((resolve, reject) => {
+    const poll = () => {
+      if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) {
+        reject(new Error('stale'));
+        return;
+      }
+      const entry = ttsPrefetchCache.get(item.seq);
+      if (entry?.status === 'ready' && entry.objectUrl) {
+        resolve(entry);
+        return;
+      }
+      if (entry?.status === 'error') {
+        reject(new Error('prefetch failed'));
+        return;
+      }
+      if (!entry && performance.now() - startedAt > timeoutMs) {
+        reject(new Error('prefetch timeout'));
+        return;
+      }
+      setTimeout(poll, 40);
+    };
+    poll();
+  });
+}
+
+function _createTTSItem(text, voice = 'roopa', context = 'training', options = {}) {
+  if (context !== currentTTSContext) return null;
+  if (isTTSMuted) return null;
+  const normalized = _normalizeTTSText(text);
+  if (!normalized) return null;
+  return {
     text: normalized,
     voice,
     context,
-    epoch: ttsContextEpoch,
+    epoch: options.epoch ?? ttsContextEpoch,
     seq: ++ttsSeqCounter,
     enqueuedAt: performance.now(),
     allowWhilePaused: Boolean(options.allowWhilePaused),
   };
+}
+
+function enqueueTTSItem(item) {
+  if (!item) return 0;
+  if (item.context !== currentTTSContext) return 0;
+  if (ttsQueue.some((queued) => queued.seq === item.seq)) return item.seq;
   if (TTS_DEBUG_LOGS) {
     console.info(`[TTS] enqueue seq=${item.seq} ctx=${item.context} voice=${item.voice} qlen=${ttsQueue.length + 1} text="${item.text.slice(0, 80)}"`);
   }
   ttsQueue.push(item);
   if (!ttsPlaying) _drainTTSQueue();
   return item.seq;
+}
+
+// ── public enqueue API ───────────────────────────────────────────────────────
+function enqueueTTS(text, voice = 'roopa') {
+  return enqueueTTSForContext(text, voice, currentTTSContext);
+}
+
+function enqueueTTSForContext(text, voice = 'roopa', context = 'training', options = {}) {
+  const item = _createTTSItem(text, voice, context, options);
+  if (!item) return;
+  _scheduleTTSPrefetch(item);
+  return enqueueTTSItem(item);
 }
 
 function waitForTTSPlayback(seq, context, epoch) {
@@ -5282,7 +6956,7 @@ function _notifyTTSWaiters() {
   ttsWaiters = pending;
 }
 
-function flushTTSPlayback({ resolveWaiters = false } = {}) {
+function flushTTSPlayback({ resolveWaiters = false, bumpEpoch = false } = {}) {
   const maxQueuedSeq = ttsQueue.reduce((max, item) => Math.max(max, item.seq || 0), 0);
   const activeSeq = _activeTTSItem?.seq || 0;
   if (_activePlaybackControl) {
@@ -5296,9 +6970,14 @@ function flushTTSPlayback({ resolveWaiters = false } = {}) {
   ttsQueue = [];
   ttsPlaying = false;
   _drainGeneration++;   // invalidate any in-flight drain loop
+  ttsFlushGeneration++;
   _activeTTSItem = null;
-  if (resolveWaiters) {
+  if (bumpEpoch) {
     ttsContextEpoch += 1;
+    _clearTTSPrefetchCache();
+    _currentCardForUnmute = null;  // epoch change invalidates current card reference
+    _notifyTTSWaiters();
+  } else if (resolveWaiters) {
     const maxSeq = Math.max(maxQueuedSeq, activeSeq);
     if (maxSeq > ttsPlayedSeq) ttsPlayedSeq = maxSeq;
     _notifyTTSWaiters();
@@ -5334,9 +7013,18 @@ function toggleTTSMute() {
   isTTSMuted = !isTTSMuted;
   localStorage.setItem('tts_muted', isTTSMuted ? '1' : '0');
   if (isTTSMuted) {
-    flushTTSPlayback({ resolveWaiters: true });
+    flushTTSPlayback({ resolveWaiters: true, bumpEpoch: true });
   } else {
-    if (ttsQueue.length > 0 && !ttsPlaying) {
+    // Re-enqueue audio for the card currently on screen if nothing is queued yet.
+    // In muted mode TTS items were never created, so the queue is empty on unmute.
+    if (_currentCardForUnmute && ttsQueue.length === 0 && !ttsPlaying) {
+      const item = _createTTSItem(_currentCardForUnmute.text, _currentCardForUnmute.voice, 'training', {});
+      if (item) {
+        _scheduleTTSPrefetch(item);
+        enqueueTTSItem(item);
+        if (TTS_DEBUG_LOGS) console.info(`[TTS] unmute: re-enqueued current card seq=${item.seq}`);
+      }
+    } else if (ttsQueue.length > 0 && !ttsPlaying) {
       _drainTTSQueue();
     }
   }
@@ -5392,6 +7080,8 @@ function setTTSContext(context) {
   ttsContextEpoch += 1;
   if (TTS_DEBUG_LOGS) console.info(`[TTS] context-switch -> ${context} epoch=${ttsContextEpoch}`);
   ttsQueue = [];
+  _clearTTSPrefetchCache();
+  _currentCardForUnmute = null;
   if (_activePlaybackControl) {
     try { _activePlaybackControl.cancel(); } catch (_) {}
     _activePlaybackControl = null;
@@ -5401,16 +7091,20 @@ function setTTSContext(context) {
     _activeAudioEl = null;
   }
   _activeTTSItem = null;
+  ttsFlushGeneration++;
   _notifyTTSWaiters();
 }
 
 async function _playTTS(item) {
   await waitForAudioUnlock();
   if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) return;
+  const myFlushGen = ttsFlushGeneration;
   const startedAt = performance.now();
   const waitMs = Math.round(startedAt - item.enqueuedAt);
   let objectUrl = null;
   let audioSrc = null;
+  let cacheEntry = null;
+  let ownsPlaybackUrl = false;
   try {
     if (item.text.length <= DIRECT_TTS_MAX_URL_TEXT_CHARS && item.text.length < TTS_POST_MIN_TEXT_CHARS) {
       const params = new URLSearchParams();
@@ -5420,32 +7114,54 @@ async function _playTTS(item) {
       audioSrc = `${API_BASE}/tts/stream?${params.toString()}`;
     } else {
       const fetchStartedAt = performance.now();
-      const res = await apiFetch(`${API_BASE}/tts/stream`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: item.text,
-          voice: item.voice || null,
-          locale: localeConfig().ttsLocale,
-        }),
-      });
-      if (!res.ok) {
-        const detail = await res.text().catch(() => '');
-        throw new Error(`TTS HTTP ${res.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
+      const cached = ttsPrefetchCache.get(item.seq);
+      if (cached?.status === 'ready' && cached.objectUrl) {
+        cacheEntry = cached;
+        audioSrc = cached.objectUrl;
+        if (TTS_DEBUG_LOGS) {
+          console.info(`[TTS] cache hit seq=${item.seq} waited=${waitMs}ms`);
+        }
+      } else if (cached?.status === 'pending') {
+        cacheEntry = await _waitForPrefetchEntry(item);
+        if (myFlushGen !== ttsFlushGeneration) return;
+        audioSrc = cacheEntry.objectUrl;
+        if (TTS_DEBUG_LOGS) {
+          console.info(`[TTS] cache wait seq=${item.seq} waited=${Math.round(performance.now() - fetchStartedAt)}ms`);
+        }
+      } else {
+        const res = await apiFetch(`${API_BASE}/tts/stream`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: item.text,
+            voice: item.voice || null,
+            locale: localeConfig().ttsLocale,
+          }),
+        });
+        if (!res.ok) {
+          const detail = await res.text().catch(() => '');
+          throw new Error(`TTS HTTP ${res.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
+        }
+        const blob = await res.blob();
+        if (!blob.size) throw new Error('TTS returned empty audio');
+        objectUrl = URL.createObjectURL(blob);
+        audioSrc = objectUrl;
+        ownsPlaybackUrl = true;
+        if (TTS_DEBUG_LOGS) {
+          console.info(`[TTS] fetched blob seq=${item.seq} fetchMs=${Math.round(performance.now() - fetchStartedAt)} bytes=${blob.size}`);
+        }
       }
-      const blob = await res.blob();
-      if (!blob.size) throw new Error('TTS returned empty audio');
-      objectUrl = URL.createObjectURL(blob);
-      audioSrc = objectUrl;
-      // Re-check epoch after the async POST fetch — it may have changed while awaiting.
-      // Without this, a stale audio blob would start playing after a flush/Next click.
-      if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) {
-        try { URL.revokeObjectURL(objectUrl); } catch (_) {}
-        objectUrl = null;
+      if (myFlushGen !== ttsFlushGeneration) {
+        if (ownsPlaybackUrl && objectUrl) {
+          try { URL.revokeObjectURL(objectUrl); } catch (_) {}
+        }
         return;
       }
-      if (TTS_DEBUG_LOGS) {
-        console.info(`[TTS] fetched blob seq=${item.seq} fetchMs=${Math.round(performance.now() - fetchStartedAt)} bytes=${blob.size}`);
+      if (item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) {
+        if (ownsPlaybackUrl && objectUrl) {
+          try { URL.revokeObjectURL(objectUrl); } catch (_) {}
+        }
+        return;
       }
     }
   } catch (e) {
@@ -5453,7 +7169,8 @@ async function _playTTS(item) {
     throw e;
   }
   if (TTS_DEBUG_LOGS) {
-    console.info(`[TTS] start seq=${item.seq} waited=${waitMs}ms via ${objectUrl ? 'POST blob' : 'direct stream'}`);
+    const via = cacheEntry ? 'prefetch cache' : (ownsPlaybackUrl ? 'POST blob' : 'direct stream');
+    console.info(`[TTS] start seq=${item.seq} waited=${waitMs}ms via ${via}`);
   }
 
   return new Promise((resolve) => {
@@ -5560,9 +7277,13 @@ async function _playTTS(item) {
       }
       if (_activeAudioEl === a) _activeAudioEl = null;
       try { a.pause(); a.removeAttribute('src'); a.load(); } catch (_) {}
-      if (objectUrl) {
+      if (ownsPlaybackUrl && objectUrl) {
         try { URL.revokeObjectURL(objectUrl); } catch (_) {}
         objectUrl = null;
+      }
+      if (cacheEntry?.ownsUrl && cacheEntry.objectUrl) {
+        _revokePrefetchEntry(cacheEntry);
+        ttsPrefetchCache.delete(item.seq);
       }
     };
 
@@ -5596,10 +7317,24 @@ async function _playTTS(item) {
       finish(); done();
     });
 
-    a.play().catch((err) => {
-      console.warn('Audio play() rejected:', err?.message);
+    if (myFlushGen !== ttsFlushGeneration) {
       finish(); done();
-    });
+      return;
+    }
+
+    // Pre-roll: let the flashcard visual register before audio starts.
+    // Abort early if a flush / context switch lands during the window.
+    setTimeout(() => {
+      if (finished) return;
+      if (myFlushGen !== ttsFlushGeneration || item.epoch !== ttsContextEpoch || item.context !== currentTTSContext) {
+        finish(); done();
+        return;
+      }
+      a.play().catch((err) => {
+        console.warn('Audio play() rejected:', err?.message);
+        finish(); done();
+      });
+    }, TTS_PREROLL_MS);
   });
 }
 
@@ -5822,6 +7557,12 @@ function updateFeedbackChrome() {
       : t('feedbackDisabledTitle');
   }
 
+  // Eval button is user-level — visible whenever authed + app started (not home-only).
+  const evalBtn = document.getElementById('sidebar-eval-btn');
+  if (evalBtn) {
+    evalBtn.style.display = (authed && appStarted) ? 'flex' : 'none';
+  }
+
   if (!authed || onHome) {
     closeFeedbackPanel();
   }
@@ -5829,6 +7570,7 @@ function updateFeedbackChrome() {
 
 function openFeedbackPanel() {
   if (!trainingSessionId) return;
+  closeAboutPanel();
   _feedbackPanelOpen = true;
   document.body.classList.add('feedback-panel-open');
   const btn = document.getElementById('sidebar-feedback-btn');
@@ -6130,22 +7872,8 @@ function updateChromeForScreen() {
   showPauseWrap(isOnTraining);
   showMuteWrap(isOnTraining);
 
-  // Disable language switch once a session has started or has history; only new empty sessions can switch
-  const langEnBtn = document.getElementById('lang-en-btn');
-  const langGuBtn = document.getElementById('lang-gu-btn');
-  const langLocked = trainingGraphStarted || chatHistory.length > 0;
-  if (langEnBtn) {
-    langEnBtn.disabled = langLocked;
-    langEnBtn.title = langLocked ? t('cannotSwitchLanguage') : '';
-    langEnBtn.style.opacity = langLocked ? '0.45' : '';
-    langEnBtn.style.cursor = langLocked ? 'not-allowed' : '';
-  }
-  if (langGuBtn) {
-    langGuBtn.disabled = langLocked;
-    langGuBtn.title = langLocked ? t('cannotSwitchLanguage') : '';
-    langGuBtn.style.opacity = langLocked ? '0.45' : '';
-    langGuBtn.style.cursor = langLocked ? 'not-allowed' : '';
-  }
+  // Session lock chrome (module jump + EN/GU) — always sync after screen/chrome changes.
+  updateSessionLockChrome();
   updateFeedbackChrome();
 }
 
@@ -6196,6 +7924,11 @@ function updateTrainingActionButton() {
   updateBkgGenBar();
   const btn = document.getElementById('training-continue-btn');
   if (!btn) return;
+  if (!sessionStateHydrated) {
+    btn.textContent = t('trainingContinue');
+    btn.disabled = true;
+    return;
+  }
   const waitingAtInterrupt = trainingAwaitingInput || trainingHasUserInterrupt;
   const interactionBusy = trainingActionInFlight || isPaused
     || (!waitingAtInterrupt && (isStreaming || ttsPlaying));
@@ -6249,6 +7982,11 @@ function resetTrainingViewForSession(sessionNumber) {
   trainingComplete = false;
   trainingRunState = 'IDLE';
   sessionStateHydrated = true;
+  // Fresh draft view has no resume artifacts. Without this, a stale true value
+  // from a previously-viewed session caused advanceTrainingImpl to skip
+  // POST /start-session/{n} and fall back to /advance, which initializes a
+  // fresh backend session with start_session_id=1 → session pill snaps to 1.
+  sessionResumeArtifacts = false;
   latestQuizSessionNumber = null;
   quizSessionId = null;
   quizLoaded = false;
@@ -6264,7 +8002,7 @@ function resetTrainingViewForSession(sessionNumber) {
   renderChatHistory();
   setFlashcardIdlePlaceholder(selectedTrainingSessionId);
   setActiveSessionChip(selectedTrainingSessionId);
-  setModuleChipDisabled(!canSwitchSessions());
+  updateSessionLockChrome();
   updateSessionLabel();
   renderHomeSessionCard();
   updateTrainingActionButton();
@@ -6476,7 +8214,7 @@ function applyTrainingStateSnapshot(data) {
   if (typeof data.active_sub_session === 'string' && data.active_sub_session.trim()) {
     activeTrainingSubSession = data.active_sub_session.trim();
   }
-  const completedSessions = Object.entries(data.session_completed || {})
+  const completedSessions = Object.entries(data.quiz_eligible_sessions || data.session_completed || {})
     .filter(([, done]) => Boolean(done))
     .map(([id]) => Number(id))
     .filter(Number.isInteger);
@@ -6487,6 +8225,19 @@ function applyTrainingStateSnapshot(data) {
   if (data.session_completed != null) {
     for (const [k, v] of Object.entries(data.session_completed)) {
       lastSessionCompleted[Number(k)] = Boolean(v);
+    }
+  }
+  if (data.quiz_eligible_sessions != null) {
+    for (const [k, v] of Object.entries(data.quiz_eligible_sessions)) {
+      lastQuizEligibleSessions[Number(k)] = Boolean(v);
+    }
+  } else if (data.session_completed != null) {
+    // Back-compat: treat only post-start completions as quiz-eligible when field is absent.
+    for (const [k, v] of Object.entries(data.session_completed)) {
+      const num = Number(k);
+      if (!Number.isInteger(num)) continue;
+      const start = Number.isInteger(activeTrainingSessionId) ? activeTrainingSessionId : 1;
+      lastQuizEligibleSessions[num] = Boolean(v) && num >= start;
     }
   }
   if (data.quiz_generation_status != null) {
@@ -6507,6 +8258,7 @@ function applyTrainingStateSnapshot(data) {
     }
   }
   updateBkgGenBar();
+  updateSessionLockChrome();
 }
 
 async function refreshTrainingState() {
@@ -6519,7 +8271,6 @@ async function refreshTrainingState() {
     setActiveSessionChip(selectedTrainingSessionId);
     updateSessionLabel();
     renderHomeSessionCard();
-    setModuleChipDisabled(!canSwitchSessions());
     updateTrainingActionButton();
     if (currentScreen === 'quiz' && quizPanelMode === 'picker') {
       _kickQuizGenerationForCompleted()
@@ -6563,7 +8314,7 @@ async function waitForTrainingBackendIdle(timeoutMs = TRAINING_BACKEND_IDLE_WAIT
       setActiveSessionChip(selectedTrainingSessionId);
       updateSessionLabel();
       renderHomeSessionCard();
-      setModuleChipDisabled(!canSwitchSessions());
+      updateSessionLockChrome();
       updateTrainingActionButton();
       if (!trainingBackendStreamActive) {
         clearTrainingBackendIdleWatch();
@@ -6592,115 +8343,342 @@ function renderChatHistory() {
 }
 
 // Shared SSE consumer that renders into the training flashcard.
-// TTS is enqueued once per flashcard when message_end arrives.
+// SSE ingest runs ahead of display; TTS prefetches while earlier cards are visible.
+function _createTrainingStreamBuffer() {
+  const items = [];
+  let closed = false;
+  let error = null;
+  const waiters = [];
+  const notify = () => {
+    while (waiters.length > 0 && (items.length > 0 || closed)) {
+      const resolve = waiters.shift();
+      if (resolve) resolve();
+    }
+  };
+  return {
+    push(item) {
+      items.push(item);
+      notify();
+    },
+    close(err) {
+      closed = true;
+      error = err || null;
+      notify();
+    },
+    async take() {
+      while (items.length === 0 && !closed) {
+        await new Promise((resolve) => waiters.push(resolve));
+      }
+      if (items.length === 0) return null;
+      return items.shift();
+    },
+    get error() { return error; },
+  };
+}
+
+function _flashcardMetaFromStart(ev) {
+  const isUserFlashcard = ev.flashcard_kind === 'user' || ev.role === 'learner';
+  const isIntroFlashcard = isIntroFlashcardMessage(ev.role, ev.speaker);
+  const skipTTSForMessage = isIntroFlashcard || isUserFlashcard || Boolean(ev.no_tts);
+  const skipManualGateForMessage = isIntroFlashcard;
+  const spk = isIntroFlashcard
+    ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'speaker-other' }
+    : speakerForRole(ev.role, ev.speaker, ev.flashcard_kind);
+  return {
+    isUserFlashcard,
+    isIntroFlashcard,
+    skipTTSForMessage,
+    skipManualGateForMessage,
+    spk,
+    voice: ev.voice || 'meera',
+  };
+}
+
+function _prepareBufferedFlashcardTTS(flashcard, streamEpoch, allowWhilePaused) {
+  const meta = _flashcardMetaFromStart(flashcard.start);
+  Object.assign(flashcard, meta);
+  flashcard.finalText = String(flashcard.text || '').trim();
+  flashcard.ttsItem = null;
+  if (!flashcard.skipTTSForMessage && flashcard.finalText) {
+    const item = _createTTSItem(flashcard.finalText, flashcard.voice, 'training', {
+      allowWhilePaused,
+      epoch: streamEpoch,
+    });
+    if (item) {
+      flashcard.ttsItem = item;
+      _scheduleTTSPrefetch(item);
+    }
+  }
+}
+
+async function _ingestTrainingStreamEvents(sseIter, buffer, streamSessionId, ingestOptions = {}) {
+  const streamEpoch = ingestOptions.streamEpoch ?? ttsContextEpoch;
+  const allowWhilePaused = Boolean(ingestOptions.allowWhilePaused);
+  let current = null;
+  try {
+    for await (const ev of sseIter) {
+      if (trainingSessionId !== streamSessionId) {
+        buffer.close();
+        return;
+      }
+      switch (ev.type) {
+        case 'message_start':
+          current = { kind: 'flashcard', start: ev, text: '' };
+          break;
+        case 'token':
+          if (current) current.text += ev.text || '';
+          break;
+        case 'message_end':
+          if (current) {
+            current.end = ev;
+            _prepareBufferedFlashcardTTS(current, streamEpoch, allowWhilePaused);
+            buffer.push(current);
+            current = null;
+          }
+          break;
+        default:
+          buffer.push({ kind: ev.type, ev });
+          if (ev.type === 'exchange_end' || ev.type === 'done') {
+            buffer.close();
+            return;
+          }
+          break;
+      }
+    }
+  } catch (err) {
+    buffer.close(err);
+    throw err;
+  } finally {
+    buffer.close();
+  }
+}
+
+const FLASHCARD_STREAM_PROFILES = {
+  // Muted only — progressive 3–4 word reveal while reading.
+  // Timings ÷ 2.5 (2026-06-30): faster reveal so muted reading keeps pace.
+  muted: {
+    wordsPerChunk: 4,
+    chunkDelayMs: 10,
+    fadeMs: 16,
+    dotsMs: 24,
+  },
+};
+
+function _planFlashcardStream(text, profile) {
+  const wordsPerChunk = profile.wordsPerChunk;
+  const chunks = _splitIntoWordChunks(text, wordsPerChunk);
+  return { chunks, delayMs: profile.chunkDelayMs };
+}
+
+function _splitIntoWordChunks(text, wordsPerChunk) {
+  const words = String(text || '').match(/\S+\s*/g) || [];
+  if (!words.length) return String(text || '').trim() ? [String(text).trim()] : [];
+  const chunks = [];
+  for (let i = 0; i < words.length; i += wordsPerChunk) {
+    chunks.push(words.slice(i, i + wordsPerChunk).join(''));
+  }
+  return chunks;
+}
+
+function _streamChunkPauseMs(chunk, baseDelayMs) {
+  if (!chunk) return baseDelayMs;
+  if (/[.!?।…:]["')\]]*\s*$/.test(chunk)) return baseDelayMs + 48;
+  return baseDelayMs;
+}
+
+function _revealStreamChunk(span, fadeMs = 240) {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        span.classList.add('is-visible');
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          span.removeEventListener('transitionend', onEnd);
+          resolve();
+        };
+        const onEnd = (ev) => {
+          if (ev.target !== span) return;
+          finish();
+        };
+        span.addEventListener('transitionend', onEnd);
+        setTimeout(finish, fadeMs + 80);
+      });
+    });
+  });
+}
+
+async function _animateBufferedFlashcardText(textEl, card, text, skipInstantReveal) {
+  const cleaned = String(text || '');
+  textEl.classList.remove('flashcard-streaming', 'flashcard-streaming--muted');
+
+  if (!cleaned || skipInstantReveal) {
+    textEl.textContent = cleaned;
+    checkFlashcardOverflow(card);
+    return;
+  }
+
+  // Audio on: show the full card immediately so users can read while listening.
+  if (!isTTSMuted) {
+    textEl.textContent = cleaned;
+    checkFlashcardOverflow(card);
+    return;
+  }
+
+  const profile = FLASHCARD_STREAM_PROFILES.muted;
+  const { chunks, delayMs } = _planFlashcardStream(cleaned, profile);
+
+  textEl.classList.add('flashcard-streaming', 'flashcard-streaming--muted');
+  if (chunks.length > 1) {
+    textEl.innerHTML = makeDots();
+    if (profile.dotsMs > 0) await sleep(profile.dotsMs);
+  }
+  textEl.textContent = '';
+
+  for (let i = 0; i < chunks.length; i++) {
+    while (isPaused) await sleep(150);
+
+    const span = document.createElement('span');
+    span.className = 'stream-chunk';
+    span.textContent = chunks[i];
+    textEl.appendChild(span);
+    await _revealStreamChunk(span, profile.fadeMs);
+    checkFlashcardOverflow(card);
+
+    if (i < chunks.length - 1) {
+      await sleep(_streamChunkPauseMs(chunks[i], delayMs));
+    }
+  }
+
+  await sleep(Math.round(profile.fadeMs * 0.45));
+  textEl.classList.remove('flashcard-streaming', 'flashcard-streaming--muted');
+}
+
+async function _presentBufferedFlashcard(flashcard, ctx) {
+  const { card, badge, textEl, allowWhilePaused, streamSessionId } = ctx;
+  if (trainingSessionId !== streamSessionId) return false;
+
+  track('sse_message_start', {
+    speaker: flashcard.start?.speaker || null,
+    role: flashcard.start?.role || null,
+    session: flashcard.start?.session ?? null,
+    sub_session: flashcard.start?.sub_session || null,
+  });
+
+  while (isPaused && !allowWhilePaused) { await sleep(150); }
+  if (ctx.completedMessageCount > 0) {
+    await sleep(TRAINING_MESSAGE_GAP_MS);
+  }
+
+  const ev = flashcard.start;
+  if (Number.isInteger(ev.session) && ev.session >= 1) {
+    activeTrainingSessionId = ev.session;
+    selectedTrainingSessionId = ev.session;
+    setActiveSessionChip(selectedTrainingSessionId);
+  }
+  if (typeof ev.sub_session === 'string' && ev.sub_session.trim()) {
+    activeTrainingSubSession = ev.sub_session.trim();
+  }
+  updateSessionLabel();
+
+  card.style.transition = 'opacity 0.28s, transform 0.28s';
+  card.style.opacity    = '0';
+  card.style.transform  = 'scale(0.97)';
+  _currentCardForUnmute = null;   // clear stale data while card is flipping out
+  await sleep(280);
+  card.className        = 'flashcard ' + flashcard.spk.cardClass;
+  badge.textContent     = flashcard.spk.badge;
+  textEl.textContent    = '';
+  if (flashcard.isIntroFlashcard) setSpeakingChipForSpeaker('', '');
+  else setSpeakingChipForSpeaker(ev.speaker || flashcard.spk.name, ev.role || '');
+  card.style.opacity    = '1';
+  card.style.transform  = 'scale(1)';
+  // Expose current card for unmute re-enqueue (only for TTS-eligible cards).
+  if (!flashcard.skipTTSForMessage && flashcard.finalText) {
+    _currentCardForUnmute = { text: flashcard.finalText, voice: flashcard.voice || 'meera' };
+  }
+
+  if (!flashcard.spk) {
+    _prepareBufferedFlashcardTTS(flashcard, ctx.streamEpoch, allowWhilePaused);
+  }
+  if (flashcard.ttsItem) {
+    _scheduleTTSPrefetch(flashcard.ttsItem);
+    const seq = enqueueTTSItem(flashcard.ttsItem);
+    if (seq) {
+      ctx.lastTTSSeq = seq;
+      ctx.messageLastTTSSeq = seq;
+    }
+  }
+
+  await _animateBufferedFlashcardText(
+    textEl,
+    card,
+    flashcard.finalText,
+    flashcard.isIntroFlashcard,
+  );
+
+  track('sse_message_end', { speaker: flashcard.spk?.name || null, role: ev.role || null });
+
+  const finalText = flashcard.finalText;
+  if (flashcard.spk) {
+    const alreadyEchoedUser = flashcard.spk.name === 'USER' && consumeEchoedUserText(finalText);
+    if (!alreadyEchoedUser) {
+      chatHistory.push({ name: flashcard.spk.name, bubbleClass: flashcard.spk.bubbleClass, text: finalText });
+      renderChatHistory();
+    }
+    ctx.completedMessageCount += 1;
+  }
+
+  if (!flashcard.skipManualGateForMessage) {
+    await waitForManualFlashcardAdvance();
+    flushTTSPlayback({ resolveWaiters: true });
+  }
+  return true;
+}
+
 async function consumeTrainingStream(sseIter, options = {}) {
   const card   = document.getElementById('flashcard');
   const badge  = document.getElementById('flashcard-speaker-badge');
   const textEl = document.getElementById('flashcard-text');
   const allowWhilePaused = Boolean(options.allowWhilePaused);
-  let spk = null, text = '', voice = 'roopa';
-  let skipTTSForMessage = false;
-  // Separate flag: only intro flashcards skip the manual gate; user/learner cards
-  // should still pause and wait for a click-to-next tap after each card.
-  let skipManualGateForMessage = false;
-  let lastTTSSeq = 0;
-  let messageLastTTSSeq = 0;
-  let completedMessageCount = 0;
   const streamEpoch = ttsContextEpoch;
-  // Capture the session at stream start — bail out if session changes mid-stream
-  // (prevents stale stream events from bleeding into a newly switched session).
   const streamSessionId = trainingSessionId;
+  const buffer = _createTrainingStreamBuffer();
+  const presentCtx = {
+    card,
+    badge,
+    textEl,
+    allowWhilePaused,
+    streamSessionId,
+    streamEpoch,
+    completedMessageCount: 0,
+    lastTTSSeq: 0,
+    messageLastTTSSeq: 0,
+  };
 
-  for await (const ev of sseIter) {
-    switch (ev.type) {
-      case 'message_start': {
-        // Guard: if the session changed since this stream started, stop processing.
-        if (trainingSessionId !== streamSessionId) {
-          return { event: null, lastTTSSeq, epoch: streamEpoch };
-        }
-        track('sse_message_start', {
-          speaker: ev.speaker || null,
-          role: ev.role || null,
-          session: ev.session ?? null,
-          sub_session: ev.sub_session || null,
-        });
-        // Wait here before showing a new speaker card. This is the pause gate —
-        // it keeps the current card visible and prevents any new TTS from starting
-        // while the user has paused. When the user resumes, the gate opens and we
-        // animate normally into the next message.
-        while (isPaused && !allowWhilePaused) { await sleep(150); }
-        if (completedMessageCount > 0) {
-          await sleep(TRAINING_MESSAGE_GAP_MS);
-        }
-        const isUserFlashcard = ev.flashcard_kind === 'user' || ev.role === 'learner';
-        const isIntroFlashcard = isIntroFlashcardMessage(ev.role, ev.speaker);
-        if (Number.isInteger(ev.session) && ev.session >= 1) {
-          activeTrainingSessionId = ev.session;
-          selectedTrainingSessionId = ev.session;
-          setActiveSessionChip(selectedTrainingSessionId);
-        }
-        if (typeof ev.sub_session === 'string' && ev.sub_session.trim()) {
-          activeTrainingSubSession = ev.sub_session.trim();
-        }
-        updateSessionLabel();
-        skipTTSForMessage = isIntroFlashcard || isUserFlashcard;
-        // User flashcards skip TTS (no audio) but should still gate on click-to-next
-        // when muted so the user can read at their own pace.
-        skipManualGateForMessage = isIntroFlashcard;
-        spk   = isIntroFlashcard
-          ? { name: t('sessionNote'), badge: `📌 ${t('sessionNote')}`, cardClass: 'speaker-other', bubbleClass: 'speaker-other' }
-          : speakerForRole(ev.role, ev.speaker, ev.flashcard_kind);
-        voice = ev.voice || 'meera';
-        text  = '';
-        messageLastTTSSeq = 0;
-        card.style.transition = 'opacity 0.28s, transform 0.28s';
-        card.style.opacity    = '0';
-        card.style.transform  = 'scale(0.97)';
-        await sleep(280);
-        card.className        = 'flashcard ' + spk.cardClass;
-        badge.textContent     = spk.badge;
-        textEl.textContent    = '';
-        if (!skipTTSForMessage) {
-          textEl.innerHTML = makeDots();
-        }
-        if (isIntroFlashcard) setSpeakingChipForSpeaker('', '');
-        else setSpeakingChipForSpeaker(ev.speaker || spk.name, ev.role || '');
-        card.style.opacity    = '1';
-        card.style.transform  = 'scale(1)';
-        break;
+  const ingestPromise = _ingestTrainingStreamEvents(sseIter, buffer, streamSessionId, {
+    streamEpoch,
+    allowWhilePaused,
+  });
+
+  while (true) {
+    const item = await buffer.take();
+    if (!item) break;
+    if (trainingSessionId !== streamSessionId) {
+      return { event: null, lastTTSSeq: presentCtx.lastTTSSeq, epoch: streamEpoch };
+    }
+
+    if (item.kind === 'flashcard') {
+      const ok = await _presentBufferedFlashcard(item, presentCtx);
+      if (!ok) {
+        return { event: null, lastTTSSeq: presentCtx.lastTTSSeq, epoch: streamEpoch };
       }
-      case 'token': {
-        text += ev.text;
-        textEl.textContent = text;
-        checkFlashcardOverflow(card);
-        break;
-      }
-      case 'message_end': {
-        track('sse_message_end', { speaker: spk?.name || null, role: ev.role || null });
-        const finalText = text.trim();
-        if (!skipTTSForMessage && finalText) {
-          const seq = enqueueTTSForContext(finalText, voice, 'training', { allowWhilePaused });
-          if (seq) {
-            lastTTSSeq = seq;
-            messageLastTTSSeq = seq;
-          }
-        }
-        if (spk) {
-          const alreadyEchoedUser = spk.name === 'USER' && consumeEchoedUserText(finalText);
-          if (!alreadyEchoedUser) {
-            chatHistory.push({ name: spk.name, bubbleClass: spk.bubbleClass, text: finalText });
-            renderChatHistory();
-          }
-          completedMessageCount += 1;
-        }
-        if (!skipManualGateForMessage) {
-          // Show "Next" button immediately (same as muted mode). TTS plays in background;
-          // clicking Next cancels any remaining audio and advances to the next card.
-          await waitForManualFlashcardAdvance();
-          flushTTSPlayback({ resolveWaiters: true });
-        }
-        break;
-      }
+      continue;
+    }
+
+    const ev = item.ev;
+    switch (item.kind) {
       case 'phase_complete': {
         track('sse_phase_complete', {
           session: ev.session ?? null,
@@ -6733,8 +8711,9 @@ async function consumeTrainingStream(sseIter, options = {}) {
           trainingRunState = ev.run_state.trim();
         }
         updateTrainingActionButton();
-        setModuleChipDisabled(!canSwitchSessions());
-        return { event: ev, lastTTSSeq, epoch: streamEpoch };
+        updateSessionLockChrome();
+        await ingestPromise.catch(() => {});
+        return { event: ev, lastTTSSeq: presentCtx.lastTTSSeq, epoch: streamEpoch };
       }
       case 'error': {
         track('sse_error', { message: ev.message || null, run_state: ev.run_state || null });
@@ -6745,10 +8724,15 @@ async function consumeTrainingStream(sseIter, options = {}) {
         break;
       }
       case 'done':
-        return { event: ev, lastTTSSeq, epoch: streamEpoch };
+        await ingestPromise.catch(() => {});
+        return { event: ev, lastTTSSeq: presentCtx.lastTTSSeq, epoch: streamEpoch };
+      default:
+        break;
     }
   }
-  return { event: null, lastTTSSeq, epoch: streamEpoch };
+
+  await ingestPromise.catch(() => {});
+  return { event: null, lastTTSSeq: presentCtx.lastTTSSeq, epoch: streamEpoch };
 }
 
 /* ── Training: advance scripted exchange ── */
@@ -6774,6 +8758,10 @@ async function advanceTraining() {
 }
 
 async function advanceTrainingImpl(traceMeta) {
+  if (!sessionStateHydrated) {
+    trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'session_not_hydrated');
+    return;
+  }
   if (trainingComplete || isPaused) {
     trackTrainingActionBlocked(traceMeta, 'advance_or_continue', 'advance_guard_blocked', {
       training_complete: Boolean(trainingComplete),
@@ -6807,9 +8795,9 @@ async function advanceTrainingImpl(traceMeta) {
   isStreaming = true;
   trainingBackendStreamActive = true;
   btn.disabled = true;
-  setModuleChipDisabled(true);
+  updateSessionLockChrome();
 
-  if (!trainingGraphStarted && !trainingSessionHasResumeContent()) {
+  if (!trainingSessionShouldResume() && !sessionResumeArtifacts) {
     try {
       const startRes = await apiFetch(`${API_BASE}/training/${trainingSessionId}/start-session/${selectedTrainingSessionId}`, {
         method: 'POST',
@@ -6821,7 +8809,7 @@ async function advanceTrainingImpl(traceMeta) {
         isStreaming = false;
         trainingBackendStreamActive = false;
         btn.disabled = false;
-        setModuleChipDisabled(!canSwitchSessions());
+        updateSessionLockChrome();
         return;
       }
     } catch (e) {
@@ -6829,7 +8817,7 @@ async function advanceTrainingImpl(traceMeta) {
       isStreaming = false;
       trainingBackendStreamActive = false;
       btn.disabled = false;
-      setModuleChipDisabled(!canSwitchSessions());
+      updateSessionLockChrome();
       return;
     }
   }
@@ -6865,7 +8853,7 @@ async function advanceTrainingImpl(traceMeta) {
   clearManualFlashcardGate();
   isStreaming = false;
   updateTrainingActionButton();
-  setModuleChipDisabled(!canSwitchSessions());
+  updateSessionLockChrome();
   runTrainingAskQueue();
 }
 
@@ -6915,7 +8903,7 @@ async function askTrainingNow(text, traceMeta = null) {
       trainingBackendStreamActive = false;
       await continueTrainingNow(traceMeta);
       updateTrainingActionButton();
-      setModuleChipDisabled(!canSwitchSessions());
+      updateSessionLockChrome();
       return;
     }
   } catch (e) {
@@ -6925,7 +8913,7 @@ async function askTrainingNow(text, traceMeta = null) {
 
   isStreaming = false;
   updateTrainingActionButton();
-  setModuleChipDisabled(!canSwitchSessions());
+  updateSessionLockChrome();
 }
 
 async function continueTrainingNow(traceMeta = null) {
@@ -6977,7 +8965,7 @@ async function continueTrainingNow(traceMeta = null) {
   trainingBackendStreamActive = true;
   const btn = document.getElementById('training-continue-btn');
   btn.disabled = true;
-  setModuleChipDisabled(true);
+  updateSessionLockChrome();
 
   try {
     const continueBody = pendingText ? { text: pendingText } : { action: 'continue' };
@@ -7003,7 +8991,7 @@ async function continueTrainingNow(traceMeta = null) {
 
   isStreaming = false;
   updateTrainingActionButton();
-  setModuleChipDisabled(!canSwitchSessions());
+  updateSessionLockChrome();
   runTrainingAskQueue();
 }
 
@@ -7041,7 +9029,7 @@ async function runTrainingAskQueue() {
       } else if (ttsQueue.length > 0 && !ttsPlaying) {
         _drainTTSQueue();
       }
-      setModuleChipDisabled(!canSwitchSessions());
+      updateSessionLockChrome();
       updatePausePlayBtn();
     }
     await advanceTraining();
@@ -7220,7 +9208,7 @@ function togglePause() {
       if (btn) btn.disabled = true;
     }
     // Disable module-jump chips while paused.
-    setModuleChipDisabled(true);
+    updateSessionLockChrome();
   } else {
     // ── Resume ──
     isPaused = false;
@@ -7239,7 +9227,7 @@ function togglePause() {
       if (btn) btn.disabled = false;
     }
     // Re-enable module-jump chips.
-    setModuleChipDisabled(!canSwitchSessions());
+    updateSessionLockChrome();
     runTrainingAskQueue();
   }
   updatePausePlayBtn();
@@ -7606,7 +9594,7 @@ async function _kickQuizGenerationForCompleted() {
   let changed = false;
   const sessionNums = Object.keys(TRAINING_SESSION_TITLES).map(Number).filter(n => n > 0);
   await Promise.all(sessionNums.map(async num => {
-    if (!lastSessionCompleted[num]) return;
+    if (!lastQuizEligibleSessions[num]) return;
     const qStatus = lastQuizGenerationStatus[num];
     if (qStatus === 'succeeded' || qStatus === 'queued' || qStatus === 'running') return;
     try {
@@ -7663,14 +9651,14 @@ function renderQuizSessionPicker() {
   const cards = sessionNums.map(num => {
     const title   = getLocalizedSessionTitle(num);
     const qStatus = lastQuizGenerationStatus[num];
-    const sessionDone = Boolean(lastSessionCompleted[num]);
+    const sessionDone = Boolean(lastQuizEligibleSessions[num]);
     const isDone  = completedQuizSessions.has(_quizCompletionKey(num));
-    const isReady = isDone || qStatus === 'succeeded';
-    const isGenning = !isDone && !isReady && (
+    const isReady = sessionDone && (isDone || qStatus === 'succeeded');
+    const isGenning = sessionDone && !isDone && !isReady && (
       ['queued', 'running', 'failed', 'skipped', 'not_found'].includes(qStatus)
-      || (sessionDone && qStatus !== 'succeeded')
+      || qStatus !== 'succeeded'
     );
-    const isLocked = !isReady && !isGenning;
+    const isLocked = !sessionDone || (!isReady && !isGenning);
 
     let badgeClass, badgeText, cardClass, onclickAttr;
     if (isDone) {
@@ -7740,8 +9728,9 @@ function _stopQuizPickerPolling() {
 
 function _hasGeneratingSessions() {
   return Object.entries(lastQuizGenerationStatus).some(([num, v]) => {
+    if (!lastQuizEligibleSessions[Number(num)]) return false;
     if (v === 'queued' || v === 'running') return true;
-    return Boolean(lastSessionCompleted[Number(num)]) && v !== 'succeeded' && !completedQuizSessions.has(_quizCompletionKey(Number(num)));
+    return Boolean(lastQuizEligibleSessions[Number(num)]) && v !== 'succeeded' && !completedQuizSessions.has(_quizCompletionKey(Number(num)));
   });
 }
 
@@ -8087,6 +10076,7 @@ async function restartQuiz() {
    INIT
 ══════════════════════════════════════════════════ */
 async function initializeApp() {
+  console.info(`[training-ui] build ${TRAINING_UI_BUILD}`);
   // Reset sidebar UI state (in case of re-init after login)
   _archivedViewActive = false;
   resetFeedbackUI();
@@ -8137,13 +10127,129 @@ async function initializeApp() {
       renderHomeSessionCard();
       updateSessionLabel();
       updateTrainingActionButton();
-      setModuleChipDisabled(!canSwitchSessions());
+      updateSessionLockChrome();
     } catch (e) {
       console.warn('Backend unavailable — live features disabled:', e.message);
       const homeStartBtn = document.getElementById('home-start-btn');
       if (homeStartBtn) homeStartBtn.disabled = true;
     }
   }
+}
+
+/* ══════════════════════════════════════════════════
+   ABOUT THIS TRAINER PANEL
+══════════════════════════════════════════════════ */
+const ABOUT_PERSONA_ORDER = [
+  { id: 'trainer', speaker: 'speaker-trainer', nameKey: 'aboutPersonaTrainerName', roleKey: 'aboutPersonaTrainerRole', descKey: 'aboutPersonaTrainerDesc' },
+  { id: 'ramesh', speaker: 'speaker-ramesh', nameKey: 'aboutPersonaRameshName', roleKey: 'aboutPersonaRameshRole', descKey: 'aboutPersonaRameshDesc' },
+  { id: 'priya', speaker: 'speaker-priya', nameKey: 'aboutPersonaPriyaName', roleKey: 'aboutPersonaPriyaRole', descKey: 'aboutPersonaPriyaDesc' },
+  { id: 'simran', speaker: 'speaker-simran', nameKey: 'aboutPersonaSimranName', roleKey: 'aboutPersonaSimranRole', descKey: 'aboutPersonaSimranDesc' },
+  { id: 'sejal', speaker: 'speaker-sejal', nameKey: 'aboutPersonaSejalName', roleKey: 'aboutPersonaSejalRole', descKey: 'aboutPersonaSejalDesc' },
+];
+
+let _aboutPanelOpen = false;
+
+function renderAboutPanel() {
+  const body = document.getElementById('about-panel-body');
+  if (!body) return;
+
+  const personasHtml = ABOUT_PERSONA_ORDER.map((p) => {
+    const isOpen = document.querySelector(`.about-persona-card[data-persona-id="${p.id}"]`)?.classList.contains('open');
+    return `
+      <div class="about-persona-card ${p.speaker}${isOpen ? ' open' : ''}" data-persona-id="${p.id}">
+        <button type="button" class="about-persona-head" onclick="toggleAboutPersona('${p.id}')" aria-expanded="${isOpen ? 'true' : 'false'}">
+          <span class="about-persona-meta">
+            <span class="about-persona-name">${t(p.nameKey)}</span>
+            <span class="about-persona-role">${t(p.roleKey)}</span>
+          </span>
+          <span class="about-persona-chevron" aria-hidden="true">▼</span>
+        </button>
+        <div class="about-persona-body">${t(p.descKey)}</div>
+      </div>`;
+  }).join('');
+
+  const interactItems = [
+    { cls: 'training', icon: '📖', titleKey: 'aboutInteractTrainingTitle', bodyKey: 'aboutInteractTrainingBody' },
+    { cls: 'roleplay', icon: '🎭', titleKey: 'aboutInteractRoleplayTitle', bodyKey: 'aboutInteractRoleplayBody' },
+    { cls: 'quiz', icon: '✏️', titleKey: 'aboutInteractQuizTitle', bodyKey: 'aboutInteractQuizBody' },
+    { cls: 'sidebar', icon: '☰', titleKey: 'aboutInteractSidebarTitle', bodyKey: 'aboutInteractSidebarBody' },
+    { cls: 'support', icon: '🌸', titleKey: 'aboutInteractSupportTitle', bodyKey: 'aboutInteractSupportBody' },
+    { cls: 'history', icon: '↑', titleKey: 'aboutInteractHistoryTitle', bodyKey: 'aboutInteractHistoryBody' },
+  ].map((item) => `
+    <li class="about-interact-item ${item.cls}">
+      <span class="about-interact-icon" aria-hidden="true">${item.icon}</span>
+      <div class="about-interact-copy">
+        <strong>${t(item.titleKey)}</strong>
+        <span>${t(item.bodyKey)}</span>
+      </div>
+    </li>`).join('');
+
+  body.innerHTML = `
+    <section class="about-section" aria-labelledby="about-sec1-title">
+      <h3 class="about-section-title" id="about-sec1-title">${t('aboutSec1Title')}</h3>
+      <p>${t('aboutSec1P1')}</p>
+      <p>${t('aboutSec1P2')}</p>
+      <p>${t('aboutSec1P3')}</p>
+      <p>${t('aboutSec1P4')}</p>
+    </section>
+    <section class="about-section" aria-labelledby="about-sec2-title">
+      <h3 class="about-section-title" id="about-sec2-title">${t('aboutSec2Title')}</h3>
+      <p class="about-trainer-para">${t('aboutTrainerPara')}</p>
+      <p class="about-participants-label">${t('aboutParticipantsLabel')}</p>
+      <div class="about-persona-list">${personasHtml}</div>
+    </section>
+    <section class="about-section" aria-labelledby="about-sec3-title">
+      <h3 class="about-section-title" id="about-sec3-title">${t('aboutSec3Title')}</h3>
+      <ul class="about-interact-list">${interactItems}</ul>
+    </section>`;
+}
+
+function toggleAboutPersona(id) {
+  const card = document.querySelector(`.about-persona-card[data-persona-id="${id}"]`);
+  if (!card) return;
+  const open = card.classList.toggle('open');
+  const head = card.querySelector('.about-persona-head');
+  if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function openAboutPanel() {
+  if (_aboutPanelOpen) return;
+  closeFeedbackPanel();
+  _aboutPanelOpen = true;
+  document.body.classList.add('about-panel-open');
+  const btn = document.getElementById('about-toggle');
+  if (btn) {
+    btn.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+  renderAboutPanel();
+  track('about_panel_open');
+}
+
+function closeAboutPanel() {
+  if (!_aboutPanelOpen) return;
+  _aboutPanelOpen = false;
+  document.body.classList.remove('about-panel-open');
+  const btn = document.getElementById('about-toggle');
+  if (btn) {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function toggleAboutPanel() {
+  if (_aboutPanelOpen) closeAboutPanel();
+  else openAboutPanel();
+}
+
+function applyAboutLocale() {
+  const title = document.getElementById('about-panel-title');
+  const btn = document.getElementById('about-toggle');
+  const closeBtn = document.getElementById('about-panel-close');
+  if (title) title.textContent = t('aboutTitle');
+  if (btn) btn.textContent = t('aboutBtn');
+  if (closeBtn) closeBtn.setAttribute('aria-label', appLocale === 'gu' ? 'બંધ કરો' : 'Close');
+  if (_aboutPanelOpen) renderAboutPanel();
 }
 
 /* ══════════════════════════════════════════════════
@@ -8164,6 +10270,615 @@ function updateDarkToggle() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const btn = document.getElementById('dark-toggle');
   if (btn) btn.textContent = isDark ? t('lightMode') : t('darkMode');
+  const evalBtn = document.getElementById('eval-dark-btn');
+  if (evalBtn) evalBtn.textContent = isDark ? t('lightMode') : t('darkMode');
+}
+
+/* ══════════════════════════════════════════════════
+   EXPERT EVALUATION — full-page per-user rubric form
+   ══════════════════════════════════════════════════ */
+let _evalRubric = null;
+let _evalDraft = null;          // currently loaded eval item (draft or submitted)
+let _evalNeedsReopen = false;   // true when loaded item is submitted → reopen on first edit
+let _evalSaveTimer = null;
+let _evalFontLevel = 0;         // -1 | 0 | 1 | 2 | 3 | 4 | 5
+let _evalHistory = [];          // cached history items for sidebar
+let _evalScrollSpyActive = false;
+
+function evalFontIncrease() {
+  _evalFontLevel = Math.min(5, _evalFontLevel + 1);
+  _evalApplyFontLevel();
+}
+function evalFontDecrease() {
+  _evalFontLevel = Math.max(-1, _evalFontLevel - 1);
+  _evalApplyFontLevel();
+}
+function _evalApplyFontLevel() {
+  const screen = document.getElementById('screen-eval');
+  if (screen) {
+    if (_evalFontLevel === 0) screen.removeAttribute('data-font-level');
+    else screen.setAttribute('data-font-level', String(_evalFontLevel));
+  }
+  try { localStorage.setItem('evalFontLevel', String(_evalFontLevel)); } catch(e) {}
+  const plusBtn = document.getElementById('eval-font-increase');
+  const minusBtn = document.getElementById('eval-font-decrease');
+  if (plusBtn) plusBtn.disabled = _evalFontLevel >= 5;
+  if (minusBtn) minusBtn.disabled = _evalFontLevel <= -1;
+}
+function _evalInitFontLevel() {
+  try {
+    const v = parseInt(localStorage.getItem('evalFontLevel') || '0');
+    _evalFontLevel = isNaN(v) ? 0 : Math.max(-1, Math.min(5, v));
+  } catch(e) {}
+  _evalApplyFontLevel();
+}
+let _evalSaveInFlight = false;
+let _evalDirty = false;
+
+function applyEvalLocale() {
+  const label = document.getElementById('sidebar-eval-btn-label');
+  if (label) label.textContent = t('evalBtn');
+  const titleEl = document.getElementById('eval-header-title');
+  if (titleEl) titleEl.textContent = t('evalTitle');
+  const newBtnLabel = document.getElementById('eval-new-btn-label');
+  if (newBtnLabel) newBtnLabel.textContent = t('evalStart');
+  const sectionsLabel = document.getElementById('eval-sections-label');
+  if (sectionsLabel) sectionsLabel.textContent = t('evalSectionsLabel');
+  const historyLabel = document.getElementById('eval-history-label');
+  if (historyLabel) historyLabel.textContent = t('evalHistory');
+  const backBtn = document.querySelector('.eval-sidebar-back-btn');
+  if (backBtn) backBtn.innerHTML = `<span style="font-size:14px">←</span> ${escapeHtml(t('evalBackToTrainer'))}`;
+}
+
+async function _evalFetchRubric() {
+  if (_evalRubric) return _evalRubric;
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/rubric`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    _evalRubric = await res.json();
+  } catch (e) {
+    console.error('Failed to load eval rubric:', e);
+    _evalRubric = null;
+  }
+  return _evalRubric;
+}
+
+function _evalAllDimensionIds() {
+  if (!_evalRubric) return [];
+  const ids = [];
+  for (const sec of _evalRubric.sections) {
+    for (const sub of sec.subsections) {
+      for (const dim of sub.dimensions) ids.push(dim.id);
+    }
+  }
+  return ids;
+}
+
+function _evalSectionDimensionIds(sectionIdx) {
+  if (!_evalRubric) return [];
+  const sec = _evalRubric.sections[sectionIdx];
+  if (!sec) return [];
+  const ids = [];
+  for (const sub of sec.subsections)
+    for (const d of sub.dimensions) ids.push(d.id);
+  return ids;
+}
+
+function _evalIsDimFilled(dimId) {
+  if (!_evalDraft) return false;
+  const r = _evalDraft.responses[dimId];
+  return !!r && !!(r.option || '').trim();
+}
+
+function _evalCountFilled() {
+  const ids = _evalAllDimensionIds();
+  let filled = 0;
+  for (const id of ids) if (_evalIsDimFilled(id)) filled++;
+  return { filled, total: ids.length };
+}
+
+function _evalMissingIds() {
+  return _evalAllDimensionIds().filter(id => !_evalIsDimFilled(id));
+}
+
+async function openEvaluationScreen() {
+  document.body.classList.add('eval-screen-open');
+  const screen = document.getElementById('screen-eval');
+  if (screen) screen.classList.add('active');
+  _evalInitFontLevel();
+  updateDarkToggle();
+  applyEvalLocale();
+  await _evalFetchRubric();
+  _evalRenderSidebar();
+  await _evalRefreshHistory();
+  await _evalLoadActiveDraft();
+}
+
+function closeEvaluationScreen() {
+  document.body.classList.remove('eval-screen-open');
+  const screen = document.getElementById('screen-eval');
+  if (screen) screen.classList.remove('active');
+  _evalDraft = null;
+  _evalNeedsReopen = false;
+  _evalScrollSpyActive = false;
+}
+
+/* ── Sidebar rendering ── */
+
+function _evalRenderSidebar() {
+  if (!_evalRubric) return;
+  const jumpsEl = document.getElementById('eval-section-jumps');
+  if (!jumpsEl) return;
+  let html = '';
+  for (let i = 0; i < _evalRubric.sections.length; i++) {
+    const sec = _evalRubric.sections[i];
+    const color = sec.color || 'plum';
+    const dimCount = _evalSectionDimensionIds(i).length;
+    html += `<button class="eval-section-chip" data-color="${color}" data-section-idx="${i}" onclick="evalJumpToSection(${i})">`;
+    html += `<span class="chip-dot"></span>`;
+    html += `<span class="chip-title">${escapeHtml(sec.title)}</span>`;
+    html += `<span class="chip-progress" id="eval-chip-progress-${i}">0/${dimCount}</span>`;
+    html += `</button>`;
+  }
+  jumpsEl.innerHTML = html;
+}
+
+async function _evalRefreshHistory() {
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/history`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    _evalHistory = data.evaluations || [];
+  } catch (e) {
+    console.error('Failed to load eval history:', e);
+    _evalHistory = [];
+  }
+  _evalRenderSidebarHistory();
+}
+
+function _evalRenderSidebarHistory() {
+  const listEl = document.getElementById('eval-sidebar-history');
+  if (!listEl) return;
+  if (!_evalHistory.length) {
+    listEl.innerHTML = `<div class="eval-hist-empty">${escapeHtml(t('evalNoHistory'))}</div>`;
+    return;
+  }
+  const currentId = _evalDraft ? _evalDraft.id : null;
+  listEl.innerHTML = _evalHistory.map(item => {
+    const idx = item.submission_index;
+    const date = item.submitted_at || item.updated_at || item.created_at;
+    const dateStr = formatFeedbackTime(date);
+    const isActive = item.id === currentId;
+    const statusClass = item.status === 'submitted' ? 'submitted' : 'draft';
+    const statusLabel = item.status === 'submitted' ? t('evalStatusSubmitted') : t('evalStatusDraft');
+    return `<li class="eval-hist-item${isActive ? ' active' : ''}" onclick="evalLoadHistoryItem(${item.id})">
+      <div class="eval-hist-item-row">
+        <span class="eval-hist-item-num">#${idx}</span>
+        <span class="eval-hist-item-status ${statusClass}">${escapeHtml(statusLabel)}</span>
+      </div>
+      <span class="eval-hist-item-time">${escapeHtml(dateStr)}</span>
+    </li>`;
+  }).join('');
+}
+
+function _evalUpdateSidebarActive() {
+  const currentId = _evalDraft ? _evalDraft.id : null;
+  document.querySelectorAll('.eval-hist-item').forEach(el => {
+    const m = el.getAttribute('onclick') || '';
+    const match = m.match(/evalLoadHistoryItem\((\d+)\)/);
+    const itemId = match ? parseInt(match[1]) : null;
+    el.classList.toggle('active', itemId === currentId);
+  });
+}
+
+function _evalUpdateSectionChipProgress() {
+  if (!_evalRubric) return;
+  for (let i = 0; i < _evalRubric.sections.length; i++) {
+    const dimIds = _evalSectionDimensionIds(i);
+    const filled = dimIds.filter(id => _evalIsDimFilled(id)).length;
+    const el = document.getElementById(`eval-chip-progress-${i}`);
+    if (el) el.textContent = `${filled}/${dimIds.length}`;
+  }
+}
+
+/* ── Section jump + scroll spy ── */
+
+function evalJumpToSection(idx) {
+  const body = document.getElementById('eval-body');
+  if (!body) return;
+  const sections = body.querySelectorAll('.eval-section');
+  if (sections[idx]) {
+    sections[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  _evalSetActiveSectionChip(idx);
+}
+
+function _evalSetActiveSectionChip(idx) {
+  document.querySelectorAll('.eval-section-chip').forEach(chip => {
+    chip.classList.toggle('active', parseInt(chip.dataset.sectionIdx) === idx);
+  });
+}
+
+function _evalSetupScrollSpy() {
+  const body = document.getElementById('eval-body');
+  if (!body || !_evalRubric) return;
+  _evalScrollSpyActive = true;
+  let scrollTimer = null;
+  body.addEventListener('scroll', () => {
+    if (!_evalScrollSpyActive) return;
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const sections = body.querySelectorAll('.eval-section');
+      const scrollTop = body.scrollTop;
+      const offset = body.offsetTop;
+      let activeIdx = 0;
+      for (let i = 0; i < sections.length; i++) {
+        const rect = sections[i].getBoundingClientRect();
+        const bodyRect = body.getBoundingClientRect();
+        if (rect.top - bodyRect.top <= 80) activeIdx = i;
+      }
+      _evalSetActiveSectionChip(activeIdx);
+    }, 80);
+  });
+}
+
+/* ── Draft loading ── */
+
+async function _evalLoadActiveDraft() {
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/active`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.draft) {
+      _evalDraft = data.draft;
+      _evalNeedsReopen = false;
+      _evalRenderForm();
+      _evalUpdateSidebarActive();
+    } else {
+      _evalDraft = null;
+      _evalNeedsReopen = false;
+      _evalRenderStartView();
+      _evalUpdateSidebarActive();
+    }
+  } catch (e) {
+    console.error('Failed to load active eval draft:', e);
+    _evalRenderStartView();
+  }
+}
+
+function _evalRenderStartView() {
+  const body = document.getElementById('eval-body');
+  if (!body) return;
+  body.innerHTML = `
+    <div class="eval-start-view">
+      <div class="eval-start-card">
+        <h3 class="eval-start-title">${escapeHtml(t('evalTitle'))}</h3>
+        <p class="eval-start-desc">${escapeHtml(t('evalStartDesc'))}</p>
+        <button class="eval-start-btn" onclick="evalStartNew()">${escapeHtml(t('evalStart'))}</button>
+      </div>
+    </div>`;
+  _evalUpdateHeader({ showSubmit: false, showProgress: false });
+  _evalUpdateSectionChipProgress();
+}
+
+async function evalStartNew() {
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/start`, { method: 'POST' });
+    if (res.status === 409) {
+      await _evalLoadActiveDraft();
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    _evalDraft = data.draft;
+    _evalNeedsReopen = false;
+    _evalRenderForm();
+    _evalRefreshHistory();
+    _evalSetupScrollSpy();
+  } catch (e) {
+    console.error('Failed to start eval:', e);
+    alert('Could not start evaluation. Please try again.');
+  }
+}
+
+async function evalLoadHistoryItem(evalId) {
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/${evalId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    _evalDraft = data.evaluation;
+    _evalNeedsReopen = (_evalDraft.status === 'submitted');
+    _evalRenderForm();
+    _evalUpdateSidebarActive();
+    _evalSetupScrollSpy();
+  } catch (e) {
+    console.error('Failed to load eval:', e);
+    alert('Could not load evaluation.');
+  }
+}
+
+/* ── Reopen on first edit (for submitted evals) ── */
+
+async function _evalEnsureReopened() {
+  if (!_evalNeedsReopen || !_evalDraft) return true;
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/${_evalDraft.id}/reopen`, { method: 'PUT' });
+    if (!res.ok) {
+      if (res.status === 409) {
+        alert(t('evalDraftConflict'));
+      } else {
+        alert('Could not reopen evaluation for editing.');
+      }
+      return false;
+    }
+    const data = await res.json();
+    if (data.draft) {
+      _evalDraft.status = 'draft';
+      _evalDraft.submitted_at = null;
+    }
+    _evalNeedsReopen = false;
+    _evalRefreshHistory();
+    return true;
+  } catch (e) {
+    console.error('Reopen eval failed:', e);
+    alert('Could not reopen evaluation for editing.');
+    return false;
+  }
+}
+
+/* ── Form rendering ── */
+
+function _evalRenderForm() {
+  if (!_evalRubric || !_evalDraft) return;
+  const responses = _evalDraft.responses || {};
+  const body = document.getElementById('eval-body');
+  if (!body) return;
+
+  const missingSet = new Set(_evalMissingIds());
+
+  let html = '';
+  for (let secIdx = 0; secIdx < _evalRubric.sections.length; secIdx++) {
+    const sec = _evalRubric.sections[secIdx];
+    const color = sec.color || 'plum';
+    html += `<div class="eval-section" data-color="${color}" data-section-idx="${secIdx}">`;
+    html += `<div class="eval-section-header"><span class="eval-section-title">${escapeHtml(sec.title)}</span></div>`;
+    for (const sub of sec.subsections) {
+      html += `<div class="eval-subsection-title">${escapeHtml(sub.title)}</div>`;
+      for (const dim of sub.dimensions) {
+        const resp = responses[dim.id] || {};
+        const isMissing = missingSet.has(dim.id);
+        html += `<div class="eval-dimension${isMissing ? ' missing' : ''}" id="eval-dim-${dim.id}" data-dim-id="${dim.id}">`;
+        html += `<h4 class="eval-dim-title">${escapeHtml(dim.title)}</h4>`;
+        html += `<p class="eval-dim-definition">${escapeHtml(dim.definition)}</p>`;
+        // options (mandatory)
+        html += `<div class="eval-options">`;
+        for (const opt of dim.options) {
+          const selected = (resp.option || '') === opt.label;
+          html += `<button class="eval-option-chip${selected ? ' selected' : ''}"`;
+          html += ` onclick="evalSelectOption('${dim.id}','${opt.label}')"`;
+          html += `>`;
+          html += `<span class="opt-label"><span>${escapeHtml(opt.label)}</span></span>`;
+          html += `<span class="opt-text">${escapeHtml(opt.text)}</span>`;
+          html += `</button>`;
+        }
+        html += `</div>`;
+        // explanation (optional)
+        const expl = escapeHtml(resp.explanation || '');
+        const placeholder = escapeHtml(dim.explanation_prompt || t('evalExplanationPlaceholder'));
+        const optionalLabel = escapeHtml(t('evalExplanationOptional'));
+        html += `<span class="eval-expl-label">${optionalLabel}</span>`;
+        html += `<textarea class="eval-explanation" id="eval-expl-${dim.id}" rows="3"`;
+        html += ` placeholder="${placeholder}"`;
+        html += ` oninput="evalOnExplanationInput('${dim.id}', this.value)"`;
+        html += `>${expl}</textarea>`;
+        html += `</div>`;
+      }
+    }
+    html += `</div>`;
+  }
+  body.innerHTML = html;
+  _evalUpdateHeader({ showSubmit: true, showProgress: true });
+  _evalUpdateProgress();
+  _evalUpdateSectionChipProgress();
+  _evalSetupScrollSpy();
+}
+
+function _evalUpdateHeader({ showSubmit, showProgress }) {
+  const submitBtn = document.getElementById('eval-submit-btn');
+  if (submitBtn) {
+    submitBtn.style.display = showSubmit ? '' : 'none';
+    submitBtn.textContent = t('evalSubmit');
+  }
+  const progressRow = document.querySelector('.eval-progress-row');
+  if (progressRow) progressRow.style.display = showProgress ? '' : 'none';
+  const saveStatus = document.getElementById('eval-save-status');
+  if (saveStatus && !showSubmit) saveStatus.textContent = '';
+}
+
+function _evalUpdateProgress() {
+  const bar = document.getElementById('eval-progress-bar');
+  const label = document.getElementById('eval-progress-label');
+  if (!bar || !label) return;
+  const { filled, total } = _evalCountFilled();
+  label.textContent = t('evalProgress', { filled, total });
+  label.classList.toggle('has-missing', filled < total);
+
+  if (!_evalRubric) return;
+  let segHtml = '';
+  for (const sec of _evalRubric.sections) {
+    const dimIds = [];
+    for (const sub of sec.subsections) for (const d of sub.dimensions) dimIds.push(d.id);
+    const secFilled = dimIds.filter(id => _evalIsDimFilled(id)).length;
+    const pct = dimIds.length ? (secFilled / dimIds.length) * 100 : 0;
+    const color = sec.color || 'plum';
+    const colorMap = { plum: '#7a3d6e', teal: '#4a9b8f', indigo: '#5b5faa', terracotta: '#c97a4a' };
+    const darkColorMap = { plum: '#c08ab0', teal: '#6fc4b8', indigo: '#8a8fc8', terracotta: '#d89060' };
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const c = (isDark ? darkColorMap : colorMap)[color] || colorMap[color];
+    segHtml += `<div class="eval-progress-seg" style="width:${(100/_evalRubric.sections.length)}%;background:${pct>0?c:'transparent'}"></div>`;
+  }
+  bar.innerHTML = segHtml;
+  _evalUpdateSectionChipProgress();
+}
+
+/* ── Option selection + explanation input ── */
+
+async function evalSelectOption(dimId, optionLabel) {
+  if (!_evalDraft) return;
+  if (_evalNeedsReopen) {
+    const ok = await _evalEnsureReopened();
+    if (!ok) return;
+  }
+  if (!_evalDraft.responses[dimId]) _evalDraft.responses[dimId] = { option: '', explanation: '' };
+  _evalDraft.responses[dimId].option = optionLabel;
+  _evalDirty = true;
+  _evalUpdateChipSelection(dimId);
+  _evalUpdateDimMissingState(dimId);
+  _evalUpdateProgress();
+  _evalScheduleSave();
+}
+
+async function evalOnExplanationInput(dimId, value) {
+  if (!_evalDraft) return;
+  if (_evalNeedsReopen) {
+    const ok = await _evalEnsureReopened();
+    if (!ok) return;
+  }
+  if (!_evalDraft.responses[dimId]) _evalDraft.responses[dimId] = { option: '', explanation: '' };
+  _evalDraft.responses[dimId].explanation = value;
+  _evalDirty = true;
+  _evalUpdateDimMissingState(dimId);
+  _evalUpdateProgress();
+  _evalScheduleSave();
+}
+
+function _evalUpdateChipSelection(dimId) {
+  const dimEl = document.getElementById(`eval-dim-${dimId}`);
+  if (!dimEl) return;
+  const selected = (_evalDraft.responses[dimId] || {}).option || '';
+  dimEl.querySelectorAll('.eval-option-chip').forEach(chip => {
+    const label = chip.querySelector('.opt-label span');
+    chip.classList.toggle('selected', label && label.textContent === selected);
+  });
+}
+
+function _evalUpdateDimMissingState(dimId) {
+  const dimEl = document.getElementById(`eval-dim-${dimId}`);
+  if (!dimEl) return;
+  dimEl.classList.toggle('missing', !_evalIsDimFilled(dimId));
+}
+
+/* ── Autosave ── */
+
+function _evalScheduleSave() {
+  _evalSetSaveStatus('saving');
+  if (_evalSaveTimer) clearTimeout(_evalSaveTimer);
+  _evalSaveTimer = setTimeout(() => { _evalSaveDraft(); }, 800);
+}
+
+function _evalSetSaveStatus(state) {
+  const el = document.getElementById('eval-save-status');
+  if (!el) return;
+  el.classList.remove('saving', 'saved');
+  if (state === 'saving') { el.textContent = t('evalSaving'); el.classList.add('saving'); }
+  else if (state === 'saved') { el.textContent = t('evalSave'); el.classList.add('saved'); }
+  else el.textContent = '';
+}
+
+async function _evalSaveDraft() {
+  if (!_evalDraft || _evalNeedsReopen) return;
+  if (_evalSaveInFlight) { _evalDirty = true; return; }
+  _evalSaveInFlight = true;
+  _evalDirty = false;
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/${_evalDraft.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ responses: _evalDraft.responses }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.draft) {
+      if (_evalDirty && data.draft.responses) {
+        _evalDraft.responses = Object.assign(data.draft.responses, _evalDraft.responses);
+      } else {
+        _evalDraft.responses = data.draft.responses || _evalDraft.responses;
+      }
+    }
+    _evalSetSaveStatus('saved');
+  } catch (e) {
+    console.error('Eval autosave failed:', e);
+    _evalSetSaveStatus('');
+  } finally {
+    _evalSaveInFlight = false;
+    if (_evalDirty) _evalSaveDraft();
+  }
+}
+
+/* ── Submit ── */
+
+function onEvalSubmitClick() {
+  if (!_evalDraft) return;
+  if (_evalSaveTimer) { clearTimeout(_evalSaveTimer); }
+  _evalSaveDraft().then(() => {
+    const missing = _evalMissingIds();
+    if (missing.length === 0) {
+      _evalDoSubmit();
+    } else {
+      _evalShowPartialModal(missing.length);
+    }
+  });
+}
+
+function _evalShowPartialModal(missingCount) {
+  const overlay = document.getElementById('eval-modal-overlay');
+  const title = document.getElementById('eval-modal-title');
+  const body = document.getElementById('eval-modal-body');
+  const jumpBtn = document.getElementById('eval-modal-jump');
+  if (!overlay || !title || !body) return;
+  title.textContent = t('evalSubmitPartialTitle');
+  body.innerHTML = t('evalSubmitPartialBody', { count: missingCount })
+    .replace('{count}', `<span class="missing-count">${missingCount}</span>`);
+  jumpBtn.textContent = t('evalSubmitMissingHighlight');
+  overlay.classList.add('active');
+}
+
+function closeEvalModal() {
+  const overlay = document.getElementById('eval-modal-overlay');
+  if (overlay) overlay.classList.remove('active');
+}
+
+function evalJumpToNextMissing() {
+  const missing = _evalMissingIds();
+  if (!missing.length) return;
+  const target = document.getElementById(`eval-dim-${missing[0]}`);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.add('missing');
+    setTimeout(() => { target.style.transition = 'box-shadow 0.4s'; }, 100);
+  }
+}
+
+async function _evalDoSubmit() {
+  if (!_evalDraft) return;
+  try {
+    const res = await apiFetch(`${API_BASE}/evaluation/${_evalDraft.id}/submit`, { method: 'POST' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    alert(t('evalSubmitted'));
+    _evalDraft = null;
+    _evalNeedsReopen = false;
+    await _evalRefreshHistory();
+    _evalRenderStartView();
+    _evalUpdateSidebarActive();
+  } catch (e) {
+    console.error('Eval submit failed:', e);
+    alert('Could not submit evaluation. Please try again.');
+  }
+}
+
+function confirmEvalSubmit() {
+  closeEvalModal();
+  _evalDoSubmit();
 }
 
 // Only boot the app if the user is already authenticated.
@@ -8172,6 +10887,7 @@ if (checkAuth()) {
   bindFeedbackInput();
   bindFeedbackPanelInteractions();
   applyFeedbackLocale();
+  applyEvalLocale();
   initializeApp();
   updateDarkToggle();
 }
